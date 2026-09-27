@@ -9,6 +9,7 @@ import {
   Text,
   Platform,
   Alert,
+  useWindowDimensions,
 } from 'react-native';
 import { apiService } from './src/services/api';
 import { THEME } from './src/constants/theme';
@@ -31,6 +32,8 @@ import DevToolbar from './src/components/DevToolbar';
 import HomeScreen from './src/components/HomeScreen';
 import BrowseScreen from './src/components/BrowseScreen';
 import ProfileScreen from './src/components/ProfileScreen';
+import SidebarNav from './src/components/SidebarNav';
+import DesktopActionCard from './src/components/DesktopActionCard';
 import { VideoModal, SubmissionModal, PaymentModal, CreateModal } from './src/components/Modals';
 
 export default function App() {
@@ -41,6 +44,8 @@ export default function App() {
   const [users, setUsers] = useState([]);
   const [activeUser, setActiveUser] = useState(null);
   const [language, setLanguage] = useState('en'); // 'en' | 'hi'
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 900;
 
   // Navigation & Interactive Modals State
   const [activeTab, setActiveTab] = useState('contests'); // 'home' | 'browse' | 'create' | 'contests' | 'profile'
@@ -197,181 +202,349 @@ export default function App() {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#080C14" />
 
-      {/* Screen Frame Container (Mobile-optimized on Web & Native) */}
-      <View style={styles.appContainer}>
-        {/* Top Header */}
-        <Header
-          activeTab={activeTab}
-          onBackPress={handleBackPress}
-          language={language}
-          setLanguage={setLanguage}
-          onToggleDevBar={() => setDevBarVisible(!devBarVisible)}
-        />
-
-        {/* Optional Evaluator Controls Bar */}
-        <DevToolbar
-          visible={devBarVisible}
-          onClose={() => setDevBarVisible(false)}
-          users={users}
-          activeUser={activeUser}
-          onSelectUser={handleSelectUser}
-          currentState={computed?.currentState}
-          onOverrideState={handleOverrideState}
-          onResetDemo={handleResetDemo}
-          spotsRemaining={computed?.spotsRemaining}
-          bookedSpots={competition?.bookedSpots}
-        />
-
-        {/* Toast Banner */}
-        {toastMessage ? (
-          <View style={styles.toastContainer}>
-            <Text style={styles.toastText}>{toastMessage}</Text>
-          </View>
-        ) : null}
-
-        {/* Screen Routing based on BottomNav activeTab */}
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={THEME.colors.primary} />
-            <Text style={styles.loadingText}>Connecting to Feedants API...</Text>
-          </View>
-        ) : !competition && activeTab === 'contests' ? (
-          <View style={styles.loadingContainer}>
-            <Ionicons name="cloud-offline-outline" size={40} color={THEME.colors.rose} />
-            <Text style={[styles.loadingText, { color: THEME.colors.rose, marginTop: 10 }]}>
-              Unable to reach Backend API (:5000)
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                setLoading(true);
-                loadData();
-              }}
-              style={{
-                marginTop: 16,
-                backgroundColor: THEME.colors.primary,
-                paddingHorizontal: 20,
-                paddingVertical: 10,
-                borderRadius: 8,
-              }}
-              activeOpacity={0.8}
-            >
-              <Text style={{ color: THEME.colors.bg, fontWeight: 'bold' }}>Retry Connection</Text>
-            </TouchableOpacity>
-          </View>
-        ) : activeTab === 'home' ? (
-          <HomeScreen
+      {isDesktop ? (
+        /* ═══════════════════════════════════════════════════════════
+           DESKTOP RESPONSIVE LAYOUT (>= 900px)
+           Sidebar navigation on left, 2-column split dashboard on right
+           ═══════════════════════════════════════════════════════════ */
+        <View style={styles.desktopLayout}>
+          {/* Left Sidebar Navigation */}
+          <SidebarNav
+            activeTab={activeTab}
+            onSelectTab={handleSelectTab}
             activeUser={activeUser}
-            competition={competition}
-            onGoToContest={() => setActiveTab('contests')}
-            onSelectCategory={(cat) => {
-              setActiveTab('browse');
-              showToast(`Browsing ${cat}`);
-            }}
+            onToggleDevBar={() => setDevBarVisible(!devBarVisible)}
+            onCreatePress={() => setCreateModalVisible(true)}
             language={language}
+            setLanguage={setLanguage}
           />
-        ) : activeTab === 'browse' ? (
-          <BrowseScreen
-            onGoToContest={() => setActiveTab('contests')}
+
+          {/* Right Main Content Panel */}
+          <View style={styles.desktopMainView}>
+            {/* Desktop Header */}
+            <Header
+              activeTab={activeTab}
+              onBackPress={handleBackPress}
+              language={language}
+              setLanguage={setLanguage}
+              onToggleDevBar={() => setDevBarVisible(!devBarVisible)}
+            />
+
+            {/* Optional Evaluator Controls Bar */}
+            <DevToolbar
+              visible={devBarVisible}
+              onClose={() => setDevBarVisible(false)}
+              users={users}
+              activeUser={activeUser}
+              onSelectUser={handleSelectUser}
+              currentState={computed?.currentState}
+              onOverrideState={handleOverrideState}
+              onResetDemo={handleResetDemo}
+              spotsRemaining={computed?.spotsRemaining}
+              bookedSpots={competition?.bookedSpots}
+            />
+
+            {/* Toast Banner */}
+            {toastMessage ? (
+              <View style={styles.toastContainer}>
+                <Text style={styles.toastText}>{toastMessage}</Text>
+              </View>
+            ) : null}
+
+            {/* Desktop Screen Content */}
+            {loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={THEME.colors.primary} />
+                <Text style={styles.loadingText}>Connecting to Feedants API...</Text>
+              </View>
+            ) : !competition && activeTab === 'contests' ? (
+              <View style={styles.loadingContainer}>
+                <Ionicons name="cloud-offline-outline" size={40} color={THEME.colors.rose} />
+                <Text style={[styles.loadingText, { color: THEME.colors.rose, marginTop: 10 }]}>
+                  Unable to reach Backend API (:5000)
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setLoading(true);
+                    loadData();
+                  }}
+                  style={styles.retryBtn}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.retryBtnText}>Retry Connection</Text>
+                </TouchableOpacity>
+              </View>
+            ) : activeTab === 'home' ? (
+              <HomeScreen
+                activeUser={activeUser}
+                competition={competition}
+                onGoToContest={() => setActiveTab('contests')}
+                onSelectCategory={(cat) => {
+                  setActiveTab('browse');
+                  showToast(`Browsing ${cat}`);
+                }}
+                language={language}
+              />
+            ) : activeTab === 'browse' ? (
+              <BrowseScreen
+                onGoToContest={() => setActiveTab('contests')}
+                language={language}
+              />
+            ) : activeTab === 'profile' ? (
+              <ProfileScreen
+                activeUser={activeUser}
+                users={users}
+                onSelectUser={handleSelectUser}
+                onShowToast={showToast}
+                onGoToContest={() => setActiveTab('contests')}
+                language={language}
+              />
+            ) : (
+              /* Desktop Split 2-Column Contest Details */
+              <View style={styles.desktopTwoColContainer}>
+                {/* Left Column: Hero, Jury, Criteria & Rules, Hall of Fame */}
+                <ScrollView
+                  style={styles.desktopLeftScroll}
+                  contentContainerStyle={styles.desktopLeftScrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <HeroCard competition={competition} computed={computed} language={language} />
+                  <JudgeCard
+                    judge={competition?.judge}
+                    onPlayVideo={(url, name) => handlePlayVideo(url, `Judge: ${name}`)}
+                    language={language}
+                  />
+                  <TabsSection competition={competition} language={language} />
+                  <RewardsList rewards={competition?.rewards} language={language} />
+                  <PreviousWinners
+                    winners={competition?.previousWinners}
+                    onPlayVideo={handlePlayVideo}
+                    language={language}
+                  />
+                </ScrollView>
+
+                {/* Right Column: Pricing, Live Action CTA, Dates, Trust, Referral */}
+                <ScrollView
+                  style={styles.desktopRightScroll}
+                  contentContainerStyle={styles.desktopRightScrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <CountdownBanner
+                    targetDate={competition?.registrationDeadline}
+                    language={language}
+                  />
+                  <DesktopActionCard
+                    competition={competition}
+                    computed={computed}
+                    onRegisterPress={handleRegisterPress}
+                    onSubmitPress={handleSubmitPress}
+                    loading={actionLoading}
+                    language={language}
+                  />
+                  <ImportantDatesCard competition={competition} language={language} />
+                  <TrustSection
+                    disclaimer={competition?.disclaimer}
+                    onWatchPrizeVideo={() =>
+                      handlePlayVideo(
+                        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                        'Prize Distribution Process'
+                      )
+                    }
+                    onOpenRefundPolicy={() =>
+                      Alert.alert(
+                        'Feedants Refund Policy',
+                        '100% refund is issued if the competition is cancelled by Feedants. Registrations can be transferred up to 24 hours before the registration deadline.'
+                      )
+                    }
+                    language={language}
+                  />
+                  <ReferralCard user={activeUser} onShowToast={showToast} language={language} />
+                  <UserFeedbackBanner
+                    onFeedbackPress={() =>
+                      showToast('Feedants reviews: 4.8/5 based on 1,200+ dancers.')
+                    }
+                    language={language}
+                  />
+                </ScrollView>
+              </View>
+            )}
+          </View>
+        </View>
+      ) : (
+        /* ═══════════════════════════════════════════════════════════
+           MOBILE RESPONSIVE LAYOUT (< 900px)
+           Clean stacked phone view with sticky BottomBar and BottomNav
+           ═══════════════════════════════════════════════════════════ */
+        <View style={styles.appContainer}>
+          {/* Top Header */}
+          <Header
+            activeTab={activeTab}
+            onBackPress={handleBackPress}
             language={language}
+            setLanguage={setLanguage}
+            onToggleDevBar={() => setDevBarVisible(!devBarVisible)}
           />
-        ) : activeTab === 'profile' ? (
-          <ProfileScreen
-            activeUser={activeUser}
+
+          {/* Optional Evaluator Controls Bar */}
+          <DevToolbar
+            visible={devBarVisible}
+            onClose={() => setDevBarVisible(false)}
             users={users}
+            activeUser={activeUser}
             onSelectUser={handleSelectUser}
-            onShowToast={showToast}
-            onGoToContest={() => setActiveTab('contests')}
+            currentState={computed?.currentState}
+            onOverrideState={handleOverrideState}
+            onResetDemo={handleResetDemo}
+            spotsRemaining={computed?.spotsRemaining}
+            bookedSpots={competition?.bookedSpots}
+          />
+
+          {/* Toast Banner */}
+          {toastMessage ? (
+            <View style={styles.toastContainer}>
+              <Text style={styles.toastText}>{toastMessage}</Text>
+            </View>
+          ) : null}
+
+          {/* Screen Routing based on BottomNav activeTab */}
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={THEME.colors.primary} />
+              <Text style={styles.loadingText}>Connecting to Feedants API...</Text>
+            </View>
+          ) : !competition && activeTab === 'contests' ? (
+            <View style={styles.loadingContainer}>
+              <Ionicons name="cloud-offline-outline" size={40} color={THEME.colors.rose} />
+              <Text style={[styles.loadingText, { color: THEME.colors.rose, marginTop: 10 }]}>
+                Unable to reach Backend API (:5000)
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setLoading(true);
+                  loadData();
+                }}
+                style={styles.retryBtn}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.retryBtnText}>Retry Connection</Text>
+              </TouchableOpacity>
+            </View>
+          ) : activeTab === 'home' ? (
+            <HomeScreen
+              activeUser={activeUser}
+              competition={competition}
+              onGoToContest={() => setActiveTab('contests')}
+              onSelectCategory={(cat) => {
+                setActiveTab('browse');
+                showToast(`Browsing ${cat}`);
+              }}
+              language={language}
+            />
+          ) : activeTab === 'browse' ? (
+            <BrowseScreen
+              onGoToContest={() => setActiveTab('contests')}
+              language={language}
+            />
+          ) : activeTab === 'profile' ? (
+            <ProfileScreen
+              activeUser={activeUser}
+              users={users}
+              onSelectUser={handleSelectUser}
+              onShowToast={showToast}
+              onGoToContest={() => setActiveTab('contests')}
+              language={language}
+            />
+          ) : (
+            /* Default: Full Competition Details Screen */
+            <ScrollView
+              style={styles.scrollView}
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+            >
+              {/* 1. Hero Card */}
+              <HeroCard competition={competition} computed={computed} language={language} />
+
+              {/* 2. Judge Card */}
+              <JudgeCard
+                judge={competition?.judge}
+                onPlayVideo={(url, name) => handlePlayVideo(url, `Judge: ${name}`)}
+                language={language}
+              />
+
+              {/* 3. Live Countdown Banner */}
+              <CountdownBanner
+                targetDate={competition?.registrationDeadline}
+                language={language}
+              />
+
+              {/* 4. Important Dates */}
+              <ImportantDatesCard competition={competition} language={language} />
+
+              {/* 5. Previous Winners */}
+              <PreviousWinners
+                winners={competition?.previousWinners}
+                onPlayVideo={handlePlayVideo}
+                language={language}
+              />
+
+              {/* 6. Tabs (About, Judging, Rules) */}
+              <TabsSection competition={competition} language={language} />
+
+              {/* 7. Rewards List */}
+              <RewardsList rewards={competition?.rewards} language={language} />
+
+              {/* 8. Trust & Policies */}
+              <TrustSection
+                disclaimer={competition?.disclaimer}
+                onWatchPrizeVideo={() =>
+                  handlePlayVideo(
+                    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                    'Prize Distribution Process'
+                  )
+                }
+                onOpenRefundPolicy={() =>
+                  Alert.alert(
+                    'Feedants Refund Policy',
+                    '100% refund is issued if the competition is cancelled by Feedants. Registrations can be transferred up to 24 hours before the registration deadline.'
+                  )
+                }
+                language={language}
+              />
+
+              {/* 9. Referral Card */}
+              <ReferralCard user={activeUser} onShowToast={showToast} language={language} />
+
+              {/* 10. Feedback & Ad */}
+              <UserFeedbackBanner
+                onFeedbackPress={() =>
+                  showToast('Feedants reviews: 4.8/5 based on 1,200+ dancers.')
+                }
+                language={language}
+              />
+            </ScrollView>
+          )}
+
+          {/* Sticky Action CTA Button (active when on Competition Details on Mobile) */}
+          {!loading && activeTab === 'contests' && (
+            <BottomBar
+              competition={competition}
+              computed={computed}
+              onRegisterPress={handleRegisterPress}
+              onSubmitPress={handleSubmitPress}
+              loading={actionLoading}
+              language={language}
+            />
+          )}
+
+          {/* Mobile Bottom Navigation */}
+          <BottomNav
+            activeTab={activeTab}
+            onSelectTab={handleSelectTab}
+            activeUser={activeUser}
             language={language}
           />
-        ) : (
-          /* Default: Full Competition Details Screen */
-          <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-          >
-            {/* 1. Hero Card */}
-            <HeroCard competition={competition} computed={computed} language={language} />
-
-            {/* 2. Judge Card */}
-            <JudgeCard
-              judge={competition?.judge}
-              onPlayVideo={(url, name) => handlePlayVideo(url, `Judge: ${name}`)}
-              language={language}
-            />
-
-            {/* 3. Live Countdown Banner */}
-            <CountdownBanner
-              targetDate={competition?.registrationDeadline}
-              language={language}
-            />
-
-            {/* 4. Important Dates */}
-            <ImportantDatesCard competition={competition} language={language} />
-
-            {/* 5. Previous Winners */}
-            <PreviousWinners
-              winners={competition?.previousWinners}
-              onPlayVideo={handlePlayVideo}
-              language={language}
-            />
-
-            {/* 6. Tabs (About, Judging, Rules) */}
-            <TabsSection competition={competition} language={language} />
-
-            {/* 7. Rewards List */}
-            <RewardsList rewards={competition?.rewards} language={language} />
-
-            {/* 8. Trust & Policies */}
-            <TrustSection
-              disclaimer={competition?.disclaimer}
-              onWatchPrizeVideo={() =>
-                handlePlayVideo(
-                  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                  'Prize Distribution Process'
-                )
-              }
-              onOpenRefundPolicy={() =>
-                Alert.alert(
-                  'Feedants Refund Policy',
-                  '100% refund is issued if the competition is cancelled by Feedants. Registrations can be transferred up to 24 hours before the registration deadline.'
-                )
-              }
-              language={language}
-            />
-
-            {/* 9. Referral Card */}
-            <ReferralCard user={activeUser} onShowToast={showToast} language={language} />
-
-            {/* 10. Feedback & Ad */}
-            <UserFeedbackBanner
-              onFeedbackPress={() =>
-                showToast('Feedants reviews: 4.8/5 based on 1,200+ dancers.')
-              }
-              language={language}
-            />
-          </ScrollView>
-        )}
-
-        {/* Sticky Action CTA Button (active when on Competition Details) */}
-        {!loading && activeTab === 'contests' && (
-          <BottomBar
-            competition={competition}
-            computed={computed}
-            onRegisterPress={handleRegisterPress}
-            onSubmitPress={handleSubmitPress}
-            loading={actionLoading}
-            language={language}
-          />
-        )}
-
-        {/* Bottom Navigation */}
-        <BottomNav
-          activeTab={activeTab}
-          onSelectTab={handleSelectTab}
-          activeUser={activeUser}
-          language={language}
-        />
+        </View>
+      )}
 
         {/* Interactive Modals */}
         <VideoModal
@@ -404,7 +577,6 @@ export default function App() {
           onClose={() => setCreateModalVisible(false)}
           onCreateSuccess={(newTitle) => showToast(`Created: ${newTitle}`)}
         />
-      </View>
     </SafeAreaView>
   );
 }
@@ -415,6 +587,60 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#080C14',
     alignItems: 'center',
+  },
+  desktopLayout: {
+    flex: 1,
+    flexDirection: 'row',
+    width: '100%',
+    height: '100vh',
+    backgroundColor: '#080C14',
+    overflow: 'hidden',
+  },
+  desktopMainView: {
+    flex: 1,
+    height: '100vh',
+    backgroundColor: '#080C14',
+    overflow: 'hidden',
+  },
+  desktopTwoColContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#080C14',
+    overflow: 'hidden',
+  },
+  desktopLeftScroll: {
+    flex: 1.6,
+    borderRightWidth: 1,
+    borderRightColor: THEME.colors.border,
+  },
+  desktopLeftScrollContent: {
+    padding: 24,
+    paddingBottom: 64,
+    gap: 16,
+    maxWidth: 850,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  desktopRightScroll: {
+    width: 380,
+    flexShrink: 0,
+    backgroundColor: '#080C14',
+  },
+  desktopRightScrollContent: {
+    padding: 20,
+    paddingBottom: 64,
+    gap: 16,
+  },
+  retryBtn: {
+    marginTop: 16,
+    backgroundColor: '#00D4AA',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryBtnText: {
+    color: '#080C14',
+    fontWeight: 'bold',
   },
   appContainer: {
     flex: 1,
