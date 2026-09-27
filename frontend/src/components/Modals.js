@@ -192,6 +192,10 @@ export function PaymentModal({ visible, onClose, onConfirm, entryFee, spotsRemai
           </TouchableOpacity>
         </View>
       </View>
+    </Modal>
+  );
+}
+
 // 4. Create Contest / Upload Post Modal
 export function CreateModal({ visible, onClose, onCreateSuccess }) {
   const [title, setTitle] = useState('');
