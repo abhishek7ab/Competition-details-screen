@@ -23,7 +23,7 @@ if (typeof document !== 'undefined') {
     }
 
     html, body, #root {
-      background-color: #0F1623 !important;
+      background-color: #F5F7FA !important;
       margin: 0 !important;
       padding: 0 !important;
       width: 100% !important;
@@ -32,18 +32,18 @@ if (typeof document !== 'undefined') {
     }
 
     ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: #1A202C;
+      background: #F1F5F9;
     }
     ::-webkit-scrollbar-thumb {
-      background: #2D3748;
+      background: #CBD5E1;
       border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #4A5568;
+      background: #94A3B8;
     }
 
     [role="button"], button {
