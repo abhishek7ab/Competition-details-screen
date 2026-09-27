@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node run.js",
     "start": "node run.js",
+    "web": "node run.js",
     "start:backend": "npm --prefix backend start",
     "start:frontend": "npm --prefix frontend run web",
     "dev:backend": "npm --prefix backend run dev",
