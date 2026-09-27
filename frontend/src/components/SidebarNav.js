@@ -25,11 +25,18 @@ export default function SidebarNav({
       <View style={styles.brandContainer}>
         <View style={styles.brandRow}>
           <View style={styles.logoIcon}>
-            <Ionicons name="sparkles" size={16} color={THEME.colors.bg} />
+            <Ionicons name="sparkles" size={17} color={THEME.colors.bg} />
           </View>
-          <Text style={styles.brandTitle}>FEEDANTS</Text>
+          <View>
+            <View style={styles.brandTitleRow}>
+              <Text style={styles.brandTitle}>FEEDANTS</Text>
+              <View style={styles.proBadge}>
+                <Text style={styles.proBadgeText}>PRO</Text>
+              </View>
+            </View>
+            <Text style={styles.brandTagline}>Full-Stack Competition Platform</Text>
+          </View>
         </View>
-        <Text style={styles.brandTagline}>Full-Stack Competition Platform</Text>
       </View>
 
       {/* Host Competition CTA */}
@@ -52,6 +59,7 @@ export default function SidebarNav({
               onPress={() => onSelectTab(item.key)}
               activeOpacity={0.8}
             >
+              {isActive && <View style={styles.activeLeftBar} />}
               <Ionicons
                 name={isActive ? item.iconActive : item.icon}
                 size={20}
@@ -60,7 +68,9 @@ export default function SidebarNav({
               <Text style={[styles.navLinkText, isActive && styles.navLinkTextActive]}>
                 {language === 'hi' ? item.labelHi : item.label}
               </Text>
-              {isActive && <View style={styles.activePill} />}
+              {isActive && (
+                <View style={styles.activePill} />
+              )}
             </TouchableOpacity>
           );
         })}
@@ -102,19 +112,22 @@ export default function SidebarNav({
         onPress={() => onSelectTab('profile')}
         activeOpacity={0.8}
       >
-        <Image
-          source={{
-            uri: activeUser?.avatarUrl || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200',
-          }}
-          style={styles.avatar}
-        />
+        <View style={styles.avatarWrap}>
+          <Image
+            source={{
+              uri: activeUser?.avatarUrl || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200',
+            }}
+            style={styles.avatar}
+          />
+          <View style={styles.onlineDot} />
+        </View>
         <View style={styles.userInfo}>
           <Text style={styles.userName} numberOfLines={1}>{activeUser?.name || 'Pooja Sharma'}</Text>
           <Text style={styles.userRole}>
-            {activeUser?.name === 'Pooja Sharma' ? 'Registered Performer ✓' : 'New Participant'}
+            {activeUser?.name === 'Pooja Sharma' ? 'Enrolled Performer ✓' : 'Audience Persona'}
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={16} color={THEME.colors.textMuted} />
+        <Ionicons name="chevron-forward" size={15} color={THEME.colors.textMuted} />
       </TouchableOpacity>
     </View>
   );
@@ -122,41 +135,51 @@ export default function SidebarNav({
 
 const styles = StyleSheet.create({
   sidebar: {
-    width: 280,
-    backgroundColor: THEME.colors.surfaceElevated,
+    width: 290,
+    backgroundColor: THEME.colors.surface,
     borderRightWidth: 1,
-    borderRightColor: THEME.colors.border,
-    padding: 20,
+    borderRightColor: THEME.colors.borderStrong,
+    padding: 22,
     gap: 16,
     height: '100vh',
     position: 'sticky',
     top: 0,
     ...Platform.select({
       web: {
-        boxShadow: '4px 0 24px rgba(0,0,0,0.5)',
+        background:
+          'linear-gradient(180deg, rgba(14, 21, 34, 0.98) 0%, rgba(8, 12, 20, 0.98) 100%)',
+        backdropFilter: 'blur(20px)',
+        boxShadow: '4px 0 32px rgba(0, 0, 0, 0.5)',
       },
     }),
   },
   brandContainer: {
-    paddingBottom: 14,
+    paddingBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: THEME.colors.border,
   },
   brandRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 12,
   },
   logoIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
+    width: 38,
+    height: 38,
+    borderRadius: 10,
     backgroundColor: THEME.colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
     ...Platform.select({
-      web: { boxShadow: `0 0 14px ${THEME.colors.primaryGlow}` },
+      web: {
+        boxShadow: '0 0 16px rgba(0, 245, 184, 0.45)',
+      },
     }),
+  },
+  brandTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   brandTitle: {
     fontSize: 18,
@@ -164,10 +187,23 @@ const styles = StyleSheet.create({
     color: THEME.colors.textPrimary,
     letterSpacing: 2,
   },
+  proBadge: {
+    backgroundColor: 'rgba(0, 245, 184, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 245, 184, 0.3)',
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: 4,
+  },
+  proBadgeText: {
+    fontSize: 9,
+    fontWeight: THEME.typography.weights.extrabold,
+    color: THEME.colors.primary,
+  },
   brandTagline: {
     fontSize: 11,
     color: THEME.colors.textMuted,
-    marginTop: 4,
+    marginTop: 2,
     fontWeight: THEME.typography.weights.medium,
   },
   hostBtn: {
@@ -176,40 +212,56 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     backgroundColor: THEME.colors.primary,
-    paddingVertical: 12,
+    paddingVertical: 13,
     borderRadius: THEME.borderRadius.md,
     ...Platform.select({
-      web: { boxShadow: `0 2px 14px ${THEME.colors.primaryGlow}` },
+      web: {
+        background: 'linear-gradient(135deg, #00F5B8 0%, #00D4AA 100%)',
+        boxShadow: '0 4px 18px rgba(0, 245, 184, 0.35)',
+      },
     }),
   },
   hostBtnText: {
     fontSize: 13,
-    fontWeight: THEME.typography.weights.bold,
+    fontWeight: THEME.typography.weights.extrabold,
     color: THEME.colors.bg,
+    letterSpacing: 0.3,
   },
   navSection: {
     gap: 6,
-    marginTop: 6,
+    marginTop: 8,
   },
   navSectionTitle: {
     fontSize: 10,
-    fontWeight: THEME.typography.weights.black,
+    fontWeight: THEME.typography.weights.extrabold,
     color: THEME.colors.textMuted,
     letterSpacing: 1.5,
     marginBottom: 4,
+    paddingLeft: 4,
   },
   navLink: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     paddingVertical: 11,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     borderRadius: THEME.borderRadius.md,
+    position: 'relative',
+    overflow: 'hidden',
   },
   navLinkActive: {
-    backgroundColor: THEME.colors.primaryBg,
+    backgroundColor: 'rgba(0, 245, 184, 0.08)',
     borderWidth: 1,
-    borderColor: THEME.colors.primaryBorder,
+    borderColor: 'rgba(0, 245, 184, 0.25)',
+  },
+  activeLeftBar: {
+    position: 'absolute',
+    left: 0,
+    top: 6,
+    bottom: 6,
+    width: 3,
+    backgroundColor: THEME.colors.primary,
+    borderRadius: 2,
   },
   navLinkText: {
     flex: 1,
@@ -226,23 +278,28 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
     backgroundColor: THEME.colors.primary,
+    ...Platform.select({
+      web: {
+        boxShadow: '0 0 6px #00F5B8',
+      },
+    }),
   },
   evaluatorSection: {
-    marginTop: 4,
+    marginTop: 6,
   },
   evaluatorBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(0, 212, 170, 0.06)',
+    backgroundColor: 'rgba(0, 245, 184, 0.05)',
     paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: THEME.borderRadius.md,
     borderWidth: 1,
-    borderColor: THEME.colors.primaryBorder,
+    borderColor: 'rgba(0, 245, 184, 0.2)',
   },
   evaluatorBtnText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: THEME.typography.weights.bold,
     color: THEME.colors.primary,
   },
@@ -250,7 +307,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderTopWidth: 1,
     borderTopColor: THEME.colors.border,
   },
@@ -261,14 +318,14 @@ const styles = StyleSheet.create({
   },
   langToggleWrap: {
     flexDirection: 'row',
-    backgroundColor: THEME.colors.surface,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
     borderRadius: THEME.borderRadius.full,
     padding: 2,
     borderWidth: 1,
     borderColor: THEME.colors.border,
   },
   langBtn: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 9,
     paddingVertical: 3,
     borderRadius: THEME.borderRadius.full,
   },
@@ -287,18 +344,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: THEME.colors.surface,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     padding: 10,
     borderRadius: THEME.borderRadius.md,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
+    borderColor: THEME.colors.borderStrong,
+  },
+  avatarWrap: {
+    position: 'relative',
   },
   avatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     borderWidth: 1.5,
     borderColor: THEME.colors.primary,
+  },
+  onlineDot: {
+    position: 'absolute',
+    bottom: -1,
+    right: -1,
+    width: 9,
+    height: 9,
+    borderRadius: 5,
+    backgroundColor: THEME.colors.primary,
+    borderWidth: 1.5,
+    borderColor: THEME.colors.surface,
   },
   userInfo: {
     flex: 1,
@@ -314,3 +385,4 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
 });
+

@@ -34,7 +34,7 @@ export default function DesktopActionCard({
     buttonVariant = 'success';
     buttonIcon = 'eye-outline';
   } else if (isRegistered) {
-    buttonTitle = language === 'hi' ? 'प्रस्तुति अपलोड करें' : 'Upload Submission';
+    buttonTitle = language === 'hi' ? 'प्रस्तुति अपलोड करें' : 'Upload Dance Submission';
     buttonSubtext = language === 'hi' ? 'आप पंजीकृत हैं' : '✓ Spot Reserved! Ready for submission';
     actionHandler = onSubmitPress;
     buttonVariant = 'primary';
@@ -55,12 +55,12 @@ export default function DesktopActionCard({
     buttonTitle =
       language === 'hi'
         ? `अभी पंजीकरण करें • ₹${competition?.entryFee || 99}`
-        : `Register for Contest • ₹${competition?.entryFee || 99}`;
+        : `REGISTER NOW • ₹${competition?.entryFee || 99}`;
     buttonSubtext =
       spotsRemaining > 0
         ? language === 'hi'
           ? `🔥 केवल ${spotsRemaining} स्थान शेष हैं`
-          : `🔥 Fast Filling • Only ${spotsRemaining} seats remaining`
+          : `🔥 Fast Filling • Only ${spotsRemaining} spots left`
         : '';
     actionHandler = onRegisterPress;
     buttonIcon = 'flash';
@@ -68,23 +68,35 @@ export default function DesktopActionCard({
 
   return (
     <View style={styles.card}>
-      {/* Top Header */}
+      {/* Top Header Badge */}
+      <View style={styles.topBadgeRow}>
+        <View style={styles.officialBadge}>
+          <Ionicons name="sparkles" size={12} color={THEME.colors.primary} />
+          <Text style={styles.officialBadgeText}>OFFICIAL REGISTRATION</Text>
+        </View>
+        <Text style={styles.spotsCounterText}>{spotsRemaining} Spots Left</Text>
+      </View>
+
+      {/* Pricing and Prize Row */}
       <View style={styles.headerRow}>
         <View>
           <Text style={styles.entryFeeLabel}>ENTRY FEE</Text>
-          <Text style={styles.entryFeeValue}>₹{competition?.entryFee || 99}</Text>
+          <View style={styles.priceRow}>
+            <Text style={styles.entryFeeValue}>₹{competition?.entryFee || 99}</Text>
+            <Text style={styles.perEntryText}>/ performer</Text>
+          </View>
         </View>
         <View style={styles.prizePoolBox}>
-          <Text style={styles.prizeLabel}>TOTAL PRIZE</Text>
+          <Text style={styles.prizeLabel}>CASH POOL</Text>
           <Text style={styles.prizeValue}>₹{(competition?.prizePool || 1500).toLocaleString('en-IN')}</Text>
         </View>
       </View>
 
-      {/* Progress */}
+      {/* Progress Quota Track */}
       <View style={styles.progressContainer}>
         <View style={styles.progressTopRow}>
           <Text style={styles.progressLabel}>Capacity Quota</Text>
-          <Text style={styles.progressCount}>{bookedSpots}/{maxSpots} Booked</Text>
+          <Text style={styles.progressCount}>{bookedSpots}/{maxSpots} Booked ({Math.round(progressRatio * 100)}%)</Text>
         </View>
         <View style={styles.track}>
           <View
@@ -97,7 +109,7 @@ export default function DesktopActionCard({
         </View>
       </View>
 
-      {/* Action CTA Button */}
+      {/* Primary Action CTA Button */}
       <TouchableOpacity
         style={[
           styles.actionBtn,
@@ -115,7 +127,7 @@ export default function DesktopActionCard({
             <View style={styles.btnTitleRow}>
               <Ionicons
                 name={buttonIcon}
-                size={17}
+                size={18}
                 color={buttonVariant === 'disabled' ? THEME.colors.textMuted : THEME.colors.bg}
               />
               <Text
@@ -141,59 +153,114 @@ export default function DesktopActionCard({
         )}
       </TouchableOpacity>
 
-      <Text style={styles.guaranteeText}>
-        🛡️ Instant confirmation & 100% refund guarantee
-      </Text>
+      {/* Security & Trust Badges */}
+      <View style={styles.trustBadgesRow}>
+        <View style={styles.trustItem}>
+          <Ionicons name="lock-closed" size={12} color={THEME.colors.primary} />
+          <Text style={styles.trustText}>Razorpay 256-Bit</Text>
+        </View>
+        <View style={styles.trustItem}>
+          <Ionicons name="flash" size={12} color={THEME.colors.gold} />
+          <Text style={styles.trustText}>Instant UPI Payout</Text>
+        </View>
+        <View style={styles.trustItem}>
+          <Ionicons name="shield-checkmark" size={12} color={THEME.colors.primary} />
+          <Text style={styles.trustText}>100% Refundable</Text>
+        </View>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: THEME.colors.surfaceElevated,
-    borderRadius: THEME.borderRadius.lg,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: THEME.colors.primaryBorder,
-    gap: 14,
+    backgroundColor: THEME.colors.surface,
+    borderRadius: THEME.borderRadius.xl,
+    padding: 20,
+    borderWidth: 1.5,
+    borderColor: 'rgba(0, 245, 184, 0.35)',
+    gap: 16,
     ...Platform.select({
       web: {
-        boxShadow: `0 0 24px ${THEME.colors.primaryGlow}`,
+        background:
+          'linear-gradient(135deg, rgba(14, 21, 34, 0.95) 0%, rgba(21, 31, 50, 0.9) 100%)',
+        boxShadow: '0 8px 32px rgba(0, 245, 184, 0.25)',
       },
     }),
+  },
+  topBadgeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  officialBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: 'rgba(0, 245, 184, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 245, 184, 0.3)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  officialBadgeText: {
+    fontSize: 9,
+    fontWeight: THEME.typography.weights.extrabold,
+    color: THEME.colors.primary,
+    letterSpacing: 0.6,
+  },
+  spotsCounterText: {
+    fontSize: 11,
+    fontWeight: THEME.typography.weights.bold,
+    color: THEME.colors.amber,
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 12,
+    paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: THEME.colors.border,
+    borderBottomColor: THEME.colors.borderStrong,
   },
   entryFeeLabel: {
     fontSize: 10,
-    fontWeight: THEME.typography.weights.black,
+    fontWeight: THEME.typography.weights.extrabold,
     color: THEME.colors.textMuted,
     letterSpacing: 1,
+    marginBottom: 2,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 4,
   },
   entryFeeValue: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: THEME.typography.weights.black,
     color: THEME.colors.textPrimary,
+    letterSpacing: -0.5,
+  },
+  perEntryText: {
+    fontSize: 11,
+    color: THEME.colors.textMuted,
+    fontWeight: THEME.typography.weights.medium,
   },
   prizePoolBox: {
     alignItems: 'flex-end',
   },
   prizeLabel: {
     fontSize: 10,
-    fontWeight: THEME.typography.weights.black,
-    color: THEME.colors.textMuted,
+    fontWeight: THEME.typography.weights.extrabold,
+    color: THEME.colors.gold,
     letterSpacing: 1,
+    marginBottom: 2,
   },
   prizeValue: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: THEME.typography.weights.black,
-    color: THEME.colors.gold,
+    color: '#FFE57F',
+    letterSpacing: -0.5,
   },
   progressContainer: {
     gap: 6,
@@ -206,6 +273,7 @@ const styles = StyleSheet.create({
   progressLabel: {
     fontSize: 11,
     color: THEME.colors.textSecondary,
+    fontWeight: THEME.typography.weights.medium,
   },
   progressCount: {
     fontSize: 11,
@@ -214,7 +282,7 @@ const styles = StyleSheet.create({
   },
   track: {
     height: 8,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderRadius: 4,
     overflow: 'hidden',
   },
@@ -222,55 +290,75 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: THEME.colors.primary,
     borderRadius: 4,
+    ...Platform.select({
+      web: {
+        boxShadow: '0 0 10px rgba(0, 245, 184, 0.6)',
+      },
+    }),
   },
   actionBtn: {
     backgroundColor: THEME.colors.primary,
-    paddingVertical: 14,
+    paddingVertical: 15,
     borderRadius: THEME.borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     ...Platform.select({
-      web: { boxShadow: `0 4px 18px ${THEME.colors.primaryGlow}` },
+      web: {
+        boxShadow: '0 4px 20px rgba(0, 245, 184, 0.45)',
+        cursor: 'pointer',
+      },
     }),
   },
   btnSuccess: {
     backgroundColor: THEME.colors.primary,
   },
   btnDisabled: {
-    backgroundColor: THEME.colors.surface,
+    backgroundColor: THEME.colors.surfaceElevated,
     borderWidth: 1,
     borderColor: THEME.colors.border,
     boxShadow: 'none',
   },
   btnContent: {
     alignItems: 'center',
-    gap: 3,
+    gap: 4,
   },
   btnTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
   },
   btnTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: THEME.typography.weights.black,
     color: THEME.colors.bg,
-    letterSpacing: 0.3,
+    letterSpacing: 0.5,
   },
   btnTitleDisabled: {
     color: THEME.colors.textMuted,
   },
   btnSubtext: {
     fontSize: 11,
-    color: 'rgba(8,12,20,0.85)',
-    fontWeight: THEME.typography.weights.semibold,
+    color: 'rgba(8, 12, 20, 0.85)',
+    fontWeight: THEME.typography.weights.bold,
   },
   btnSubtextDisabled: {
     color: THEME.colors.textMuted,
   },
-  guaranteeText: {
+  trustBadgesRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 4,
+  },
+  trustItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  trustText: {
     fontSize: 10,
     color: THEME.colors.textMuted,
-    textAlign: 'center',
+    fontWeight: THEME.typography.weights.semibold,
   },
 });
+

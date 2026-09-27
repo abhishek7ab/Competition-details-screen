@@ -1,57 +1,65 @@
 export const THEME = {
   colors: {
-    // Core Brand — Deep space dark with electric teal glow
-    primary: '#00D4AA',          // Electric teal/mint — the hero accent
-    primaryDark: '#00A887',      // Deeper teal for press states
-    primaryGlow: 'rgba(0, 212, 170, 0.25)',
-    primaryBg: 'rgba(0, 212, 170, 0.1)',
-    primaryBorder: 'rgba(0, 212, 170, 0.25)',
+    // Core Brand — Deep space dark with electric teal/mint glow
+    primary: '#00F5B8',          // Luminous electric mint
+    primaryDark: '#00D4AA',      // Rich teal
+    primaryGlow: 'rgba(0, 245, 184, 0.35)',
+    primaryBg: 'rgba(0, 245, 184, 0.08)',
+    primaryBorder: 'rgba(0, 245, 184, 0.28)',
 
     // Deep dark backgrounds
-    bg: '#080C14',               // True darkest layer
-    surface: '#0F1623',          // Card background
-    surfaceElevated: '#161F2E',  // Elevated card / modal
-    surfaceGlass: 'rgba(255,255,255,0.04)', // Glassmorphic surface
+    bg: '#080C14',               // True darkest background
+    surface: '#0E1522',          // Card surface
+    surfaceElevated: '#151F32',  // Elevated card / modal
+    surfaceGlass: 'rgba(14, 21, 34, 0.75)', // Glassmorphic surface
 
     // Borders & Dividers
-    border: 'rgba(255,255,255,0.08)',
-    borderStrong: 'rgba(255,255,255,0.14)',
+    border: 'rgba(255, 255, 255, 0.07)',
+    borderStrong: 'rgba(255, 255, 255, 0.15)',
+    borderGlow: 'rgba(0, 245, 184, 0.4)',
 
-    // Accent palette
-    gold: '#FFB800',             // Prize / trophy gold
-    goldBg: 'rgba(255,184,0,0.12)',
-    rose: '#FF4D6A',             // Danger / sold out
-    roseBg: 'rgba(255,77,106,0.12)',
-    violet: '#9747FF',           // Special / premium
-    violetBg: 'rgba(151,71,255,0.12)',
-    amber: '#FF8C42',            // Warning / deadline
-    amberBg: 'rgba(255,140,66,0.12)',
+    // Luxury Accent palette
+    gold: '#FFB800',             // Pure trophy gold
+    goldBright: '#FFD700',       // Glowing gold
+    goldGlow: 'rgba(255, 184, 0, 0.3)',
+    goldBg: 'rgba(255, 184, 0, 0.1)',
+    rose: '#FF416C',             // Electric coral/rose
+    roseBg: 'rgba(255, 65, 108, 0.12)',
+    violet: '#8B5CF6',           // Royal violet
+    violetBg: 'rgba(139, 92, 246, 0.12)',
+    amber: '#FF9F1C',            // Solar amber
+    amberBg: 'rgba(255, 159, 28, 0.12)',
+    cyan: '#00C2FF',             // Neon cyan
+    cyanBg: 'rgba(0, 194, 255, 0.1)',
 
     // Text
-    textPrimary: '#F0F4FF',
-    textSecondary: '#94A3C4',
-    textMuted: '#4F607A',
-    textAccent: '#00D4AA',
+    textPrimary: '#F8FAFC',
+    textSecondary: '#94A3B8',
+    textMuted: '#52617A',
+    textAccent: '#00F5B8',
     white: '#FFFFFF',
 
     // Status
-    success: '#00D4AA',
-    successBg: 'rgba(0, 212, 170, 0.1)',
-    warning: '#FF8C42',
-    warningBg: 'rgba(255,140,66,0.1)',
-    danger: '#FF4D6A',
-    dangerBg: 'rgba(255,77,106,0.1)',
+    success: '#00F5B8',
+    successBg: 'rgba(0, 245, 184, 0.1)',
+    warning: '#FF9F1C',
+    warningBg: 'rgba(255, 159, 28, 0.1)',
+    danger: '#FF416C',
+    dangerBg: 'rgba(255, 65, 108, 0.1)',
   },
 
   gradients: {
-    hero: ['#080C14', '#0D1928', '#0F2035'],
-    card: ['#0F1623', '#161F2E'],
-    accent: ['#00D4AA', '#0096D6'],
-    gold: ['#FFB800', '#FF8C00'],
+    hero: ['#080C14', '#0E1726', '#121F33'],
+    card: ['#0E1522', '#151F32'],
+    mint: ['#00F5B8', '#00D4AA'],
+    gold: ['#FFE066', '#FFB800', '#FF8C00'],
+    aurora: ['#00F5B8', '#00C2FF', '#8B5CF6'],
+    darkGlass: ['rgba(21, 31, 50, 0.85)', 'rgba(14, 21, 34, 0.85)'],
   },
 
   typography: {
-    fontFamily: 'System',
+    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    displayFont: "'Outfit', 'Plus Jakarta Sans', sans-serif",
     sizes: {
       xs: 11,
       sm: 12,
@@ -75,17 +83,24 @@ export const THEME = {
 
   shadows: {
     glow: {
-      shadowColor: '#00D4AA',
+      shadowColor: '#00F5B8',
       shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.4,
-      shadowRadius: 16,
+      shadowOpacity: 0.45,
+      shadowRadius: 18,
       elevation: 12,
+    },
+    goldGlow: {
+      shadowColor: '#FFB800',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.35,
+      shadowRadius: 14,
+      elevation: 10,
     },
     card: {
       shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.4,
-      shadowRadius: 12,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.45,
+      shadowRadius: 14,
       elevation: 8,
     },
     subtle: {
@@ -101,9 +116,10 @@ export const THEME = {
     xs: 4,
     sm: 8,
     md: 12,
-    lg: 18,
-    xl: 24,
-    xxl: 32,
+    lg: 16,
+    xl: 20,
+    xxl: 28,
     full: 9999,
   },
 };
+
