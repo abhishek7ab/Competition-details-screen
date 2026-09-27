@@ -192,6 +192,79 @@ export function PaymentModal({ visible, onClose, onConfirm, entryFee, spotsRemai
           </TouchableOpacity>
         </View>
       </View>
+// 4. Create Contest / Upload Post Modal
+export function CreateModal({ visible, onClose, onCreateSuccess }) {
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('Dance');
+  const [prize, setPrize] = useState('1000');
+
+  if (!visible) return null;
+
+  const handleCreate = () => {
+    onClose();
+    if (onCreateSuccess) {
+      onCreateSuccess(title || 'Custom Community Contest');
+    }
+  };
+
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalCard}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Host a Competition</Text>
+            <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn}>
+              <Ionicons name="close" size={20} color={THEME.colors.textSecondary} />
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.formSubtitle}>
+            Create your own stage on Feedants. Invite talent and set prize pools.
+          </Text>
+
+          <View style={styles.fieldGroup}>
+            <Text style={styles.label}>Contest Title</Text>
+            <TextInput
+              style={styles.input}
+              value={title}
+              onChangeText={setTitle}
+              placeholder="e.g. Inter-College Kathak Showdown"
+              placeholderTextColor={THEME.colors.textMuted}
+            />
+          </View>
+
+          <View style={styles.fieldGroup}>
+            <Text style={styles.label}>Category</Text>
+            <TextInput
+              style={styles.input}
+              value={category}
+              onChangeText={setCategory}
+              placeholder="Dance / Music / Art"
+              placeholderTextColor={THEME.colors.textMuted}
+            />
+          </View>
+
+          <View style={styles.fieldGroup}>
+            <Text style={styles.label}>Prize Pool (₹)</Text>
+            <TextInput
+              style={styles.input}
+              value={prize}
+              onChangeText={setPrize}
+              keyboardType="numeric"
+              placeholder="1000"
+              placeholderTextColor={THEME.colors.textMuted}
+            />
+          </View>
+
+          <TouchableOpacity
+            style={styles.primaryActionBtn}
+            onPress={handleCreate}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.primaryActionBtnText}>Launch Competition</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </Modal>
   );
 }

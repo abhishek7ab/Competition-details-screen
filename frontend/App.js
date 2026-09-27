@@ -28,7 +28,10 @@ import UserFeedbackBanner from './src/components/UserFeedbackBanner';
 import BottomBar from './src/components/BottomBar';
 import BottomNav from './src/components/BottomNav';
 import DevToolbar from './src/components/DevToolbar';
-import { VideoModal, SubmissionModal, PaymentModal } from './src/components/Modals';
+import HomeScreen from './src/components/HomeScreen';
+import BrowseScreen from './src/components/BrowseScreen';
+import ProfileScreen from './src/components/ProfileScreen';
+import { VideoModal, SubmissionModal, PaymentModal, CreateModal } from './src/components/Modals';
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -39,12 +42,36 @@ export default function App() {
   const [activeUser, setActiveUser] = useState(null);
   const [language, setLanguage] = useState('en'); // 'en' | 'hi'
 
-  // Interactive Modals State
+  // Navigation & Interactive Modals State
+  const [activeTab, setActiveTab] = useState('contests'); // 'home' | 'browse' | 'create' | 'contests' | 'profile'
+  const [createModalVisible, setCreateModalVisible] = useState(false);
   const [devBarVisible, setDevBarVisible] = useState(false);
   const [videoModal, setVideoModal] = useState({ visible: false, url: '', title: '' });
   const [submissionModalVisible, setSubmissionModalVisible] = useState(false);
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+
+  const handleSelectTab = (tab) => {
+    if (tab === 'create') {
+      setCreateModalVisible(true);
+      return;
+    }
+    setActiveTab(tab);
+    if (tab === 'home') showToast('Switched to Home Feed');
+    else if (tab === 'browse') showToast('Browse Competitions');
+    else if (tab === 'profile') showToast(`Profile: ${activeUser?.name || 'User'}`);
+    else if (tab === 'contests') showToast('Competition Details Screen');
+  };
+
+  const handleBackPress = () => {
+    if (activeTab !== 'contests') {
+      setActiveTab('contests');
+      showToast('Back to Competition Details');
+    } else {
+      setActiveTab('home');
+      showToast('Navigated to Feedants Home');
+    }
+  };
 
   // Show temporary toast notification
   const showToast = (msg) => {
@@ -174,6 +201,8 @@ export default function App() {
       <View style={styles.appContainer}>
         {/* Top Header */}
         <Header
+          activeTab={activeTab}
+          onBackPress={handleBackPress}
           language={language}
           setLanguage={setLanguage}
           onToggleDevBar={() => setDevBarVisible(!devBarVisible)}
@@ -200,13 +229,39 @@ export default function App() {
           </View>
         ) : null}
 
-        {/* Scrollable Main Content */}
+        {/* Screen Routing based on BottomNav activeTab */}
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={THEME.colors.primary} />
             <Text style={styles.loadingText}>Connecting to Feedants API...</Text>
           </View>
+        ) : activeTab === 'home' ? (
+          <HomeScreen
+            activeUser={activeUser}
+            competition={competition}
+            onGoToContest={() => setActiveTab('contests')}
+            onSelectCategory={(cat) => {
+              setActiveTab('browse');
+              showToast(`Browsing ${cat}`);
+            }}
+            language={language}
+          />
+        ) : activeTab === 'browse' ? (
+          <BrowseScreen
+            onGoToContest={() => setActiveTab('contests')}
+            language={language}
+          />
+        ) : activeTab === 'profile' ? (
+          <ProfileScreen
+            activeUser={activeUser}
+            users={users}
+            onSelectUser={handleSelectUser}
+            onShowToast={showToast}
+            onGoToContest={() => setActiveTab('contests')}
+            language={language}
+          />
         ) : (
+          /* Default: Full Competition Details Screen */
           <ScrollView
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}
@@ -275,8 +330,8 @@ export default function App() {
           </ScrollView>
         )}
 
-        {/* Sticky Action CTA Button */}
-        {!loading && (
+        {/* Sticky Action CTA Button (active when on Competition Details) */}
+        {!loading && activeTab === 'contests' && (
           <BottomBar
             competition={competition}
             computed={computed}
@@ -288,7 +343,12 @@ export default function App() {
         )}
 
         {/* Bottom Navigation */}
-        <BottomNav activeUser={activeUser} language={language} />
+        <BottomNav
+          activeTab={activeTab}
+          onSelectTab={handleSelectTab}
+          activeUser={activeUser}
+          language={language}
+        />
 
         {/* Interactive Modals */}
         <VideoModal
@@ -314,6 +374,12 @@ export default function App() {
           entryFee={competition?.entryFee}
           spotsRemaining={computed?.spotsRemaining}
           loading={actionLoading}
+        />
+
+        <CreateModal
+          visible={createModalVisible}
+          onClose={() => setCreateModalVisible(false)}
+          onCreateSuccess={(newTitle) => showToast(`Created: ${newTitle}`)}
         />
       </View>
     </SafeAreaView>

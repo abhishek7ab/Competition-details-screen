@@ -4,22 +4,29 @@ import { Ionicons, Feather } from '@expo/vector-icons';
 import { THEME } from '../constants/theme';
 
 const NAV_ITEMS = [
-  { icon: 'home-outline', iconActive: 'home', label: 'Home', labelHi: 'होम', active: false },
-  { icon: 'search-outline', iconActive: 'search', label: 'Explore', labelHi: 'खोजें', active: false },
-  { icon: null, label: 'Create', labelHi: 'बनाएं', isCenter: true },
-  { icon: 'trophy-outline', iconActive: 'trophy', label: 'Contests', labelHi: 'प्रतियोगिताएं', active: true },
-  { icon: 'person-outline', iconActive: 'person', label: 'Profile', labelHi: 'प्रोफ़ाइल', active: false, isProfile: true },
+  { key: 'home', icon: 'home-outline', iconActive: 'home', label: 'Home', labelHi: 'होम' },
+  { key: 'browse', icon: 'compass-outline', iconActive: 'compass', label: 'Browse', labelHi: 'ब्राउज़' },
+  { key: 'create', label: 'Create', labelHi: 'बनाएं', isCenter: true },
+  { key: 'contests', icon: 'trophy-outline', iconActive: 'trophy', label: 'Contest', labelHi: 'प्रतियोगिता' },
+  { key: 'profile', label: 'Profile', labelHi: 'प्रोफ़ाइल', isProfile: true },
 ];
 
-export default function BottomNav({ activeUser, language }) {
+export default function BottomNav({ activeTab = 'contests', onSelectTab, activeUser, language }) {
   return (
     <View style={styles.navBar}>
-      {NAV_ITEMS.map((item, idx) => {
+      {NAV_ITEMS.map((item) => {
+        const isActive = activeTab === item.key;
+
         if (item.isCenter) {
           return (
-            <TouchableOpacity key={idx} style={styles.navItem} activeOpacity={0.8}>
+            <TouchableOpacity
+              key={item.key}
+              style={styles.navItem}
+              onPress={() => onSelectTab && onSelectTab('create')}
+              activeOpacity={0.8}
+            >
               <View style={styles.addCircle}>
-                <Feather name="plus" size={20} color={THEME.colors.bg} />
+                <Feather name="plus" size={22} color={THEME.colors.bg} />
               </View>
             </TouchableOpacity>
           );
@@ -27,15 +34,20 @@ export default function BottomNav({ activeUser, language }) {
 
         if (item.isProfile) {
           return (
-            <TouchableOpacity key={idx} style={styles.navItem} activeOpacity={0.7}>
+            <TouchableOpacity
+              key={item.key}
+              style={styles.navItem}
+              onPress={() => onSelectTab && onSelectTab('profile')}
+              activeOpacity={0.7}
+            >
               <Image
                 source={{
                   uri: activeUser?.avatarUrl ||
                     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
                 }}
-                style={[styles.profileAvatar, item.active && styles.profileAvatarActive]}
+                style={[styles.profileAvatar, isActive && styles.profileAvatarActive]}
               />
-              <Text style={[styles.navLabel, item.active && styles.navLabelActive]}>
+              <Text style={[styles.navLabel, isActive && styles.navLabelActive]}>
                 {language === 'hi' ? item.labelHi : item.label}
               </Text>
             </TouchableOpacity>
@@ -43,13 +55,18 @@ export default function BottomNav({ activeUser, language }) {
         }
 
         return (
-          <TouchableOpacity key={idx} style={styles.navItem} activeOpacity={0.7}>
+          <TouchableOpacity
+            key={item.key}
+            style={styles.navItem}
+            onPress={() => onSelectTab && onSelectTab(item.key)}
+            activeOpacity={0.7}
+          >
             <Ionicons
-              name={item.active ? item.iconActive : item.icon}
+              name={isActive ? item.iconActive : item.icon}
               size={21}
-              color={item.active ? THEME.colors.primary : THEME.colors.textMuted}
+              color={isActive ? THEME.colors.primary : THEME.colors.textMuted}
             />
-            <Text style={[styles.navLabel, item.active && styles.navLabelActive]}>
+            <Text style={[styles.navLabel, isActive && styles.navLabelActive]}>
               {language === 'hi' ? item.labelHi : item.label}
             </Text>
           </TouchableOpacity>
@@ -91,8 +108,8 @@ const styles = StyleSheet.create({
     fontWeight: THEME.typography.weights.bold,
   },
   addCircle: {
-    width: 42,
-    height: 42,
+    width: 44,
+    height: 44,
     borderRadius: 14,
     backgroundColor: THEME.colors.primary,
     alignItems: 'center',
@@ -110,6 +127,7 @@ const styles = StyleSheet.create({
   },
   profileAvatarActive: {
     borderColor: THEME.colors.primary,
+    borderWidth: 2,
     ...Platform.select({
       web: { boxShadow: `0 0 8px ${THEME.colors.primaryGlow}` },
     }),

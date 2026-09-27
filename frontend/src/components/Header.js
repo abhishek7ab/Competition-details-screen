@@ -3,20 +3,41 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native
 import { Ionicons } from '@expo/vector-icons';
 import { THEME } from '../constants/theme';
 
-export default function Header({ language, setLanguage, onToggleDevBar }) {
+export default function Header({
+  activeTab = 'contests',
+  onBackPress,
+  language,
+  setLanguage,
+  onToggleDevBar,
+}) {
+  const titles = {
+    contests: { en: 'Competition Details', hi: 'प्रतियोगिता विवरण' },
+    home: { en: 'Feed & Discover', hi: 'मुख्य फ़ीड' },
+    browse: { en: 'Browse Contests', hi: 'प्रतियोगिताएं खोजें' },
+    profile: { en: 'My Profile & Stats', hi: 'प्रोफ़ाइल' },
+  };
+
+  const currentTitle = titles[activeTab] || titles.contests;
+
   return (
     <View style={styles.container}>
       {/* Accent line at top */}
       <View style={styles.accentLine} />
 
       <View style={styles.innerRow}>
-        <TouchableOpacity style={styles.backButton} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.backButton} onPress={onBackPress} activeOpacity={0.7}>
           <View style={styles.backIconWrap}>
-            <Ionicons name="arrow-back" size={18} color={THEME.colors.textPrimary} />
+            <Ionicons
+              name={activeTab === 'home' ? 'grid-outline' : 'arrow-back'}
+              size={17}
+              color={THEME.colors.textPrimary}
+            />
           </View>
           <View>
             <Text style={styles.brandName}>FEEDANTS</Text>
-            <Text style={styles.backLabel}>Competition Details</Text>
+            <Text style={styles.backLabel}>
+              {language === 'hi' ? currentTitle.hi : currentTitle.en}
+            </Text>
           </View>
         </TouchableOpacity>
 
@@ -87,8 +108,8 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   backIconWrap: {
-    width: 30,
-    height: 30,
+    width: 32,
+    height: 32,
     borderRadius: 8,
     backgroundColor: THEME.colors.surfaceGlass,
     borderWidth: 1,
