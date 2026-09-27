@@ -29,13 +29,13 @@ export default function DesktopActionCard({
 
   if (hasSubmitted) {
     buttonTitle = language === 'hi' ? 'प्रस्तुति देखें' : 'View Your Submission';
-    buttonSubtext = language === 'hi' ? 'समीक्षाधीन' : '✓ Entry Submitted & Under Review';
+    buttonSubtext = language === 'hi' ? 'समीक्षाधीन' : 'Entry Submitted & Under Review';
     actionHandler = onSubmitPress;
     buttonVariant = 'success';
     buttonIcon = 'eye-outline';
   } else if (isRegistered) {
     buttonTitle = language === 'hi' ? 'प्रस्तुति अपलोड करें' : 'Upload Dance Submission';
-    buttonSubtext = language === 'hi' ? 'आप पंजीकृत हैं' : '✓ Spot Reserved! Ready for submission';
+    buttonSubtext = language === 'hi' ? 'आप पंजीकृत हैं' : 'Spot Reserved! Ready for submission';
     actionHandler = onSubmitPress;
     buttonVariant = 'primary';
     buttonIcon = 'cloud-upload-outline';
@@ -59,8 +59,8 @@ export default function DesktopActionCard({
     buttonSubtext =
       spotsRemaining > 0
         ? language === 'hi'
-          ? `🔥 केवल ${spotsRemaining} स्थान शेष हैं`
-          : `🔥 Fast Filling • Only ${spotsRemaining} spots left`
+          ? `केवल ${spotsRemaining} स्थान शेष हैं`
+          : `Fast Filling • Only ${spotsRemaining} spots left`
         : '';
     actionHandler = onRegisterPress;
     buttonIcon = 'flash';
@@ -174,17 +174,15 @@ export default function DesktopActionCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: THEME.colors.surface,
-    borderRadius: THEME.borderRadius.xl,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 20,
-    borderWidth: 1.5,
-    borderColor: 'rgba(0, 245, 184, 0.35)',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
     gap: 16,
     ...Platform.select({
       web: {
-        background:
-          'linear-gradient(135deg, rgba(14, 21, 34, 0.95) 0%, rgba(21, 31, 50, 0.9) 100%)',
-        boxShadow: '0 8px 32px rgba(0, 245, 184, 0.25)',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
       },
     }),
   },
@@ -197,23 +195,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    backgroundColor: 'rgba(0, 245, 184, 0.1)',
+    backgroundColor: '#E8F6F6',
     borderWidth: 1,
-    borderColor: 'rgba(0, 245, 184, 0.3)',
+    borderColor: '#B2E2E4',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
   officialBadgeText: {
-    fontSize: 9,
-    fontWeight: THEME.typography.weights.extrabold,
-    color: THEME.colors.primary,
-    letterSpacing: 0.6,
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#0A7075',
+    letterSpacing: 0.5,
   },
   spotsCounterText: {
     fontSize: 11,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.amber,
+    fontWeight: '700',
+    color: '#0A7075',
   },
   headerRow: {
     flexDirection: 'row',
@@ -221,13 +219,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: THEME.colors.borderStrong,
+    borderBottomColor: '#F1F5F9',
   },
   entryFeeLabel: {
     fontSize: 10,
-    fontWeight: THEME.typography.weights.extrabold,
-    color: THEME.colors.textMuted,
-    letterSpacing: 1,
+    fontWeight: '600',
+    color: '#64748B',
+    letterSpacing: 0.8,
     marginBottom: 2,
   },
   priceRow: {
@@ -237,29 +235,29 @@ const styles = StyleSheet.create({
   },
   entryFeeValue: {
     fontSize: 26,
-    fontWeight: THEME.typography.weights.black,
-    color: THEME.colors.textPrimary,
+    fontWeight: '800',
+    color: '#0F172A',
     letterSpacing: -0.5,
   },
   perEntryText: {
     fontSize: 11,
-    color: THEME.colors.textMuted,
-    fontWeight: THEME.typography.weights.medium,
+    color: '#94A3B8',
+    fontWeight: '500',
   },
   prizePoolBox: {
     alignItems: 'flex-end',
   },
   prizeLabel: {
     fontSize: 10,
-    fontWeight: THEME.typography.weights.extrabold,
-    color: THEME.colors.gold,
-    letterSpacing: 1,
+    fontWeight: '600',
+    color: '#64748B',
+    letterSpacing: 0.8,
     marginBottom: 2,
   },
   prizeValue: {
     fontSize: 26,
-    fontWeight: THEME.typography.weights.black,
-    color: '#FFE57F',
+    fontWeight: '800',
+    color: '#0A7075',
     letterSpacing: -0.5,
   },
   progressContainer: {
@@ -272,55 +270,49 @@ const styles = StyleSheet.create({
   },
   progressLabel: {
     fontSize: 11,
-    color: THEME.colors.textSecondary,
-    fontWeight: THEME.typography.weights.medium,
+    color: '#64748B',
+    fontWeight: '500',
   },
   progressCount: {
     fontSize: 11,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.primary,
+    fontWeight: '700',
+    color: '#0A7075',
   },
   track: {
-    height: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 4,
+    height: 6,
+    backgroundColor: '#E2E8F0',
+    borderRadius: 3,
     overflow: 'hidden',
   },
   fill: {
     height: '100%',
-    backgroundColor: THEME.colors.primary,
-    borderRadius: 4,
-    ...Platform.select({
-      web: {
-        boxShadow: '0 0 10px rgba(0, 245, 184, 0.6)',
-      },
-    }),
+    backgroundColor: '#0A7075',
+    borderRadius: 3,
   },
   actionBtn: {
-    backgroundColor: THEME.colors.primary,
-    paddingVertical: 15,
-    borderRadius: THEME.borderRadius.md,
+    backgroundColor: '#0A7075',
+    paddingVertical: 14,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     ...Platform.select({
       web: {
-        boxShadow: '0 4px 20px rgba(0, 245, 184, 0.45)',
+        boxShadow: '0 2px 8px rgba(10, 112, 117, 0.25)',
         cursor: 'pointer',
       },
     }),
   },
   btnSuccess: {
-    backgroundColor: THEME.colors.primary,
+    backgroundColor: '#0A7075',
   },
   btnDisabled: {
-    backgroundColor: THEME.colors.surfaceElevated,
-    borderWidth: 1,
-    borderColor: THEME.colors.border,
+    backgroundColor: '#E2E8F0',
+    borderWidth: 0,
     boxShadow: 'none',
   },
   btnContent: {
     alignItems: 'center',
-    gap: 4,
+    gap: 2,
   },
   btnTitleRow: {
     flexDirection: 'row',
@@ -329,20 +321,20 @@ const styles = StyleSheet.create({
   },
   btnTitle: {
     fontSize: 15,
-    fontWeight: THEME.typography.weights.black,
-    color: THEME.colors.bg,
-    letterSpacing: 0.5,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 0.3,
   },
   btnTitleDisabled: {
-    color: THEME.colors.textMuted,
+    color: '#94A3B8',
   },
   btnSubtext: {
     fontSize: 11,
-    color: 'rgba(8, 12, 20, 0.85)',
-    fontWeight: THEME.typography.weights.bold,
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontWeight: '500',
   },
   btnSubtextDisabled: {
-    color: THEME.colors.textMuted,
+    color: '#94A3B8',
   },
   trustBadgesRow: {
     flexDirection: 'row',
@@ -356,9 +348,9 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   trustText: {
-    fontSize: 10,
-    color: THEME.colors.textMuted,
-    fontWeight: THEME.typography.weights.semibold,
+    fontSize: 11,
+    color: '#64748B',
+    fontWeight: '500',
   },
 });
 

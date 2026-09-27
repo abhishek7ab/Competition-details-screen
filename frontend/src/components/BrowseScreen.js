@@ -193,8 +193,8 @@ const styles = StyleSheet.create({
     color: THEME.colors.textSecondary,
   },
   catPillTextSelected: {
-    color: THEME.colors.bg,
-    fontWeight: THEME.typography.weights.black,
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
   list: {
     flex: 1,
@@ -213,14 +213,14 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   card: {
-    backgroundColor: THEME.colors.surface,
-    borderRadius: THEME.borderRadius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
+    borderColor: '#E2E8F0',
     gap: 8,
     ...Platform.select({
-      web: { boxShadow: '0 2px 14px rgba(0,0,0,0.4)' },
+      web: { boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' },
     }),
   },
   cardTop: {

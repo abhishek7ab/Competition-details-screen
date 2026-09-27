@@ -5,10 +5,10 @@ import { THEME } from '../constants/theme';
 
 export default function HomeScreen({ activeUser, competition, onGoToContest, onSelectCategory, language }) {
   const categories = [
-    { name: 'Classical Dance', emoji: '💃', count: '12 Live' },
-    { name: 'Vocal Music', emoji: '🎤', count: '8 Live' },
-    { name: 'Fine Arts', emoji: '🎨', count: '15 Live' },
-    { name: 'Instrumental', emoji: '🎻', count: '6 Live' },
+    { name: 'Classical Dance', icon: 'musical-notes', count: '12 Live' },
+    { name: 'Vocal Music', icon: 'mic', count: '8 Live' },
+    { name: 'Fine Arts', icon: 'color-palette', count: '15 Live' },
+    { name: 'Instrumental', icon: 'musical-note', count: '6 Live' },
   ];
 
   const featured = [
@@ -17,7 +17,7 @@ export default function HomeScreen({ activeUser, competition, onGoToContest, onS
       title: language === 'hi' ? 'फीडएंट्स क्लासिकल डांस' : 'Feedants Classical Dance',
       prize: '₹1,500',
       fee: '₹99',
-      badge: '🔥 Closes Soon',
+      badge: 'Closes Soon',
       category: 'Dance',
     },
     {
@@ -25,7 +25,7 @@ export default function HomeScreen({ activeUser, competition, onGoToContest, onS
       title: 'Hindustani Classical Vocal',
       prize: '₹3,000',
       fee: '₹149',
-      badge: '✨ New',
+      badge: 'New',
       category: 'Music',
     },
     {
@@ -33,7 +33,7 @@ export default function HomeScreen({ activeUser, competition, onGoToContest, onS
       title: 'Digital Folk Art Showcase',
       prize: '₹2,000',
       fee: '₹79',
-      badge: '🎯 8 Spots Left',
+      badge: '8 Spots Left',
       category: 'Art',
     },
   ];
@@ -44,7 +44,7 @@ export default function HomeScreen({ activeUser, competition, onGoToContest, onS
       <View style={styles.welcomeCard}>
         <View style={styles.welcomeTextCol}>
           <Text style={styles.greeting}>
-            {language === 'hi' ? 'नमस्ते,' : 'Hello,'} {activeUser?.name || 'Artist'} 👋
+            {language === 'hi' ? 'नमस्ते,' : 'Hello,'} {activeUser?.name || 'Artist'}
           </Text>
           <Text style={styles.subGreeting}>
             {language === 'hi'
@@ -62,8 +62,9 @@ export default function HomeScreen({ activeUser, competition, onGoToContest, onS
 
       {/* Hero Spotlight: Current Competition */}
       <View style={styles.sectionHeader}>
+        <Ionicons name="trophy" size={18} color={THEME.colors.gold} />
         <Text style={styles.sectionTitle}>
-          {language === 'hi' ? '🏆 विशेष प्रतियोगिता' : '🏆 FEATURED SPOTLIGHT'}
+          {language === 'hi' ? 'विशेष प्रतियोगिता' : 'FEATURED SPOTLIGHT'}
         </Text>
       </View>
 
@@ -100,8 +101,9 @@ export default function HomeScreen({ activeUser, competition, onGoToContest, onS
 
       {/* Categories */}
       <View style={styles.sectionHeader}>
+        <Ionicons name="grid" size={18} color={THEME.colors.textMuted} />
         <Text style={styles.sectionTitle}>
-          {language === 'hi' ? '🎨 श्रेणियां' : '🎨 BROWSE CATEGORIES'}
+          {language === 'hi' ? 'श्रेणियां' : 'BROWSE CATEGORIES'}
         </Text>
       </View>
 
@@ -113,7 +115,7 @@ export default function HomeScreen({ activeUser, competition, onGoToContest, onS
             onPress={() => onSelectCategory && onSelectCategory(cat.name)}
             activeOpacity={0.8}
           >
-            <Text style={styles.catEmoji}>{cat.emoji}</Text>
+            <Ionicons name={cat.icon} size={24} color={THEME.colors.primary} />
             <Text style={styles.catName}>{cat.name}</Text>
             <Text style={styles.catCount}>{cat.count}</Text>
           </TouchableOpacity>
@@ -122,8 +124,9 @@ export default function HomeScreen({ activeUser, competition, onGoToContest, onS
 
       {/* Trending List */}
       <View style={styles.sectionHeader}>
+        <Ionicons name="trending-up" size={18} color={THEME.colors.textMuted} />
         <Text style={styles.sectionTitle}>
-          {language === 'hi' ? '🔥 लोकप्रिय प्रतियोगिताएं' : '🔥 TRENDING COMPETITIONS'}
+          {language === 'hi' ? 'लोकप्रिय प्रतियोगिताएं' : 'TRENDING COMPETITIONS'}
         </Text>
       </View>
 
@@ -204,13 +207,13 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
   },
   spotlightCard: {
-    backgroundColor: THEME.colors.surfaceElevated,
-    borderRadius: THEME.borderRadius.xl,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 18,
     borderWidth: 1,
-    borderColor: THEME.colors.primaryBorder,
+    borderColor: '#E2E8F0',
     ...Platform.select({
-      web: { boxShadow: `0 0 24px ${THEME.colors.primaryGlow}` },
+      web: { boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' },
     }),
   },
   spotlightBadgeRow: {
@@ -223,7 +226,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(255, 77, 106, 0.15)',
+    backgroundColor: '#FEE2E2',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: THEME.borderRadius.full,
@@ -232,28 +235,28 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: THEME.colors.rose,
+    backgroundColor: '#DC2626',
   },
   liveTagText: {
     fontSize: 10,
-    fontWeight: THEME.typography.weights.black,
-    color: THEME.colors.rose,
+    fontWeight: '700',
+    color: '#DC2626',
     letterSpacing: 0.5,
   },
   spotlightFee: {
     fontSize: 11,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.primary,
+    fontWeight: '700',
+    color: '#0A7075',
   },
   spotlightTitle: {
     fontSize: 17,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.textPrimary,
+    fontWeight: '800',
+    color: '#0F172A',
     marginBottom: 4,
   },
   spotlightSubtitle: {
     fontSize: 12,
-    color: THEME.colors.textSecondary,
+    color: '#64748B',
     marginBottom: 16,
   },
   spotlightBottomRow: {
@@ -261,29 +264,29 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     borderTopWidth: 1,
-    borderTopColor: THEME.colors.border,
+    borderTopColor: '#F1F5F9',
     paddingTop: 12,
   },
   spotlightPrizeLabel: {
     fontSize: 10,
-    color: THEME.colors.textMuted,
+    color: '#64748B',
     textTransform: 'uppercase',
   },
   spotlightPrize: {
     fontSize: 18,
-    fontWeight: THEME.typography.weights.black,
-    color: THEME.colors.gold,
+    fontWeight: '800',
+    color: '#0A7075',
   },
   enterBtn: {
-    backgroundColor: THEME.colors.primary,
+    backgroundColor: '#0A7075',
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: THEME.borderRadius.md,
+    borderRadius: 8,
   },
   enterBtnText: {
     fontSize: 12,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.bg,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   categoryGrid: {
     flexDirection: 'row',

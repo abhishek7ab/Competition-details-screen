@@ -6,39 +6,31 @@ import { THEME } from '../constants/theme';
 export default function UserFeedbackBanner({ onFeedbackPress, language }) {
   return (
     <View style={styles.container}>
-      {/* Hear From Our Users banner */}
+      {/* 1. Hear From Our Users banner */}
       <TouchableOpacity
         style={styles.banner}
         onPress={onFeedbackPress}
         activeOpacity={0.8}
       >
-        <View style={styles.iconCircle}>
-          <Ionicons name="chatbubbles" size={18} color={THEME.colors.primary} />
-        </View>
+        <Ionicons name="chatbubble-ellipses-outline" size={20} color="#0F172A" />
         <View style={styles.textContainer}>
-          <View style={styles.titleRow}>
-            <Text style={styles.title}>
-              {language === 'hi' ? 'प्रतिभागियों की प्रतिक्रियाएं' : 'Community Reviews'}
-            </Text>
-            <View style={styles.ratingBadge}>
-              <Ionicons name="star" size={10} color={THEME.colors.gold} />
-              <Text style={styles.ratingText}>4.9/5</Text>
-            </View>
-          </View>
+          <Text style={styles.title}>
+            {language === 'hi' ? 'हमारे उपयोगकर्ताओं से सुनें' : 'Hear From Our Users'}
+          </Text>
           <Text style={styles.subtext}>
             {language === 'hi'
-              ? '1,200+ नर्तकियों द्वारा प्रशंसित मंच'
-              : 'Rated 4.9 by 1,200+ dancers across India'}
+              ? 'देखें कि प्रतिभागी फीडएंट्स के बारे में क्या कहते हैं'
+              : 'See what participants say about Feedants'}
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={16} color={THEME.colors.textMuted} />
+        <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
       </TouchableOpacity>
 
-      {/* Partner / Sponsor Spot */}
-      <View style={styles.adContainer}>
-        <Ionicons name="sparkles" size={14} color={THEME.colors.primary} />
+      {/* 2. Ad Here spot */}
+      <View style={styles.adBox}>
+        <Ionicons name="megaphone-outline" size={16} color="#94A3B8" />
         <Text style={styles.adText}>
-          {language === 'hi' ? 'प्रायोजक एवं साझेदारी स्थान' : 'OFFICIAL PARTNER SPOTLIGHT'}
+          {language === 'hi' ? 'विज्ञापन स्थान' : 'Ad Here'}
         </Text>
       </View>
     </View>
@@ -47,81 +39,50 @@ export default function UserFeedbackBanner({ onFeedbackPress, language }) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 28,
-    backgroundColor: THEME.colors.bg,
-    gap: 12,
+    gap: 10,
+    marginBottom: 24,
   },
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: THEME.colors.surface,
-    borderRadius: THEME.borderRadius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
     padding: 14,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
+    borderColor: '#E2E8F0',
+    gap: 12,
     ...Platform.select({
-      web: { boxShadow: '0 2px 14px rgba(0,0,0,0.4)' },
+      web: { boxShadow: '0 1px 3px rgba(0,0,0,0.05)' },
     }),
-  },
-  iconCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
-    backgroundColor: THEME.colors.primaryBg,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   textContainer: {
     flex: 1,
-    marginLeft: 12,
-    gap: 3,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    gap: 2,
   },
   title: {
     fontSize: 13,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.textPrimary,
-  },
-  ratingBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    backgroundColor: THEME.colors.goldBg,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  ratingText: {
-    fontSize: 10,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.gold,
+    fontWeight: '700',
+    color: '#0F172A',
   },
   subtext: {
     fontSize: 11,
-    color: THEME.colors.textSecondary,
+    color: '#64748B',
   },
-  adContainer: {
+  adBox: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
     borderWidth: 1,
+    borderColor: '#CBD5E1',
     borderStyle: 'dashed',
-    borderColor: THEME.colors.primaryBorder,
-    backgroundColor: 'rgba(0, 212, 170, 0.03)',
+    borderRadius: 10,
     paddingVertical: 12,
-    borderRadius: THEME.borderRadius.md,
+    backgroundColor: '#F8FAFC',
   },
   adText: {
-    fontSize: 10,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.primary,
-    letterSpacing: 1,
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#94A3B8',
   },
 });

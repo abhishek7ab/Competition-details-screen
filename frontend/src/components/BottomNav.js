@@ -5,9 +5,9 @@ import { THEME } from '../constants/theme';
 
 const NAV_ITEMS = [
   { key: 'home', icon: 'home-outline', iconActive: 'home', label: 'Home', labelHi: 'होम' },
-  { key: 'browse', icon: 'compass-outline', iconActive: 'compass', label: 'Browse', labelHi: 'ब्राउज़' },
-  { key: 'create', label: 'Create', labelHi: 'बनाएं', isCenter: true },
-  { key: 'contests', icon: 'trophy-outline', iconActive: 'trophy', label: 'Contest', labelHi: 'प्रतियोगिता' },
+  { key: 'browse', icon: 'search-outline', iconActive: 'search', label: 'Explore', labelHi: 'खोजें' },
+  { key: 'create', label: '', isCenter: true },
+  { key: 'contests', icon: 'trophy-outline', iconActive: 'trophy', label: 'Competitions', labelHi: 'प्रतियोगिता' },
   { key: 'profile', label: 'Profile', labelHi: 'प्रोफ़ाइल', isProfile: true },
 ];
 
@@ -21,12 +21,12 @@ export default function BottomNav({ activeTab = 'contests', onSelectTab, activeU
           return (
             <TouchableOpacity
               key={item.key}
-              style={styles.navItem}
+              style={styles.centerItem}
               onPress={() => onSelectTab && onSelectTab('create')}
-              activeOpacity={0.8}
+              activeOpacity={0.85}
             >
               <View style={styles.addCircle}>
-                <Feather name="plus" size={22} color={THEME.colors.bg} />
+                <Feather name="plus" size={24} color="#FFFFFF" />
               </View>
             </TouchableOpacity>
           );
@@ -42,8 +42,9 @@ export default function BottomNav({ activeTab = 'contests', onSelectTab, activeU
             >
               <Image
                 source={{
-                  uri: activeUser?.avatarUrl ||
-                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
+                  uri:
+                    activeUser?.avatarUrl ||
+                    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200',
                 }}
                 style={[styles.profileAvatar, isActive && styles.profileAvatarActive]}
               />
@@ -64,7 +65,7 @@ export default function BottomNav({ activeTab = 'contests', onSelectTab, activeU
             <Ionicons
               name={isActive ? item.iconActive : item.icon}
               size={21}
-              color={isActive ? THEME.colors.primary : THEME.colors.textMuted}
+              color={isActive ? '#0A7075' : '#64748B'}
             />
             <Text style={[styles.navLabel, isActive && styles.navLabelActive]}>
               {language === 'hi' ? item.labelHi : item.label}
@@ -81,55 +82,49 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    backgroundColor: THEME.colors.surface,
+    backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
-    borderTopColor: THEME.colors.border,
+    borderTopColor: '#E2E8F0',
     paddingTop: 8,
     paddingBottom: 16,
     paddingHorizontal: 8,
-    ...Platform.select({
-      web: { boxShadow: '0 -2px 12px rgba(0,0,0,0.4)' },
-    }),
+    width: '100%',
   },
   navItem: {
     alignItems: 'center',
+    gap: 4,
+    flex: 1,
+  },
+  centerItem: {
+    alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-    gap: 3,
-  },
-  navLabel: {
-    fontSize: 9.5,
-    color: THEME.colors.textMuted,
-    marginTop: 3,
-    fontWeight: THEME.typography.weights.medium,
-  },
-  navLabelActive: {
-    color: THEME.colors.primary,
-    fontWeight: THEME.typography.weights.bold,
   },
   addCircle: {
     width: 44,
     height: 44,
-    borderRadius: 14,
-    backgroundColor: THEME.colors.primary,
+    borderRadius: 22,
+    backgroundColor: '#0A7075',
     alignItems: 'center',
     justifyContent: 'center',
-    ...Platform.select({
-      web: { boxShadow: `0 0 16px ${THEME.colors.primaryGlow}` },
-    }),
+    marginTop: -6,
   },
   profileAvatar: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: THEME.colors.textMuted,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
   },
   profileAvatarActive: {
-    borderColor: THEME.colors.primary,
     borderWidth: 2,
-    ...Platform.select({
-      web: { boxShadow: `0 0 8px ${THEME.colors.primaryGlow}` },
-    }),
+    borderColor: '#0A7075',
+  },
+  navLabel: {
+    fontSize: 10,
+    fontWeight: '500',
+    color: '#64748B',
+  },
+  navLabelActive: {
+    color: '#0A7075',
+    fontWeight: '700',
   },
 });

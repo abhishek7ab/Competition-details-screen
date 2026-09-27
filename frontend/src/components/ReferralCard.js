@@ -13,56 +13,47 @@ export default function ReferralCard({ user, onShowToast, language }) {
       navigator.clipboard.writeText(referralUrl);
     }
     setCopied(true);
-    onShowToast(language === 'hi' ? 'लिंक कॉपी हो गया!' : 'Referral link copied to clipboard!');
+    onShowToast(language === 'hi' ? 'लिंक कॉपी हो गया!' : 'Referral link copied!');
     setTimeout(() => setCopied(false), 2500);
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        {/* Top: Megaphone & Title */}
-        <View style={styles.topRow}>
-          <View style={styles.iconCircle}>
-            <Ionicons name="gift" size={20} color={THEME.colors.primary} />
-          </View>
-
-          <View style={styles.titleWrapper}>
-            <Text style={styles.title}>
-              {language === 'hi' ? 'दोस्तों को आमंत्रित करें' : 'Invite Friends & Save ₹10'}
-            </Text>
-            <Text style={styles.subtitle}>
-              {language === 'hi' ? 'हर साइनअप पर छूट पाएं' : 'Get instant reward for every friend who joins'}
-            </Text>
-          </View>
+    <View style={styles.card}>
+      <View style={styles.topRow}>
+        <View style={styles.iconWrap}>
+          <Ionicons name="megaphone-outline" size={24} color="#16A34A" />
         </View>
 
-        {/* Action Row: Link Box & Refer Button */}
-        <View style={styles.actionRow}>
-          {/* Link Box with Copy Button */}
-          <View style={styles.linkBox}>
-            <Text style={styles.linkText} numberOfLines={1}>
-              {referralUrl}
-            </Text>
-            <TouchableOpacity style={styles.copyBtn} onPress={handleCopy} activeOpacity={0.7}>
-              <Text style={styles.copyBtnText}>
-                {copied
-                  ? language === 'hi'
-                    ? 'कॉपी हुआ!'
-                    : 'Copied!'
-                  : language === 'hi'
-                  ? 'कॉपी'
-                  : 'Copy Link'}
-              </Text>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.contentCol}>
+          <Text style={styles.title}>
+            {language === 'hi' ? 'रेफ़र करें और अधिक छूट पाएं' : 'Refer & Earn more discount'}
+          </Text>
 
-          {/* Refer Now CTA Button */}
-          <TouchableOpacity style={styles.referBtn} onPress={handleCopy} activeOpacity={0.8}>
-            <Ionicons name="share-social" size={15} color={THEME.colors.bg} />
-            <Text style={styles.referBtnText}>
-              {language === 'hi' ? 'शेयर करें' : 'Share Link'}
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.inputAndActionsRow}>
+            {/* Link Box */}
+            <View style={styles.linkBox}>
+              <Text style={styles.linkText} numberOfLines={1}>
+                {referralUrl}
+              </Text>
+              <TouchableOpacity style={styles.copyBtn} onPress={handleCopy} activeOpacity={0.7}>
+                <Text style={styles.copyBtnText}>
+                  {copied ? 'Copied!' : 'Copy Link'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Refer Now Button & Note */}
+            <View style={styles.btnWrap}>
+              <TouchableOpacity style={styles.referBtn} onPress={handleCopy} activeOpacity={0.8}>
+                <Text style={styles.referBtnText}>
+                  {language === 'hi' ? 'रेफ़र करें' : 'Refer Now'}
+                </Text>
+              </TouchableOpacity>
+              <Text style={styles.rewardNote}>
+                {language === 'hi' ? 'प्रति साइनअप ₹10 पाएं' : 'You earn ₹10 for every signup'}
+              </Text>
+            </View>
+          </View>
         </View>
       </View>
     </View>
@@ -70,102 +61,90 @@ export default function ReferralCard({ user, onShowToast, language }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
-    backgroundColor: THEME.colors.bg,
-  },
   card: {
-    backgroundColor: THEME.colors.surface,
-    borderRadius: THEME.borderRadius.lg,
+    backgroundColor: '#E8F6F0',
+    borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: THEME.colors.primaryBorder,
-    ...Platform.select({
-      web: { boxShadow: `0 0 20px ${THEME.colors.primaryGlow}` },
-    }),
+    borderColor: '#D1EAE0',
+    marginBottom: 12,
   },
   topRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: 12,
-    marginBottom: 12,
   },
-  iconCircle: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: THEME.colors.primaryBg,
+  iconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#DCFCE7',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: THEME.colors.primaryBorder,
   },
-  titleWrapper: {
+  contentCol: {
     flex: 1,
-    gap: 2,
   },
   title: {
     fontSize: 14,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.textPrimary,
+    fontWeight: '700',
+    color: '#0F172A',
+    marginBottom: 10,
   },
-  subtitle: {
-    fontSize: 11,
-    color: THEME.colors.textSecondary,
-  },
-  actionRow: {
-    flexDirection: 'column',
+  inputAndActionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 10,
+    flexWrap: 'wrap',
   },
   linkBox: {
+    flex: 1.4,
+    minWidth: 180,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: THEME.colors.surfaceElevated,
-    borderRadius: THEME.borderRadius.md,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
-    paddingLeft: 12,
-    paddingRight: 5,
-    paddingVertical: 6,
+    borderColor: '#CBD5E1',
+    paddingLeft: 10,
+    paddingRight: 4,
+    paddingVertical: 4,
   },
   linkText: {
-    flex: 1,
     fontSize: 11,
-    color: THEME.colors.textSecondary,
-    marginRight: 8,
-    fontFamily: Platform.OS === 'web' ? 'monospace' : undefined,
+    color: '#64748B',
+    flex: 1,
   },
   copyBtn: {
-    backgroundColor: THEME.colors.primaryBg,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: THEME.borderRadius.sm,
-    borderWidth: 1,
-    borderColor: THEME.colors.primaryBorder,
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 6,
   },
   copyBtnText: {
-    fontSize: 11,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.primary,
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  btnWrap: {
+    alignItems: 'center',
   },
   referBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    backgroundColor: THEME.colors.primary,
-    paddingVertical: 11,
-    borderRadius: THEME.borderRadius.md,
-    ...Platform.select({
-      web: { boxShadow: `0 2px 14px ${THEME.colors.primaryGlow}` },
-    }),
+    backgroundColor: '#0A7075',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
   },
   referBtnText: {
-    fontSize: 13,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.bg,
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  rewardNote: {
+    fontSize: 10,
+    color: '#64748B',
+    fontWeight: '500',
+    marginTop: 4,
   },
 });

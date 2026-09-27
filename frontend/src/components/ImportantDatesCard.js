@@ -4,7 +4,6 @@ import { Ionicons, Feather } from '@expo/vector-icons';
 import { THEME } from '../constants/theme';
 
 export default function ImportantDatesCard({ competition, language }) {
-  // Format date helper
   const formatDateParts = (dateString, fallbackDate, fallbackTime) => {
     if (!dateString) return { dateStr: fallbackDate, timeStr: fallbackTime };
     const d = new Date(dateString);
@@ -38,9 +37,6 @@ export default function ImportantDatesCard({ competition, language }) {
       label: language === 'hi' ? 'पंजीकरण अंतिम तिथि' : 'Register Before',
       date: regDate.dateStr,
       time: regDate.timeStr,
-      highlight: true,
-      badgeColor: THEME.colors.amber,
-      badgeBg: THEME.colors.amberBg,
     },
     {
       icon: 'send',
@@ -48,9 +44,6 @@ export default function ImportantDatesCard({ competition, language }) {
       label: language === 'hi' ? 'प्रस्तुति प्रारंभ' : 'Submission Starts',
       date: subStartDate.dateStr,
       time: subStartDate.timeStr,
-      highlight: false,
-      badgeColor: THEME.colors.primary,
-      badgeBg: THEME.colors.primaryBg,
     },
     {
       icon: 'upload',
@@ -58,9 +51,6 @@ export default function ImportantDatesCard({ competition, language }) {
       label: language === 'hi' ? 'प्रस्तुति समाप्ति' : 'Submission Ends',
       date: subEndDate.dateStr,
       time: subEndDate.timeStr,
-      highlight: false,
-      badgeColor: THEME.colors.rose,
-      badgeBg: THEME.colors.roseBg,
     },
     {
       icon: 'trophy-outline',
@@ -68,16 +58,13 @@ export default function ImportantDatesCard({ competition, language }) {
       label: language === 'hi' ? 'परिणाम तिथि' : 'Result Date',
       date: resultDate.dateStr,
       time: resultDate.timeStr,
-      highlight: false,
-      badgeColor: THEME.colors.gold,
-      badgeBg: THEME.colors.goldBg,
     },
   ];
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionLabel}>
-        {language === 'hi' ? '📅 महत्वपूर्ण तिथियां' : '📅 TIMELINE & DATES'}
+      <Text style={styles.sectionTitle}>
+        {language === 'hi' ? 'महत्वपूर्ण तिथियां' : 'Important Dates'}
       </Text>
 
       <View style={styles.card}>
@@ -91,18 +78,16 @@ export default function ImportantDatesCard({ competition, language }) {
                 idx < 2 && styles.cellTop,
               ]}
             >
-              <View style={[styles.iconWrap, { backgroundColor: item.badgeBg }]}>
+              <View style={styles.iconWrap}>
                 {item.iconType === 'ionicons' ? (
-                  <Ionicons name={item.icon} size={18} color={item.badgeColor} />
+                  <Ionicons name={item.icon} size={18} color="#0A7075" />
                 ) : (
-                  <Feather name={item.icon} size={16} color={item.badgeColor} />
+                  <Feather name={item.icon} size={16} color="#0A7075" />
                 )}
               </View>
               <View style={styles.cellContent}>
                 <Text style={styles.label}>{item.label}</Text>
-                <Text style={[styles.dateText, item.highlight && styles.dateHighlight]}>
-                  {item.date}
-                </Text>
+                <Text style={styles.dateText}>{item.date}</Text>
                 <Text style={styles.timeText}>{item.time}</Text>
               </View>
             </View>
@@ -115,27 +100,23 @@ export default function ImportantDatesCard({ competition, language }) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
-    backgroundColor: THEME.colors.bg,
+    marginBottom: 12,
   },
-  sectionLabel: {
-    fontSize: 10,
-    fontWeight: THEME.typography.weights.black,
-    color: THEME.colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
-    marginBottom: 10,
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0F172A',
+    marginBottom: 8,
+    paddingLeft: 2,
   },
   card: {
-    backgroundColor: THEME.colors.surface,
-    borderRadius: THEME.borderRadius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
+    borderColor: '#E2E8F0',
     overflow: 'hidden',
     ...Platform.select({
-      web: { boxShadow: '0 2px 16px rgba(0,0,0,0.4)' },
+      web: { boxShadow: '0 1px 3px rgba(0,0,0,0.05)' },
     }),
   },
   grid: {
@@ -151,16 +132,17 @@ const styles = StyleSheet.create({
   },
   cellLeft: {
     borderRightWidth: 1,
-    borderRightColor: THEME.colors.border,
+    borderRightColor: '#F1F5F9',
   },
   cellTop: {
     borderBottomWidth: 1,
-    borderBottomColor: THEME.colors.border,
+    borderBottomColor: '#F1F5F9',
   },
   iconWrap: {
-    width: 34,
-    height: 34,
-    borderRadius: 10,
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: '#E8F6F6',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -168,23 +150,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   label: {
-    fontSize: 10,
-    color: THEME.colors.textSecondary,
-    fontWeight: THEME.typography.weights.medium,
-    marginBottom: 3,
+    fontSize: 11,
+    color: '#64748B',
+    fontWeight: '500',
+    marginBottom: 2,
   },
   dateText: {
     fontSize: 14,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.textPrimary,
-  },
-  dateHighlight: {
-    color: THEME.colors.primary,
+    fontWeight: '800',
+    color: '#0A7075',
   },
   timeText: {
-    fontSize: 11,
-    fontWeight: THEME.typography.weights.semibold,
-    color: THEME.colors.textMuted,
-    marginTop: 2,
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#0F172A',
+    marginTop: 1,
   },
 });

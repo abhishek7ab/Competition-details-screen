@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME } from '../constants/theme';
 
 export default function BottomBar({
@@ -21,78 +20,54 @@ export default function BottomBar({
   let buttonSubtext = '';
   let isActionDisabled = false;
   let actionHandler = onRegisterPress;
-  let buttonVariant = 'primary'; // 'primary' | 'success' | 'disabled'
-  let buttonIcon = 'flash';
+  let isPrimary = true;
 
   if (hasSubmitted) {
-    buttonTitle = language === 'hi' ? 'प्रस्तुति देखें' : 'View Your Submission';
-    buttonSubtext = language === 'hi' ? 'समीक्षाधीन' : '✓ Submitted & Under Review';
+    buttonTitle = language === 'hi' ? 'प्रस्तुति देखें' : 'View Submission';
+    buttonSubtext = language === 'hi' ? 'समीक्षाधीन' : 'Submitted & Under Review';
     actionHandler = onSubmitPress;
-    buttonVariant = 'success';
-    buttonIcon = 'eye-outline';
   } else if (isRegistered) {
     buttonTitle = language === 'hi' ? 'प्रस्तुति अपलोड करें' : 'Upload Submission';
-    buttonSubtext = language === 'hi' ? 'आप पंजीकृत हैं' : '✓ You are registered!';
+    buttonSubtext = language === 'hi' ? 'पंजीकृत' : 'Registered';
     actionHandler = onSubmitPress;
-    buttonVariant = 'primary';
-    buttonIcon = 'cloud-upload-outline';
   } else if (isRegistrationFull) {
-    buttonTitle = language === 'hi' ? 'सभी स्थान भरे हुए हैं' : 'Sold Out';
-    buttonSubtext = language === 'hi' ? 'पंजीकरण बंद' : 'All spots are booked';
+    buttonTitle = language === 'hi' ? 'सभी स्थान भरे हुए हैं' : 'Registration Full';
+    buttonSubtext = language === 'hi' ? 'पंजीकरण बंद' : 'Sold Out';
     isActionDisabled = true;
-    buttonVariant = 'disabled';
-    buttonIcon = 'lock-closed-outline';
+    isPrimary = false;
   } else if (currentState === 'REGISTRATION_CLOSED') {
     buttonTitle = language === 'hi' ? 'पंजीकरण बंद' : 'Registration Closed';
     buttonSubtext = language === 'hi' ? 'समय सीमा समाप्त' : 'Deadline has passed';
     isActionDisabled = true;
-    buttonVariant = 'disabled';
-    buttonIcon = 'time-outline';
+    isPrimary = false;
   } else {
-    buttonTitle =
-      language === 'hi'
-        ? `अभी पंजीकरण करें  ₹${competition?.entryFee || 99}`
-        : `Register Now  ₹${competition?.entryFee || 99}`;
+    buttonTitle = language === 'hi' ? 'अभी पंजीकरण करें' : 'Register Now';
     buttonSubtext =
       spotsRemaining > 0
         ? language === 'hi'
-          ? `🔥 केवल ${spotsRemaining} स्थान शेष`
-          : `🔥 Only ${spotsRemaining} spots left`
-        : '';
+          ? `₹${competition?.entryFee || 99} • केवल ${spotsRemaining} स्थान शेष`
+          : `₹${competition?.entryFee || 99} • ${spotsRemaining} spots left`
+        : `₹${competition?.entryFee || 99}`;
     actionHandler = onRegisterPress;
-    buttonIcon = 'flash';
   }
-
-  const btnStyle = [
-    styles.button,
-    buttonVariant === 'success' && styles.buttonSuccess,
-    buttonVariant === 'disabled' && styles.buttonDisabled,
-  ];
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={btnStyle}
+        style={[styles.button, !isPrimary && styles.buttonDisabled]}
         onPress={actionHandler}
         disabled={isActionDisabled || loading}
         activeOpacity={0.85}
       >
         {loading ? (
-          <ActivityIndicator color="#000" size="small" />
+          <ActivityIndicator color="#FFFFFF" size="small" />
         ) : (
           <View style={styles.textContainer}>
-            <View style={styles.titleRow}>
-              <Ionicons
-                name={buttonIcon}
-                size={16}
-                color={buttonVariant === 'disabled' ? THEME.colors.textMuted : THEME.colors.bg}
-              />
-              <Text style={[styles.buttonTitle, buttonVariant === 'disabled' && styles.buttonTitleDisabled]}>
-                {buttonTitle}
-              </Text>
-            </View>
+            <Text style={[styles.buttonTitle, !isPrimary && styles.buttonTitleDisabled]}>
+              {buttonTitle}
+            </Text>
             {buttonSubtext ? (
-              <Text style={[styles.buttonSubtext, buttonVariant === 'disabled' && styles.buttonSubtextDisabled]}>
+              <Text style={[styles.buttonSubtext, !isPrimary && styles.buttonSubtextDisabled]}>
                 {buttonSubtext}
               </Text>
             ) : null}
@@ -105,61 +80,47 @@ export default function BottomBar({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    backgroundColor: THEME.colors.surface,
+    backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
-    borderTopColor: THEME.colors.border,
+    borderTopColor: '#E2E8F0',
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 10,
+    width: '100%',
     ...Platform.select({
-      web: { boxShadow: '0 -4px 20px rgba(0,0,0,0.5)' },
+      web: {
+        boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.04)',
+      },
     }),
   },
   button: {
-    backgroundColor: THEME.colors.primary,
-    borderRadius: THEME.borderRadius.lg,
-    paddingVertical: 14,
+    backgroundColor: '#0A7075',
+    borderRadius: 12,
+    paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    ...Platform.select({
-      web: { boxShadow: `0 0 20px ${THEME.colors.primaryGlow}` },
-    }),
-  },
-  buttonSuccess: {
-    backgroundColor: THEME.colors.violet,
-    ...Platform.select({
-      web: { boxShadow: '0 0 16px rgba(151,71,255,0.35)' },
-    }),
   },
   buttonDisabled: {
-    backgroundColor: THEME.colors.surfaceElevated,
-    borderWidth: 1,
-    borderColor: THEME.colors.border,
+    backgroundColor: '#E2E8F0',
   },
   textContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 3,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 7,
+    gap: 1,
   },
   buttonTitle: {
     fontSize: 15,
-    fontWeight: THEME.typography.weights.black,
-    color: THEME.colors.bg,
-    letterSpacing: 0.2,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   buttonTitleDisabled: {
-    color: THEME.colors.textMuted,
+    color: '#94A3B8',
   },
   buttonSubtext: {
     fontSize: 11,
-    fontWeight: THEME.typography.weights.medium,
-    color: 'rgba(8,12,20,0.7)',
+    fontWeight: '500',
+    color: 'rgba(255, 255, 255, 0.85)',
   },
   buttonSubtextDisabled: {
-    color: THEME.colors.textMuted,
+    color: '#94A3B8',
   },
 });

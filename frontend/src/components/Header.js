@@ -21,16 +21,13 @@ export default function Header({
 
   return (
     <View style={styles.container}>
-      {/* Accent line at top */}
-      <View style={styles.accentLine} />
-
       <View style={styles.innerRow}>
         <TouchableOpacity style={styles.backButton} onPress={onBackPress} activeOpacity={0.7}>
           <View style={styles.backIconWrap}>
             <Ionicons
               name={activeTab === 'home' ? 'grid-outline' : 'arrow-back'}
               size={17}
-              color={THEME.colors.textPrimary}
+              color="#0F172A"
             />
           </View>
           <View>
@@ -71,7 +68,7 @@ export default function Header({
             onPress={onToggleDevBar}
             activeOpacity={0.7}
           >
-            <Ionicons name="options-outline" size={18} color={THEME.colors.primary} />
+            <Ionicons name="options-outline" size={17} color="#0A7075" />
           </TouchableOpacity>
         </View>
       </View>
@@ -81,18 +78,11 @@ export default function Header({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: THEME.colors.surface,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: THEME.colors.border,
+    borderBottomColor: '#E2E8F0',
     ...Platform.select({
-      web: { boxShadow: '0 2px 12px rgba(0,0,0,0.4)' },
-    }),
-  },
-  accentLine: {
-    height: 2,
-    backgroundColor: THEME.colors.primary,
-    ...Platform.select({
-      web: { boxShadow: `0 0 12px ${THEME.colors.primaryGlow}` },
+      web: { boxShadow: '0 1px 3px rgba(0,0,0,0.03)' },
     }),
   },
   innerRow: {
@@ -111,24 +101,24 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: THEME.colors.surfaceGlass,
+    backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: THEME.colors.border,
+    borderColor: '#E2E8F0',
     alignItems: 'center',
     justifyContent: 'center',
   },
   brandName: {
     fontSize: 13,
-    fontWeight: THEME.typography.weights.black,
-    color: THEME.colors.primary,
-    letterSpacing: 2,
+    fontWeight: '800',
+    color: '#0A7075',
+    letterSpacing: 1.5,
     lineHeight: 16,
   },
   backLabel: {
     fontSize: 10,
-    color: THEME.colors.textMuted,
-    fontWeight: THEME.typography.weights.medium,
-    letterSpacing: 0.3,
+    color: '#64748B',
+    fontWeight: '500',
+    letterSpacing: 0.2,
   },
   rightActions: {
     flexDirection: 'row',
@@ -137,36 +127,36 @@ const styles = StyleSheet.create({
   },
   langPillContainer: {
     flexDirection: 'row',
-    backgroundColor: THEME.colors.surfaceGlass,
-    borderRadius: THEME.borderRadius.full,
+    backgroundColor: '#F1F5F9',
+    borderRadius: 9999,
     padding: 2,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
+    borderColor: '#E2E8F0',
     gap: 2,
   },
   langPill: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: THEME.borderRadius.full,
+    borderRadius: 9999,
   },
   langPillActive: {
-    backgroundColor: THEME.colors.primary,
+    backgroundColor: '#0A7075',
   },
   langText: {
     fontSize: 11,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.textMuted,
+    fontWeight: '700',
+    color: '#64748B',
   },
   langTextActive: {
-    color: THEME.colors.bg,
+    color: '#FFFFFF',
   },
   devButton: {
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: THEME.colors.primaryBg,
+    backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: THEME.colors.primaryBorder,
+    borderColor: '#E2E8F0',
     alignItems: 'center',
     justifyContent: 'center',
   },

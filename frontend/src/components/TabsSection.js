@@ -8,9 +8,9 @@ export default function TabsSection({ competition, language }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const tabs = [
-    { key: 'about', label: language === 'hi' ? 'विवरण' : 'About' },
-    { key: 'parameters', label: language === 'hi' ? 'मापदंड' : 'Judging' },
-    { key: 'rules', label: language === 'hi' ? 'नियम' : 'Rules' },
+    { key: 'about', label: language === 'hi' ? 'प्रतियोगिता विवरण' : 'About Competition' },
+    { key: 'parameters', label: language === 'hi' ? 'निर्णय मापदंड' : 'Judging Parameters' },
+    { key: 'rules', label: language === 'hi' ? 'नियम और पात्रता' : 'Rules & Eligibility' },
   ];
 
   const aboutText =
@@ -20,199 +20,180 @@ export default function TabsSection({ competition, language }) {
         'This is an online classical dance competition open for all age groups. Participate from anywhere and showcase your talent. Express your passion through traditional dance.';
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.sectionLabel}>
-        {language === 'hi' ? '📋 विवरण व नियम' : '📋 SPECIFICATIONS'}
-      </Text>
-
-      <View style={styles.card}>
-        {/* Tab Switcher Segmented Control */}
-        <View style={styles.tabHeadersRow}>
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.key;
-            return (
-              <TouchableOpacity
-                key={tab.key}
-                style={[styles.tabHeader, isActive && styles.tabHeaderActive]}
-                onPress={() => setActiveTab(tab.key)}
-                activeOpacity={0.8}
-              >
-                <Text style={[styles.tabHeaderText, isActive && styles.tabHeaderTextActive]}>
-                  {tab.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
-        {/* Tab Content Box */}
-        <View style={styles.contentBox}>
-          {/* Tab 1: About Competition */}
-          {activeTab === 'about' && (
-            <View>
-              <Text
-                style={styles.paragraph}
-                numberOfLines={isExpanded ? undefined : 4}
-              >
-                {aboutText}
+    <View style={styles.card}>
+      {/* Authentic Underlined Tab Headers */}
+      <View style={styles.tabHeadersRow}>
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.key;
+          return (
+            <TouchableOpacity
+              key={tab.key}
+              style={[styles.tabHeader, isActive && styles.tabHeaderActive]}
+              onPress={() => setActiveTab(tab.key)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.tabHeaderText, isActive && styles.tabHeaderTextActive]}>
+                {tab.label}
               </Text>
+              {isActive && <View style={styles.activeUnderline} />}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
 
-              <TouchableOpacity
-                style={styles.viewMoreButton}
-                onPress={() => setIsExpanded(!isExpanded)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.viewMoreText}>
-                  {isExpanded
-                    ? language === 'hi'
-                      ? 'कम देखें'
-                      : 'Show less'
-                    : language === 'hi'
-                    ? 'और पढ़ें'
-                    : 'Read more'}
-                </Text>
-                <Ionicons
-                  name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                  size={14}
-                  color={THEME.colors.primary}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
+      {/* Tab Content Box */}
+      <View style={styles.contentBox}>
+        {/* Tab 1: About Competition */}
+        {activeTab === 'about' && (
+          <View>
+            <Text
+              style={styles.paragraph}
+              numberOfLines={isExpanded ? undefined : 4}
+            >
+              {aboutText}
+            </Text>
 
-          {/* Tab 2: Judging Parameters */}
-          {activeTab === 'parameters' && (
-            <View style={styles.paramList}>
-              {(competition?.judgingParameters || []).map((item, idx) => (
-                <View key={idx} style={styles.paramItem}>
-                  <View style={styles.paramTop}>
-                    <Text style={styles.paramName}>
-                      {language === 'hi' && item.parameterHindi ? item.parameterHindi : item.parameter}
-                    </Text>
-                    <View style={styles.weightChip}>
-                      <Text style={styles.weightText}>{item.weightage}</Text>
-                    </View>
-                  </View>
-                  {item.description ? (
-                    <Text style={styles.paramDesc}>{item.description}</Text>
-                  ) : null}
-                </View>
-              ))}
-            </View>
-          )}
+            <TouchableOpacity
+              style={styles.viewMoreButton}
+              onPress={() => setIsExpanded(!isExpanded)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.viewMoreText}>
+                {isExpanded
+                  ? language === 'hi'
+                    ? 'कम देखें'
+                    : 'View less'
+                  : language === 'hi'
+                  ? 'और पढ़ें'
+                  : 'View more'}
+              </Text>
+              <Ionicons
+                name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                size={14}
+                color="#0A7075"
+              />
+            </TouchableOpacity>
+          </View>
+        )}
 
-          {/* Tab 3: Rules & Eligibility */}
-          {activeTab === 'rules' && (
-            <View style={styles.rulesList}>
-              {(competition?.rulesAndEligibility || []).map((item, idx) => (
-                <View key={idx} style={styles.ruleItem}>
-                  <Ionicons
-                    name="checkmark-circle"
-                    size={16}
-                    color={THEME.colors.primary}
-                    style={styles.ruleIcon}
-                  />
-                  <Text style={styles.ruleText}>
-                    {language === 'hi' && item.ruleHindi ? item.ruleHindi : item.rule}
+        {/* Tab 2: Judging Parameters */}
+        {activeTab === 'parameters' && (
+          <View style={styles.paramList}>
+            {(competition?.judgingParameters || []).map((item, idx) => (
+              <View key={idx} style={styles.paramItem}>
+                <View style={styles.paramTop}>
+                  <Text style={styles.paramName}>
+                    {language === 'hi' && item.parameterHindi ? item.parameterHindi : item.parameter}
                   </Text>
+                  <View style={styles.weightChip}>
+                    <Text style={styles.weightText}>{item.weightage}</Text>
+                  </View>
                 </View>
-              ))}
-            </View>
-          )}
-        </View>
+                {item.description ? (
+                  <Text style={styles.paramDesc}>{item.description}</Text>
+                ) : null}
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Tab 3: Rules & Eligibility */}
+        {activeTab === 'rules' && (
+          <View style={styles.rulesList}>
+            {(competition?.rulesAndEligibility || []).map((item, idx) => (
+              <View key={idx} style={styles.ruleItem}>
+                <Ionicons
+                  name="checkmark-circle"
+                  size={16}
+                  color="#0A7075"
+                  style={styles.ruleIcon}
+                />
+                <Text style={styles.ruleText}>
+                  {language === 'hi' && item.ruleHindi ? item.ruleHindi : item.rule}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
-    backgroundColor: THEME.colors.bg,
-  },
-  sectionLabel: {
-    fontSize: 10,
-    fontWeight: THEME.typography.weights.black,
-    color: THEME.colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
-    marginBottom: 10,
-  },
   card: {
-    backgroundColor: THEME.colors.surface,
-    borderRadius: THEME.borderRadius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
+    borderColor: '#E2E8F0',
     overflow: 'hidden',
+    marginBottom: 12,
     ...Platform.select({
-      web: { boxShadow: '0 2px 16px rgba(0,0,0,0.4)' },
+      web: { boxShadow: '0 1px 3px rgba(0,0,0,0.05)' },
     }),
   },
   tabHeadersRow: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(0,0,0,0.25)',
-    padding: 4,
     borderBottomWidth: 1,
-    borderBottomColor: THEME.colors.border,
-    gap: 4,
+    borderBottomColor: '#E2E8F0',
   },
   tabHeader: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: THEME.borderRadius.sm,
+    position: 'relative',
   },
-  tabHeaderActive: {
-    backgroundColor: THEME.colors.surfaceElevated,
-    borderWidth: 1,
-    borderColor: THEME.colors.borderStrong,
-  },
+  tabHeaderActive: {},
   tabHeaderText: {
     fontSize: 12,
-    fontWeight: THEME.typography.weights.semibold,
-    color: THEME.colors.textMuted,
+    fontWeight: '600',
+    color: '#64748B',
+    textAlign: 'center',
   },
   tabHeaderTextActive: {
-    color: THEME.colors.primary,
-    fontWeight: THEME.typography.weights.bold,
+    color: '#0A7075',
+    fontWeight: '700',
+  },
+  activeUnderline: {
+    position: 'absolute',
+    bottom: 0,
+    left: 12,
+    right: 12,
+    height: 2.5,
+    backgroundColor: '#0A7075',
+    borderRadius: 2,
   },
   contentBox: {
     padding: 16,
   },
   paragraph: {
     fontSize: 13,
-    color: THEME.colors.textSecondary,
-    lineHeight: 22,
+    color: '#475569',
+    lineHeight: 21,
   },
   viewMoreButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
-    marginTop: 12,
+    marginTop: 10,
     alignSelf: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    borderRadius: THEME.borderRadius.full,
-    backgroundColor: THEME.colors.primaryBg,
   },
   viewMoreText: {
-    fontSize: 11,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.primary,
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#0A7075',
   },
   paramList: {
     gap: 10,
   },
   paramItem: {
-    backgroundColor: THEME.colors.surfaceElevated,
-    borderRadius: THEME.borderRadius.md,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 10,
     padding: 12,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
+    borderColor: '#E2E8F0',
   },
   paramTop: {
     flexDirection: 'row',
@@ -221,40 +202,38 @@ const styles = StyleSheet.create({
   },
   paramName: {
     fontSize: 13,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.textPrimary,
+    fontWeight: '700',
+    color: '#0F172A',
   },
   weightChip: {
-    backgroundColor: THEME.colors.primaryBg,
+    backgroundColor: '#E8F6F6',
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 2,
     borderRadius: 6,
-    borderWidth: 1,
-    borderColor: THEME.colors.primaryBorder,
   },
   weightText: {
     fontSize: 11,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.primary,
+    fontWeight: '700',
+    color: '#0A7075',
   },
   paramDesc: {
-    fontSize: 11,
-    color: THEME.colors.textSecondary,
-    marginTop: 6,
-    lineHeight: 16,
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 4,
+    lineHeight: 17,
   },
   rulesList: {
-    gap: 10,
+    gap: 8,
   },
   ruleItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 10,
-    backgroundColor: THEME.colors.surfaceElevated,
+    gap: 8,
+    backgroundColor: '#F8FAFC',
     padding: 10,
-    borderRadius: THEME.borderRadius.md,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
+    borderColor: '#E2E8F0',
   },
   ruleIcon: {
     marginTop: 1,
@@ -262,7 +241,8 @@ const styles = StyleSheet.create({
   ruleText: {
     flex: 1,
     fontSize: 12,
-    color: THEME.colors.textSecondary,
+    color: '#475569',
     lineHeight: 18,
   },
 });
+

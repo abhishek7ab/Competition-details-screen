@@ -276,7 +276,7 @@ export function CreateModal({ visible, onClose, onCreateSuccess }) {
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(4, 6, 12, 0.85)',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
@@ -284,25 +284,25 @@ const styles = StyleSheet.create({
   modalCard: {
     width: '100%',
     maxWidth: 440,
-    backgroundColor: THEME.colors.surfaceElevated,
-    borderRadius: THEME.borderRadius.xl,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 20,
     borderWidth: 1,
-    borderColor: THEME.colors.borderStrong,
+    borderColor: '#E2E8F0',
     ...Platform.select({
-      web: { boxShadow: '0 8px 32px rgba(0,0,0,0.8)' },
+      web: { boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)' },
     }),
   },
   paymentCard: {
     width: '100%',
     maxWidth: 400,
-    backgroundColor: THEME.colors.surfaceElevated,
-    borderRadius: THEME.borderRadius.xl,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 22,
     borderWidth: 1,
-    borderColor: 'rgba(88, 166, 255, 0.3)',
+    borderColor: '#E2E8F0',
     ...Platform.select({
-      web: { boxShadow: '0 8px 32px rgba(0,0,0,0.8)' },
+      web: { boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)' },
     }),
   },
   modalHeader: {
@@ -385,19 +385,19 @@ const styles = StyleSheet.create({
     color: THEME.colors.textPrimary,
   },
   primaryActionBtn: {
-    backgroundColor: THEME.colors.primary,
+    backgroundColor: '#0A7075',
     paddingVertical: 14,
-    borderRadius: THEME.borderRadius.md,
+    borderRadius: 12,
     alignItems: 'center',
     marginTop: 10,
     ...Platform.select({
-      web: { boxShadow: `0 4px 18px ${THEME.colors.primaryGlow}` },
+      web: { boxShadow: '0 2px 8px rgba(10, 112, 117, 0.25)' },
     }),
   },
   primaryActionBtnText: {
-    color: THEME.colors.bg,
+    color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: THEME.typography.weights.bold,
+    fontWeight: '700',
   },
   btnDisabled: {
     opacity: 0.5,

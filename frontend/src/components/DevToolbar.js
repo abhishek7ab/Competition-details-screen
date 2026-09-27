@@ -84,12 +84,12 @@ export default function DevToolbar({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: THEME.colors.surfaceElevated,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: THEME.colors.primaryBorder,
+    borderBottomColor: '#E2E8F0',
     padding: 14,
     ...Platform.select({
-      web: { boxShadow: '0 4px 20px rgba(0,0,0,0.6)' },
+      web: { boxShadow: '0 2px 8px rgba(0,0,0,0.04)' },
     }),
   },
   header: {
@@ -130,13 +130,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: THEME.borderRadius.sm,
-    backgroundColor: THEME.colors.surface,
+    backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: THEME.colors.border,
+    borderColor: '#E2E8F0',
   },
   userChipSelected: {
-    backgroundColor: THEME.colors.primaryBg,
-    borderColor: THEME.colors.primary,
+    backgroundColor: '#E8F6F6',
+    borderColor: '#0A7075',
   },
   userChipText: {
     fontSize: 11,
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     fontWeight: THEME.typography.weights.medium,
   },
   userChipTextSelected: {
-    color: THEME.colors.primary,
+    color: '#0A7075',
     fontWeight: THEME.typography.weights.bold,
   },
   stateRow: {
@@ -156,22 +156,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: THEME.borderRadius.sm,
-    backgroundColor: THEME.colors.surface,
+    backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: THEME.colors.border,
+    borderColor: '#E2E8F0',
   },
   stateChipSelected: {
-    backgroundColor: THEME.colors.primary,
-    borderColor: THEME.colors.primary,
+    backgroundColor: '#0A7075',
+    borderColor: '#0A7075',
   },
   stateChipText: {
     fontSize: 10,
-    color: THEME.colors.textMuted,
+    color: '#64748B',
     fontWeight: THEME.typography.weights.semibold,
   },
   stateChipTextSelected: {
-    color: THEME.colors.bg,
-    fontWeight: THEME.typography.weights.black,
+    color: '#FFFFFF',
+    fontWeight: THEME.typography.weights.bold,
   },
   footerRow: {
     flexDirection: 'row',

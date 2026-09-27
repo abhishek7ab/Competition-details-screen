@@ -200,7 +200,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#080C14" />
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       {isDesktop ? (
         /* ═══════════════════════════════════════════════════════════
@@ -585,7 +585,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     width: '100%',
-    backgroundColor: '#080C14',
+    backgroundColor: '#F5F7FA',
     alignItems: 'center',
   },
   desktopLayout: {
@@ -593,25 +593,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     height: '100vh',
-    backgroundColor: '#080C14',
+    backgroundColor: '#F5F7FA',
     overflow: 'hidden',
   },
   desktopMainView: {
     flex: 1,
     height: '100vh',
-    backgroundColor: '#080C14',
+    backgroundColor: '#F5F7FA',
     overflow: 'hidden',
   },
   desktopTwoColContainer: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#080C14',
+    backgroundColor: '#F5F7FA',
     overflow: 'hidden',
   },
   desktopLeftScroll: {
     flex: 1.6,
     borderRightWidth: 1,
-    borderRightColor: THEME.colors.border,
+    borderRightColor: '#E2E8F0',
   },
   desktopLeftScrollContent: {
     padding: 24,
@@ -624,7 +624,7 @@ const styles = StyleSheet.create({
   desktopRightScroll: {
     width: 380,
     flexShrink: 0,
-    backgroundColor: '#080C14',
+    backgroundColor: '#F5F7FA',
   },
   desktopRightScrollContent: {
     padding: 20,
@@ -633,23 +633,23 @@ const styles = StyleSheet.create({
   },
   retryBtn: {
     marginTop: 16,
-    backgroundColor: '#00D4AA',
+    backgroundColor: '#0A7075',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
   },
   retryBtnText: {
-    color: '#080C14',
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
   appContainer: {
     flex: 1,
     width: '100%',
     maxWidth: 480,
-    backgroundColor: '#080C14',
+    backgroundColor: '#F5F7FA',
     ...Platform.select({
       web: {
-        boxShadow: '0 0 60px rgba(0,212,170,0.08), 0 4px 40px rgba(0,0,0,0.6)',
+        boxShadow: '0 0 30px rgba(0,0,0,0.06)',
         height: '100vh',
         minHeight: '100vh',
       },
@@ -657,22 +657,23 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    backgroundColor: '#0F1623',
+    backgroundColor: '#F5F7FA',
   },
   scrollContent: {
-    paddingBottom: 16,
+    padding: 16,
+    paddingBottom: 24,
   },
   loadingContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 30,
-    backgroundColor: '#080C14',
+    backgroundColor: '#F5F7FA',
   },
   loadingText: {
     marginTop: 12,
     fontSize: 13,
-    color: '#00D4AA',
+    color: '#0A7075',
     fontWeight: '600',
   },
   toastContainer: {
@@ -680,22 +681,24 @@ const styles = StyleSheet.create({
     top: 54,
     left: 20,
     right: 20,
-    backgroundColor: '#00D4AA',
+    backgroundColor: '#0F172A',
     paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#1E293B',
     zIndex: 9999,
     alignItems: 'center',
-    shadowColor: '#00D4AA',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 16,
-    elevation: 8,
+    ...Platform.select({
+      web: {
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      },
+    }),
   },
   toastText: {
-    color: '#080C14',
-    fontSize: 12,
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '600',
     textAlign: 'center',
   },
 });

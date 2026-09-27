@@ -25,7 +25,7 @@ export default function SidebarNav({
       <View style={styles.brandContainer}>
         <View style={styles.brandRow}>
           <View style={styles.logoIcon}>
-            <Ionicons name="sparkles" size={17} color={THEME.colors.bg} />
+            <Ionicons name="sparkles" size={17} color="#FFFFFF" />
           </View>
           <View>
             <View style={styles.brandTitleRow}>
@@ -41,7 +41,7 @@ export default function SidebarNav({
 
       {/* Host Competition CTA */}
       <TouchableOpacity style={styles.hostBtn} onPress={onCreatePress} activeOpacity={0.85}>
-        <Feather name="plus-circle" size={17} color={THEME.colors.bg} />
+        <Feather name="plus-circle" size={16} color="#FFFFFF" />
         <Text style={styles.hostBtnText}>
           {language === 'hi' ? 'प्रतियोगिता आयोजित करें' : 'Host Competition'}
         </Text>
@@ -59,18 +59,15 @@ export default function SidebarNav({
               onPress={() => onSelectTab(item.key)}
               activeOpacity={0.8}
             >
-              {isActive && <View style={styles.activeLeftBar} />}
               <Ionicons
                 name={isActive ? item.iconActive : item.icon}
-                size={20}
-                color={isActive ? THEME.colors.primary : THEME.colors.textSecondary}
+                size={18}
+                color={isActive ? '#0A7075' : '#64748B'}
               />
               <Text style={[styles.navLinkText, isActive && styles.navLinkTextActive]}>
                 {language === 'hi' ? item.labelHi : item.label}
               </Text>
-              {isActive && (
-                <View style={styles.activePill} />
-              )}
+              {isActive && <View style={styles.activePill} />}
             </TouchableOpacity>
           );
         })}
@@ -79,7 +76,7 @@ export default function SidebarNav({
       {/* Evaluator HUD Shortcut */}
       <View style={styles.evaluatorSection}>
         <TouchableOpacity style={styles.evaluatorBtn} onPress={onToggleDevBar} activeOpacity={0.8}>
-          <Ionicons name="hardware-chip-outline" size={16} color={THEME.colors.primary} />
+          <Ionicons name="options-outline" size={15} color="#0A7075" />
           <Text style={styles.evaluatorBtnText}>Evaluator Dev Panel</Text>
         </TouchableOpacity>
       </View>
@@ -127,7 +124,7 @@ export default function SidebarNav({
             {activeUser?.name === 'Pooja Sharma' ? 'Enrolled Performer ✓' : 'Audience Persona'}
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={15} color={THEME.colors.textMuted} />
+        <Ionicons name="chevron-forward" size={14} color="#94A3B8" />
       </TouchableOpacity>
     </View>
   );
@@ -135,28 +132,25 @@ export default function SidebarNav({
 
 const styles = StyleSheet.create({
   sidebar: {
-    width: 290,
-    backgroundColor: THEME.colors.surface,
+    width: 270,
+    backgroundColor: '#FFFFFF',
     borderRightWidth: 1,
-    borderRightColor: THEME.colors.borderStrong,
-    padding: 22,
+    borderRightColor: '#E2E8F0',
+    padding: 20,
     gap: 16,
     height: '100vh',
     position: 'sticky',
     top: 0,
     ...Platform.select({
       web: {
-        background:
-          'linear-gradient(180deg, rgba(14, 21, 34, 0.98) 0%, rgba(8, 12, 20, 0.98) 100%)',
-        backdropFilter: 'blur(20px)',
-        boxShadow: '4px 0 32px rgba(0, 0, 0, 0.5)',
+        boxShadow: '1px 0 3px rgba(0, 0, 0, 0.03)',
       },
     }),
   },
   brandContainer: {
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: THEME.colors.border,
+    borderBottomColor: '#F1F5F9',
   },
   brandRow: {
     flexDirection: 'row',
@@ -164,17 +158,12 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   logoIcon: {
-    width: 38,
-    height: 38,
+    width: 36,
+    height: 36,
     borderRadius: 10,
-    backgroundColor: THEME.colors.primary,
+    backgroundColor: '#0A7075',
     alignItems: 'center',
     justifyContent: 'center',
-    ...Platform.select({
-      web: {
-        boxShadow: '0 0 16px rgba(0, 245, 184, 0.45)',
-      },
-    }),
   },
   brandTitleRow: {
     flexDirection: 'row',
@@ -182,60 +171,59 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   brandTitle: {
-    fontSize: 18,
-    fontWeight: THEME.typography.weights.black,
-    color: THEME.colors.textPrimary,
-    letterSpacing: 2,
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#0F172A',
+    letterSpacing: 1.5,
   },
   proBadge: {
-    backgroundColor: 'rgba(0, 245, 184, 0.12)',
+    backgroundColor: '#E8F6F6',
     borderWidth: 1,
-    borderColor: 'rgba(0, 245, 184, 0.3)',
-    paddingHorizontal: 5,
+    borderColor: '#B2E2E4',
+    paddingHorizontal: 6,
     paddingVertical: 1,
     borderRadius: 4,
   },
   proBadgeText: {
     fontSize: 9,
-    fontWeight: THEME.typography.weights.extrabold,
-    color: THEME.colors.primary,
+    fontWeight: '800',
+    color: '#0A7075',
   },
   brandTagline: {
     fontSize: 11,
-    color: THEME.colors.textMuted,
+    color: '#64748B',
     marginTop: 2,
-    fontWeight: THEME.typography.weights.medium,
+    fontWeight: '500',
   },
   hostBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: THEME.colors.primary,
-    paddingVertical: 13,
-    borderRadius: THEME.borderRadius.md,
+    backgroundColor: '#0A7075',
+    paddingVertical: 11,
+    borderRadius: 10,
     ...Platform.select({
       web: {
-        background: 'linear-gradient(135deg, #00F5B8 0%, #00D4AA 100%)',
-        boxShadow: '0 4px 18px rgba(0, 245, 184, 0.35)',
+        boxShadow: '0 2px 6px rgba(10, 112, 117, 0.25)',
       },
     }),
   },
   hostBtnText: {
     fontSize: 13,
-    fontWeight: THEME.typography.weights.extrabold,
-    color: THEME.colors.bg,
-    letterSpacing: 0.3,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 0.2,
   },
   navSection: {
-    gap: 6,
-    marginTop: 8,
+    gap: 4,
+    marginTop: 4,
   },
   navSectionTitle: {
     fontSize: 10,
-    fontWeight: THEME.typography.weights.extrabold,
-    color: THEME.colors.textMuted,
-    letterSpacing: 1.5,
+    fontWeight: '700',
+    color: '#94A3B8',
+    letterSpacing: 1.2,
     marginBottom: 4,
     paddingLeft: 4,
   },
@@ -243,65 +231,48 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    paddingVertical: 11,
-    paddingHorizontal: 14,
-    borderRadius: THEME.borderRadius.md,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
     position: 'relative',
-    overflow: 'hidden',
   },
   navLinkActive: {
-    backgroundColor: 'rgba(0, 245, 184, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(0, 245, 184, 0.25)',
-  },
-  activeLeftBar: {
-    position: 'absolute',
-    left: 0,
-    top: 6,
-    bottom: 6,
-    width: 3,
-    backgroundColor: THEME.colors.primary,
-    borderRadius: 2,
+    backgroundColor: '#E8F6F6',
   },
   navLinkText: {
     flex: 1,
     fontSize: 13,
-    fontWeight: THEME.typography.weights.semibold,
-    color: THEME.colors.textSecondary,
+    fontWeight: '500',
+    color: '#475569',
   },
   navLinkTextActive: {
-    color: THEME.colors.primary,
-    fontWeight: THEME.typography.weights.bold,
+    color: '#0A7075',
+    fontWeight: '700',
   },
   activePill: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: THEME.colors.primary,
-    ...Platform.select({
-      web: {
-        boxShadow: '0 0 6px #00F5B8',
-      },
-    }),
+    backgroundColor: '#0A7075',
   },
   evaluatorSection: {
-    marginTop: 6,
+    marginTop: 4,
   },
   evaluatorBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(0, 245, 184, 0.05)',
-    paddingVertical: 10,
+    backgroundColor: '#F8FAFC',
+    paddingVertical: 9,
     paddingHorizontal: 12,
-    borderRadius: THEME.borderRadius.md,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: 'rgba(0, 245, 184, 0.2)',
+    borderColor: '#E2E8F0',
   },
   evaluatorBtnText: {
     fontSize: 11,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.primary,
+    fontWeight: '600',
+    color: '#0A7075',
   },
   langRow: {
     flexDirection: 'row',
@@ -309,56 +280,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: THEME.colors.border,
+    borderTopColor: '#F1F5F9',
   },
   langLabel: {
     fontSize: 11,
-    color: THEME.colors.textMuted,
-    fontWeight: THEME.typography.weights.medium,
+    color: '#64748B',
+    fontWeight: '500',
   },
   langToggleWrap: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-    borderRadius: THEME.borderRadius.full,
+    backgroundColor: '#F1F5F9',
+    borderRadius: 9999,
     padding: 2,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
+    borderColor: '#E2E8F0',
   },
   langBtn: {
     paddingHorizontal: 9,
     paddingVertical: 3,
-    borderRadius: THEME.borderRadius.full,
+    borderRadius: 9999,
   },
   langBtnActive: {
-    backgroundColor: THEME.colors.primary,
+    backgroundColor: '#0A7075',
   },
   langBtnText: {
     fontSize: 10,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.textMuted,
+    fontWeight: '700',
+    color: '#64748B',
   },
   langBtnTextActive: {
-    color: THEME.colors.bg,
+    color: '#FFFFFF',
   },
   userCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    backgroundColor: '#F8FAFC',
     padding: 10,
-    borderRadius: THEME.borderRadius.md,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: THEME.colors.borderStrong,
+    borderColor: '#E2E8F0',
   },
   avatarWrap: {
     position: 'relative',
   },
   avatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    borderWidth: 1.5,
-    borderColor: THEME.colors.primary,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   onlineDot: {
     position: 'absolute',
@@ -367,22 +338,23 @@ const styles = StyleSheet.create({
     width: 9,
     height: 9,
     borderRadius: 5,
-    backgroundColor: THEME.colors.primary,
+    backgroundColor: '#16A34A',
     borderWidth: 1.5,
-    borderColor: THEME.colors.surface,
+    borderColor: '#FFFFFF',
   },
   userInfo: {
     flex: 1,
   },
   userName: {
     fontSize: 12,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.textPrimary,
+    fontWeight: '700',
+    color: '#0F172A',
   },
   userRole: {
     fontSize: 10,
-    color: THEME.colors.primary,
+    color: '#0A7075',
     marginTop: 1,
+    fontWeight: '500',
   },
 });
 
