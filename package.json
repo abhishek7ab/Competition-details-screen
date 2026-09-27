@@ -1,0 +1,15 @@
+{
+  "name": "feedants-competition-details-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Feedants Full-Stack Technical Assignment: Functional Competition Details Screen with React Native, Node.js, Express & MongoDB",
+  "scripts": {
+    "dev": "node run.js",
+    "start": "node run.js",
+    "start:backend": "npm --prefix backend start",
+    "start:frontend": "npm --prefix frontend run web",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run web",
+    "seed": "npm --prefix backend run seed"
+  }
+}

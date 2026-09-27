@@ -1,0 +1,384 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  SafeAreaView,
+  StatusBar,
+  ActivityIndicator,
+  Text,
+  Platform,
+  Alert,
+} from 'react-native';
+import { apiService } from './src/services/api';
+import { THEME } from './src/constants/theme';
+
+// Components
+import Header from './src/components/Header';
+import HeroCard from './src/components/HeroCard';
+import JudgeCard from './src/components/JudgeCard';
+import CountdownBanner from './src/components/CountdownBanner';
+import ImportantDatesCard from './src/components/ImportantDatesCard';
+import PreviousWinners from './src/components/PreviousWinners';
+import TabsSection from './src/components/TabsSection';
+import RewardsList from './src/components/RewardsList';
+import TrustSection from './src/components/TrustSection';
+import ReferralCard from './src/components/ReferralCard';
+import UserFeedbackBanner from './src/components/UserFeedbackBanner';
+import BottomBar from './src/components/BottomBar';
+import BottomNav from './src/components/BottomNav';
+import DevToolbar from './src/components/DevToolbar';
+import { VideoModal, SubmissionModal, PaymentModal } from './src/components/Modals';
+
+export default function App() {
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [competition, setCompetition] = useState(null);
+  const [computed, setComputed] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [activeUser, setActiveUser] = useState(null);
+  const [language, setLanguage] = useState('en'); // 'en' | 'hi'
+
+  // Interactive Modals State
+  const [devBarVisible, setDevBarVisible] = useState(false);
+  const [videoModal, setVideoModal] = useState({ visible: false, url: '', title: '' });
+  const [submissionModalVisible, setSubmissionModalVisible] = useState(false);
+  const [paymentModalVisible, setPaymentModalVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+
+  // Show temporary toast notification
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage('');
+    }, 3000);
+  };
+
+  // 1. Initial Load: Fetch Users & Competition Data
+  const loadData = useCallback(async (selectedUserId) => {
+    try {
+      const demoUsers = await apiService.getDemoUsers();
+      setUsers(demoUsers);
+
+      const userToUse =
+        selectedUserId || activeUser?._id || (demoUsers.length > 0 ? demoUsers[0]._id : null);
+
+      if (demoUsers.length > 0 && !activeUser) {
+        setActiveUser(demoUsers[0]);
+      }
+
+      const compData = await apiService.getCompetition(userToUse);
+      setCompetition(compData.competition);
+      setComputed(compData.computed);
+    } catch (err) {
+      console.error('Failed to load competition data:', err);
+      showToast('Backend connection error. Make sure backend is running on :5000');
+    } finally {
+      setLoading(false);
+    }
+  }, [activeUser]);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  // 2. Handle switching demo user
+  const handleSelectUser = async (user) => {
+    setActiveUser(user);
+    setLoading(true);
+    await loadData(user._id);
+    showToast(`Switched user to: ${user.name}`);
+  };
+
+  // 3. Handle Registration CTA
+  const handleRegisterPress = () => {
+    setPaymentModalVisible(true);
+  };
+
+  const handleConfirmPayment = async () => {
+    if (!activeUser || !competition) return;
+    setActionLoading(true);
+    try {
+      const res = await apiService.registerForCompetition(competition._id, activeUser._id);
+      setPaymentModalVisible(false);
+      showToast(res.message || 'Registration successful! Spot reserved.');
+      await loadData(activeUser._id);
+    } catch (err) {
+      Alert.alert('Registration Issue', err.message);
+      showToast(err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // 4. Handle Submission CTA
+  const handleSubmitPress = () => {
+    setSubmissionModalVisible(true);
+  };
+
+  const handleConfirmSubmission = async (submissionPayload) => {
+    if (!activeUser || !competition) return;
+    setActionLoading(true);
+    try {
+      const res = await apiService.submitEntry(competition._id, {
+        userId: activeUser._id,
+        ...submissionPayload,
+      });
+      setSubmissionModalVisible(false);
+      showToast('Submission uploaded successfully!');
+      await loadData(activeUser._id);
+    } catch (err) {
+      Alert.alert('Submission Issue', err.message);
+      showToast(err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // 5. Video player helper
+  const handlePlayVideo = (url, title) => {
+    setVideoModal({
+      visible: true,
+      url: url || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+      title: title || 'Video Preview',
+    });
+  };
+
+  // 6. Evaluator overrides & demo reset
+  const handleOverrideState = async (state) => {
+    if (!competition) return;
+    try {
+      await apiService.overrideState(competition._id, state);
+      showToast(`State set to: ${state}`);
+      await loadData(activeUser?._id);
+    } catch (err) {
+      showToast(err.message);
+    }
+  };
+
+  const handleResetDemo = async () => {
+    try {
+      await apiService.resetDemoState();
+      showToast('Database reset to clean demo state (1/20 booked)');
+      await loadData(activeUser?._id);
+    } catch (err) {
+      showToast(err.message);
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#080C14" />
+
+      {/* Screen Frame Container (Mobile-optimized on Web & Native) */}
+      <View style={styles.appContainer}>
+        {/* Top Header */}
+        <Header
+          language={language}
+          setLanguage={setLanguage}
+          onToggleDevBar={() => setDevBarVisible(!devBarVisible)}
+        />
+
+        {/* Optional Evaluator Controls Bar */}
+        <DevToolbar
+          visible={devBarVisible}
+          onClose={() => setDevBarVisible(false)}
+          users={users}
+          activeUser={activeUser}
+          onSelectUser={handleSelectUser}
+          currentState={computed?.currentState}
+          onOverrideState={handleOverrideState}
+          onResetDemo={handleResetDemo}
+          spotsRemaining={computed?.spotsRemaining}
+          bookedSpots={competition?.bookedSpots}
+        />
+
+        {/* Toast Banner */}
+        {toastMessage ? (
+          <View style={styles.toastContainer}>
+            <Text style={styles.toastText}>{toastMessage}</Text>
+          </View>
+        ) : null}
+
+        {/* Scrollable Main Content */}
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={THEME.colors.primary} />
+            <Text style={styles.loadingText}>Connecting to Feedants API...</Text>
+          </View>
+        ) : (
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* 1. Hero Card */}
+            <HeroCard competition={competition} computed={computed} language={language} />
+
+            {/* 2. Judge Card */}
+            <JudgeCard
+              judge={competition?.judge}
+              onPlayVideo={(url, name) => handlePlayVideo(url, `Judge: ${name}`)}
+              language={language}
+            />
+
+            {/* 3. Live Countdown Banner */}
+            <CountdownBanner
+              targetDate={competition?.registrationDeadline}
+              language={language}
+            />
+
+            {/* 4. Important Dates */}
+            <ImportantDatesCard competition={competition} language={language} />
+
+            {/* 5. Previous Winners */}
+            <PreviousWinners
+              winners={competition?.previousWinners}
+              onPlayVideo={handlePlayVideo}
+              language={language}
+            />
+
+            {/* 6. Tabs (About, Judging, Rules) */}
+            <TabsSection competition={competition} language={language} />
+
+            {/* 7. Rewards List */}
+            <RewardsList rewards={competition?.rewards} language={language} />
+
+            {/* 8. Trust & Policies */}
+            <TrustSection
+              disclaimer={competition?.disclaimer}
+              onWatchPrizeVideo={() =>
+                handlePlayVideo(
+                  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                  'Prize Distribution Process'
+                )
+              }
+              onOpenRefundPolicy={() =>
+                Alert.alert(
+                  'Feedants Refund Policy',
+                  '100% refund is issued if the competition is cancelled by Feedants. Registrations can be transferred up to 24 hours before the registration deadline.'
+                )
+              }
+              language={language}
+            />
+
+            {/* 9. Referral Card */}
+            <ReferralCard user={activeUser} onShowToast={showToast} language={language} />
+
+            {/* 10. Feedback & Ad */}
+            <UserFeedbackBanner
+              onFeedbackPress={() =>
+                showToast('Feedants reviews: 4.8/5 based on 1,200+ dancers.')
+              }
+              language={language}
+            />
+          </ScrollView>
+        )}
+
+        {/* Sticky Action CTA Button */}
+        {!loading && (
+          <BottomBar
+            competition={competition}
+            computed={computed}
+            onRegisterPress={handleRegisterPress}
+            onSubmitPress={handleSubmitPress}
+            loading={actionLoading}
+            language={language}
+          />
+        )}
+
+        {/* Bottom Navigation */}
+        <BottomNav activeUser={activeUser} language={language} />
+
+        {/* Interactive Modals */}
+        <VideoModal
+          visible={videoModal.visible}
+          videoUrl={videoModal.url}
+          title={videoModal.title}
+          onClose={() => setVideoModal({ visible: false, url: '', title: '' })}
+        />
+
+        <SubmissionModal
+          visible={submissionModalVisible}
+          onClose={() => setSubmissionModalVisible(false)}
+          onSubmit={handleConfirmSubmission}
+          loading={actionLoading}
+          initialData={computed?.userState?.submission}
+          language={language}
+        />
+
+        <PaymentModal
+          visible={paymentModalVisible}
+          onClose={() => setPaymentModalVisible(false)}
+          onConfirm={handleConfirmPayment}
+          entryFee={competition?.entryFee}
+          spotsRemaining={computed?.spotsRemaining}
+          loading={actionLoading}
+        />
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#080C14',
+    alignItems: 'center',
+  },
+  appContainer: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 480,
+    backgroundColor: '#080C14',
+    ...Platform.select({
+      web: {
+        boxShadow: '0 0 60px rgba(0,212,170,0.08), 0 4px 40px rgba(0,0,0,0.6)',
+        height: '100vh',
+      },
+    }),
+  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: '#0F1623',
+  },
+  scrollContent: {
+    paddingBottom: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 30,
+    backgroundColor: '#080C14',
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 13,
+    color: '#00D4AA',
+    fontWeight: '600',
+  },
+  toastContainer: {
+    position: 'absolute',
+    top: 54,
+    left: 20,
+    right: 20,
+    backgroundColor: '#00D4AA',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    zIndex: 9999,
+    alignItems: 'center',
+    shadowColor: '#00D4AA',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  toastText: {
+    color: '#080C14',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+});
