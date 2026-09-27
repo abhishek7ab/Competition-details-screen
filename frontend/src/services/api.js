@@ -66,30 +66,5 @@ export const apiService = {
       return [];
     }
   },
-
-  // Switch lifecycle state (for testing edge cases)
-  async overrideState(competitionId, statusOverride) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/competitions/${competitionId}/override-status`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ statusOverride }),
-      });
-      return await res.json();
-    } catch (error) {
-      console.error('API overrideState error:', error);
-      throw error;
-    }
-  },
-
-  // Reset demo state back to 1/20 booked
-  async resetDemoState() {
-    try {
-      const res = await fetch(`${API_BASE_URL}/dev/reset`, { method: 'POST' });
-      return await res.json();
-    } catch (error) {
-      console.error('API resetDemoState error:', error);
-      throw error;
-    }
-  },
 };
+

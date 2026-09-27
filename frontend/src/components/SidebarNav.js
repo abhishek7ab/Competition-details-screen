@@ -112,7 +112,7 @@ export default function SidebarNav({
         <View style={styles.userInfo}>
           <Text style={styles.userName} numberOfLines={1}>{activeUser?.name || 'Pooja Sharma'}</Text>
           <Text style={styles.userRole}>
-            {activeUser?.name === 'Pooja Sharma' ? 'Enrolled Performer ✓' : 'Audience Persona'}
+            {activeUser?.name === 'Pooja Sharma' ? 'Enrolled Performer ✓' : 'Artist Member'}
           </Text>
         </View>
         <Ionicons name="chevron-forward" size={14} color="#94A3B8" />

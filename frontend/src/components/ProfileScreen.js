@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Platform }
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { THEME } from '../constants/theme';
 
-export default function ProfileScreen({ activeUser, users, onSelectUser, onShowToast, onGoToContest, language }) {
+export default function ProfileScreen({ activeUser, onShowToast, onGoToContest, language }) {
   const isPooja = activeUser?.name === 'Pooja Sharma';
 
   return (

@@ -40,7 +40,6 @@ export default function App() {
   const [actionLoading, setActionLoading] = useState(false);
   const [competition, setCompetition] = useState(null);
   const [computed, setComputed] = useState(null);
-  const [users, setUsers] = useState([]);
   const [activeUser, setActiveUser] = useState(null);
   const [language, setLanguage] = useState('en'); // 'en' | 'hi'
   const { width } = useWindowDimensions();
@@ -87,14 +86,13 @@ export default function App() {
   // 1. Initial Load: Fetch Users & Competition Data
   const loadData = useCallback(async (selectedUserId) => {
     try {
-      const demoUsers = await apiService.getDemoUsers();
-      setUsers(demoUsers);
+      const fetchedUsers = await apiService.getDemoUsers();
 
       const userToUse =
-        selectedUserId || activeUser?._id || (demoUsers.length > 0 ? demoUsers[0]._id : null);
+        selectedUserId || activeUser?._id || (fetchedUsers.length > 0 ? fetchedUsers[0]._id : null);
 
-      if (demoUsers.length > 0 && !activeUser) {
-        setActiveUser(demoUsers[0]);
+      if (fetchedUsers.length > 0 && !activeUser) {
+        setActiveUser(fetchedUsers[0]);
       }
 
       const compData = await apiService.getCompetition(userToUse);
@@ -112,13 +110,7 @@ export default function App() {
     loadData();
   }, []);
 
-  // 2. Handle switching demo user
-  const handleSelectUser = async (user) => {
-    setActiveUser(user);
-    setLoading(true);
-    await loadData(user._id);
-    showToast(`Switched user to: ${user.name}`);
-  };
+
 
   // 3. Handle Registration CTA
   const handleRegisterPress = () => {
@@ -172,28 +164,6 @@ export default function App() {
       url: url || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       title: title || 'Video Preview',
     });
-  };
-
-  // 6. Evaluator overrides & demo reset
-  const handleOverrideState = async (state) => {
-    if (!competition) return;
-    try {
-      await apiService.overrideState(competition._id, state);
-      showToast(`State set to: ${state}`);
-      await loadData(activeUser?._id);
-    } catch (err) {
-      showToast(err.message);
-    }
-  };
-
-  const handleResetDemo = async () => {
-    try {
-      await apiService.resetDemoState();
-      showToast('Database reset to clean demo state (1/20 booked)');
-      await loadData(activeUser?._id);
-    } catch (err) {
-      showToast(err.message);
-    }
   };
 
   return (
@@ -275,8 +245,6 @@ export default function App() {
             ) : activeTab === 'profile' ? (
               <ProfileScreen
                 activeUser={activeUser}
-                users={users}
-                onSelectUser={handleSelectUser}
                 onShowToast={showToast}
                 onGoToContest={() => setActiveTab('contests')}
                 language={language}
@@ -415,8 +383,6 @@ export default function App() {
           ) : activeTab === 'profile' ? (
             <ProfileScreen
               activeUser={activeUser}
-              users={users}
-              onSelectUser={handleSelectUser}
               onShowToast={showToast}
               onGoToContest={() => setActiveTab('contests')}
               language={language}

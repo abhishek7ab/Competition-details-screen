@@ -60,7 +60,7 @@ export function VideoModal({ visible, onClose, videoUrl, title }) {
 export function SubmissionModal({ visible, onClose, onSubmit, loading, initialData, language }) {
   const [title, setTitle] = useState(initialData?.title || 'Classical Kathak Performance');
   const [videoUrl, setVideoUrl] = useState(
-    initialData?.videoUrl || 'https://youtube.com/watch?v=demo_classical_dance'
+    initialData?.videoUrl || 'https://youtube.com/watch?v=feedants_classical_dance'
   );
   const [danceStyle, setDanceStyle] = useState(initialData?.danceStyle || 'Kathak');
 
