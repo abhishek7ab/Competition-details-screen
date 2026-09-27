@@ -209,59 +209,7 @@ const submitEntry = async (req, res) => {
   }
 };
 
-// Switch lifecycle state for evaluator testing
-const updateLifecycleOverride = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { statusOverride } = req.body;
-
-    const competition = await Competition.findByIdAndUpdate(
-      id,
-      { statusOverride },
-      { new: true }
-    );
-
-    return res.status(200).json({
-      success: true,
-      message: `State overridden to: ${statusOverride}`,
-      data: competition,
-    });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-// Reset demo competition state
-const resetDemoState = async (req, res) => {
-  try {
-    const competition = await Competition.findOne();
-    if (!competition) {
-      return res.status(404).json({ success: false, message: 'No competition to reset' });
-    }
-
-    // Keep 1 spot booked as per design
-    competition.bookedSpots = 1;
-    competition.statusOverride = 'AUTO';
-    await competition.save();
-
-    // Clear registrations for non-default users
-    const users = await User.find();
-    if (users.length > 1) {
-      // Keep user 0 registered (to match the design where user is already registered), or clear user 1
-      await Registration.deleteMany({ userId: { $ne: users[0]._id } });
-      await Submission.deleteMany({ userId: { $ne: users[0]._id } });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: 'Demo state reset successfully!',
-    });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-// Get Demo Users
+// Get Users
 const getDemoUsers = async (req, res) => {
   try {
     const users = await User.find();
@@ -275,7 +223,5 @@ module.exports = {
   getCompetitionDetails,
   registerForCompetition,
   submitEntry,
-  updateLifecycleOverride,
-  resetDemoState,
   getDemoUsers,
 };
