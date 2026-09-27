@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "expo start",
-    "web": "expo start --web"
+    "web": "expo start --web -c"
   },
   "dependencies": {
     "@expo/metro-runtime": "~4.0.1",

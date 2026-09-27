@@ -235,6 +235,29 @@ export default function App() {
             <ActivityIndicator size="large" color={THEME.colors.primary} />
             <Text style={styles.loadingText}>Connecting to Feedants API...</Text>
           </View>
+        ) : !competition && activeTab === 'contests' ? (
+          <View style={styles.loadingContainer}>
+            <Ionicons name="cloud-offline-outline" size={40} color={THEME.colors.rose} />
+            <Text style={[styles.loadingText, { color: THEME.colors.rose, marginTop: 10 }]}>
+              Unable to reach Backend API (:5000)
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setLoading(true);
+                loadData();
+              }}
+              style={{
+                marginTop: 16,
+                backgroundColor: THEME.colors.primary,
+                paddingHorizontal: 20,
+                paddingVertical: 10,
+                borderRadius: 8,
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={{ color: THEME.colors.bg, fontWeight: 'bold' }}>Retry Connection</Text>
+            </TouchableOpacity>
+          </View>
         ) : activeTab === 'home' ? (
           <HomeScreen
             activeUser={activeUser}
@@ -389,6 +412,7 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    width: '100%',
     backgroundColor: '#080C14',
     alignItems: 'center',
   },
@@ -401,6 +425,7 @@ const styles = StyleSheet.create({
       web: {
         boxShadow: '0 0 60px rgba(0,212,170,0.08), 0 4px 40px rgba(0,0,0,0.6)',
         height: '100vh',
+        minHeight: '100vh',
       },
     }),
   },
