@@ -8,7 +8,6 @@ export default function Header({
   onBackPress,
   language,
   setLanguage,
-  onToggleDevBar,
 }) {
   const titles = {
     contests: { en: 'Competition Details', hi: 'प्रतियोगिता विवरण' },
@@ -61,15 +60,6 @@ export default function Header({
               </Text>
             </TouchableOpacity>
           </View>
-
-          {/* Dev Controls Toggle */}
-          <TouchableOpacity
-            style={styles.devButton}
-            onPress={onToggleDevBar}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="options-outline" size={17} color="#0A7075" />
-          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -149,15 +139,5 @@ const styles = StyleSheet.create({
   },
   langTextActive: {
     color: '#FFFFFF',
-  },
-  devButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

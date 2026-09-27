@@ -28,7 +28,6 @@ import ReferralCard from './src/components/ReferralCard';
 import UserFeedbackBanner from './src/components/UserFeedbackBanner';
 import BottomBar from './src/components/BottomBar';
 import BottomNav from './src/components/BottomNav';
-import DevToolbar from './src/components/DevToolbar';
 import HomeScreen from './src/components/HomeScreen';
 import BrowseScreen from './src/components/BrowseScreen';
 import ProfileScreen from './src/components/ProfileScreen';
@@ -50,7 +49,6 @@ export default function App() {
   // Navigation & Interactive Modals State
   const [activeTab, setActiveTab] = useState('contests'); // 'home' | 'browse' | 'create' | 'contests' | 'profile'
   const [createModalVisible, setCreateModalVisible] = useState(false);
-  const [devBarVisible, setDevBarVisible] = useState(false);
   const [videoModal, setVideoModal] = useState({ visible: false, url: '', title: '' });
   const [submissionModalVisible, setSubmissionModalVisible] = useState(false);
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);
@@ -213,7 +211,6 @@ export default function App() {
             activeTab={activeTab}
             onSelectTab={handleSelectTab}
             activeUser={activeUser}
-            onToggleDevBar={() => setDevBarVisible(!devBarVisible)}
             onCreatePress={() => setCreateModalVisible(true)}
             language={language}
             setLanguage={setLanguage}
@@ -227,21 +224,6 @@ export default function App() {
               onBackPress={handleBackPress}
               language={language}
               setLanguage={setLanguage}
-              onToggleDevBar={() => setDevBarVisible(!devBarVisible)}
-            />
-
-            {/* Optional Evaluator Controls Bar */}
-            <DevToolbar
-              visible={devBarVisible}
-              onClose={() => setDevBarVisible(false)}
-              users={users}
-              activeUser={activeUser}
-              onSelectUser={handleSelectUser}
-              currentState={computed?.currentState}
-              onOverrideState={handleOverrideState}
-              onResetDemo={handleResetDemo}
-              spotsRemaining={computed?.spotsRemaining}
-              bookedSpots={competition?.bookedSpots}
             />
 
             {/* Toast Banner */}
@@ -382,21 +364,6 @@ export default function App() {
             onBackPress={handleBackPress}
             language={language}
             setLanguage={setLanguage}
-            onToggleDevBar={() => setDevBarVisible(!devBarVisible)}
-          />
-
-          {/* Optional Evaluator Controls Bar */}
-          <DevToolbar
-            visible={devBarVisible}
-            onClose={() => setDevBarVisible(false)}
-            users={users}
-            activeUser={activeUser}
-            onSelectUser={handleSelectUser}
-            currentState={computed?.currentState}
-            onOverrideState={handleOverrideState}
-            onResetDemo={handleResetDemo}
-            spotsRemaining={computed?.spotsRemaining}
-            bookedSpots={competition?.bookedSpots}
           />
 
           {/* Toast Banner */}

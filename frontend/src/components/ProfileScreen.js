@@ -28,31 +28,6 @@ export default function ProfileScreen({ activeUser, users, onSelectUser, onShowT
         </View>
       </View>
 
-      {/* Switch Demo Persona (Evaluator tool right in Profile) */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>
-          {language === 'hi' ? '👤 डेमो उपयोगकर्ता बदलें' : '👤 SWITCH DEMO PERSONA'}
-        </Text>
-      </View>
-
-      <View style={styles.personaRow}>
-        {(users || []).map((u) => {
-          const isSelected = activeUser?._id === u._id;
-          return (
-            <TouchableOpacity
-              key={u._id}
-              style={[styles.personaChip, isSelected && styles.personaChipSelected]}
-              onPress={() => onSelectUser(u)}
-              activeOpacity={0.8}
-            >
-              <Text style={[styles.personaText, isSelected && styles.personaTextSelected]}>
-                {u.name} {u.name === 'Pooja Sharma' ? '(Registered)' : '(New)'}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-
       {/* Stats Counter */}
       <View style={styles.statsRow}>
         <View style={styles.statBox}>
@@ -196,32 +171,6 @@ const styles = StyleSheet.create({
     fontWeight: THEME.typography.weights.black,
     color: THEME.colors.textMuted,
     letterSpacing: 1.5,
-  },
-  personaRow: {
-    flexDirection: 'row',
-    gap: 8,
-    flexWrap: 'wrap',
-  },
-  personaChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: THEME.borderRadius.sm,
-    backgroundColor: THEME.colors.surface,
-    borderWidth: 1,
-    borderColor: THEME.colors.border,
-  },
-  personaChipSelected: {
-    backgroundColor: THEME.colors.primaryBg,
-    borderColor: THEME.colors.primary,
-  },
-  personaText: {
-    fontSize: 11,
-    color: THEME.colors.textSecondary,
-    fontWeight: THEME.typography.weights.medium,
-  },
-  personaTextSelected: {
-    color: THEME.colors.primary,
-    fontWeight: THEME.typography.weights.bold,
   },
   statsRow: {
     flexDirection: 'row',

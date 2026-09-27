@@ -7,7 +7,6 @@ export default function SidebarNav({
   activeTab,
   onSelectTab,
   activeUser,
-  onToggleDevBar,
   onCreatePress,
   language,
   setLanguage,
@@ -71,14 +70,6 @@ export default function SidebarNav({
             </TouchableOpacity>
           );
         })}
-      </View>
-
-      {/* Evaluator HUD Shortcut */}
-      <View style={styles.evaluatorSection}>
-        <TouchableOpacity style={styles.evaluatorBtn} onPress={onToggleDevBar} activeOpacity={0.8}>
-          <Ionicons name="options-outline" size={15} color="#0A7075" />
-          <Text style={styles.evaluatorBtnText}>Evaluator Dev Panel</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Spacer */}
@@ -254,25 +245,6 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
     backgroundColor: '#0A7075',
-  },
-  evaluatorSection: {
-    marginTop: 4,
-  },
-  evaluatorBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: '#F8FAFC',
-    paddingVertical: 9,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  evaluatorBtnText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#0A7075',
   },
   langRow: {
     flexDirection: 'row',
