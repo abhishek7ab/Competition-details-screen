@@ -34,7 +34,7 @@ npm start
 
 The backend will start at: `http://localhost:5000`
 
-For local development, if `MONGODB_URI` is not set, the backend uses a temporary in-memory MongoDB database. **Data is erased when the process stops.** For persistent data, configure `MONGODB_URI` in `backend/.env`. Production startup requires a valid `MONGODB_URI` and will not fall back to temporary storage.
+For local development, if `MONGODB_URI` is not set, the backend uses a temporary in-memory MongoDB database. **Data is erased when the process stops.** This fallback is for development only. For persistent data, configure `MONGODB_URI` in `backend/.env`. Production startup requires a valid `MONGODB_URI` and will not fall back to temporary storage.
 
 ### Step 2: Start the Frontend
 
@@ -68,7 +68,7 @@ Demo-only controls are available in development. They are disabled when `NODE_EN
 
 - **Frontend**: React Native, Expo Web
 - **Backend**: Node.js, Express.js
-- **Database**: MongoDB (with automatic in-memory fallback)
+- **Database**: MongoDB (temporary in-memory database fallback for local development only)
 - **Icons**: Custom inline SVG icons
 
 ---
@@ -82,6 +82,8 @@ Demo-only controls are available in development. They are disabled when `NODE_EN
 ---
 
 ## Testing User Flows
+
+**These demo flows are for local development only.** Production registration is disabled until real payment verification is implemented, and production submissions are disabled until authentication and verified-payment checks are available.
 
 Click the settings gear icon at the top right to test different flows:
 
