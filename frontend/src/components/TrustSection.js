@@ -7,6 +7,7 @@ export default function TrustSection({
   disclaimer,
   onWatchPrizeVideo,
   onOpenRefundPolicy,
+  onShowInfo,
   language,
   isDarkMode = false,
 }) {
@@ -18,10 +19,13 @@ export default function TrustSection({
       : disclaimer?.en || 'Only contributions from paid participants will be considered for judging.';
 
   const handleRazorpayPress = () => {
-    Alert.alert(
-      'Razorpay Verified Security',
-      'All payments on Feedants are processed via Razorpay with 256-bit SSL encryption.\n\n✓ Supports UPI (GPay, PhonePe, Paytm, BHIM)\n✓ All Credit/Debit Cards & Net Banking\n✓ Instant automated refund if event is cancelled.'
-    );
+    const msg =
+      'All payments on Feedants are processed via Razorpay with 256-bit SSL encryption.\n\n• Supports UPI (GPay, PhonePe, Paytm, BHIM)\n• All Credit/Debit Cards & Net Banking\n• Instant automated refund if event is cancelled.';
+    if (onShowInfo) {
+      onShowInfo('Razorpay Verified Security', msg, 'shield-checkmark-outline');
+    } else {
+      Alert.alert('Razorpay Verified Security', msg);
+    }
   };
 
   return (

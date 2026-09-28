@@ -80,12 +80,21 @@ export function SubmissionModal({
     initialData?.videoUrl || 'https://youtube.com/watch?v=feedants_classical_dance'
   );
   const [danceStyle, setDanceStyle] = useState(initialData?.danceStyle || 'Kathak');
+  const [errorMsg, setErrorMsg] = useState('');
   const colors = getThemeColors(isDarkMode);
 
   if (!visible) return null;
 
   const handleSubmit = () => {
-    if (!title.trim() || !videoUrl.trim()) return;
+    if (!title.trim()) {
+      setErrorMsg('Please enter a performance title.');
+      return;
+    }
+    if (!videoUrl.trim()) {
+      setErrorMsg('Please enter a video URL.');
+      return;
+    }
+    setErrorMsg('');
     onSubmit({ title, videoUrl, danceStyle });
   };
 
@@ -106,6 +115,13 @@ export function SubmissionModal({
             Submit your classical dance link for official jury evaluation by Manju Dubey.
           </Text>
 
+          {errorMsg ? (
+            <View style={styles.errorBanner}>
+              <Icon name="alert-circle" size={14} color="#DC2626" />
+              <Text style={styles.errorText}>{errorMsg}</Text>
+            </View>
+          ) : null}
+
           <View style={styles.fieldGroup}>
             <Text style={[styles.label, { color: colors.textSecondary }]}>Performance Title</Text>
             <TextInput
@@ -118,7 +134,10 @@ export function SubmissionModal({
                 },
               ]}
               value={title}
-              onChangeText={setTitle}
+              onChangeText={(t) => {
+                setTitle(t);
+                if (errorMsg) setErrorMsg('');
+              }}
               placeholder="e.g. Traditional Kathak Tarana"
               placeholderTextColor={colors.textMuted}
             />
@@ -154,7 +173,10 @@ export function SubmissionModal({
                 },
               ]}
               value={videoUrl}
-              onChangeText={setVideoUrl}
+              onChangeText={(u) => {
+                setVideoUrl(u);
+                if (errorMsg) setErrorMsg('');
+              }}
               placeholder="https://..."
               placeholderTextColor={colors.textMuted}
             />
@@ -462,6 +484,49 @@ export function ReviewsModal({ visible, onClose, isDarkMode = false, language })
   );
 }
 
+// 6. In-App Interactive Info Dialog Modal (replaces browser Alert.alert)
+export function InfoModal({ visible, onClose, title, message, icon = 'information-circle-outline', isDarkMode = false }) {
+  if (!visible) return null;
+  const colors = getThemeColors(isDarkMode);
+
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <View style={[styles.modalOverlay, isDarkMode && { backgroundColor: 'rgba(0,0,0,0.8)' }]}>
+        <View style={[styles.modalCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={styles.modalHeader}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, paddingRight: 8 }}>
+              <View style={[styles.infoIconWrap, { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
+                <Icon name={icon} size={20} color={colors.primary} />
+              </View>
+              <Text style={[styles.modalTitle, { color: colors.textPrimary, flex: 1 }]} numberOfLines={2}>
+                {title || 'Details'}
+              </Text>
+            </View>
+            <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn} activeOpacity={0.7} accessibilityRole="button">
+              <Icon name="close" size={20} color={colors.textSecondary} />
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView style={{ maxHeight: 280, marginVertical: 10 }} showsVerticalScrollIndicator={false}>
+            <Text style={[styles.infoMessageText, { color: colors.textSecondary }]}>
+              {message}
+            </Text>
+          </ScrollView>
+
+          <TouchableOpacity
+            style={[styles.primaryActionBtn, { backgroundColor: colors.primary, marginTop: 6 }]}
+            onPress={onClose}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+          >
+            <Text style={styles.primaryActionBtnText}>Got it</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
@@ -697,5 +762,32 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     fontStyle: 'italic',
+  },
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FECACA',
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 12,
+  },
+  errorText: {
+    color: '#DC2626',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  infoIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoMessageText: {
+    fontSize: 13,
+    lineHeight: 20,
   },
 });

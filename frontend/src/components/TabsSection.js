@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform, Alert } from 'react
 import { THEME, getThemeColors } from '../constants/theme';
 import Icon from './Icon';
 
-export default function TabsSection({ competition, language, isDarkMode = false }) {
+export default function TabsSection({ competition, language, isDarkMode = false, onShowInfo }) {
   const colors = getThemeColors(isDarkMode);
   const [activeTab, setActiveTab] = useState('about'); // 'about' | 'parameters' | 'rules'
   const [isExpanded, setIsExpanded] = useState(false);
@@ -21,14 +21,21 @@ export default function TabsSection({ competition, language, isDarkMode = false 
         'This is an online classical dance competition open for all age groups. Participate from anywhere and showcase your talent. Express your passion through traditional dance.';
 
   const handleParamPress = (item) => {
-    Alert.alert(
-      item.parameter,
-      `Weightage: ${item.weightage}\n\n${item.description || 'Evaluated strictly according to standard Indian classical choreography standards by Judge Manju Dubey.'}`
-    );
+    const title = language === 'hi' && item.parameterHindi ? item.parameterHindi : item.parameter;
+    const msg = `Weightage: ${item.weightage}\n\n${item.description || 'Evaluated strictly according to standard Indian classical choreography standards by Judge Manju Dubey.'}`;
+    if (onShowInfo) {
+      onShowInfo(title, msg, 'ribbon-outline');
+    } else {
+      Alert.alert(title, msg);
+    }
   };
 
   const handleRulePress = (rule) => {
-    Alert.alert('Competition Rule', rule);
+    if (onShowInfo) {
+      onShowInfo('Competition Rule & Eligibility', rule, 'checkmark-circle-outline');
+    } else {
+      Alert.alert('Competition Rule', rule);
+    }
   };
 
   return (

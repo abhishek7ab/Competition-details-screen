@@ -12,15 +12,18 @@ const RANK_ICONS = {
   6: { icon: 'star-outline', color: '#0A7075' },
 };
 
-export default function RewardsList({ rewards, language, isDarkMode = false }) {
+export default function RewardsList({ rewards, language, isDarkMode = false, onShowInfo }) {
   if (!rewards || rewards.length === 0) return null;
   const colors = getThemeColors(isDarkMode);
 
   const handleRewardPress = (reward) => {
-    Alert.alert(
-      `${reward.title || `${reward.rank}th Place Reward`}`,
-      `Prize: ₹${Number(reward.amount).toLocaleString('en-IN')}\n\n🏆 Winner receives official Feedants e-certificate, cash disbursed via direct UPI/bank transfer within 48 hours of result announcement, and feature on Feedants Hall of Fame.`
-    );
+    const title = reward.title || `${reward.rank}th Place Reward`;
+    const msg = `Prize: ₹${Number(reward.amount).toLocaleString('en-IN')}\n\nWinner receives official Feedants e-certificate, cash disbursed via direct UPI/bank transfer within 48 hours of result announcement, and feature on Feedants Hall of Fame.`;
+    if (onShowInfo) {
+      onShowInfo(title, msg, 'trophy');
+    } else {
+      Alert.alert(title, msg);
+    }
   };
 
   return (

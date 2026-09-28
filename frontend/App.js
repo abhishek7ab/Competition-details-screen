@@ -42,6 +42,7 @@ import {
   PaymentModal,
   CreateModal,
   ReviewsModal,
+  InfoModal,
 } from './src/components/Modals';
 
 export default function App() {
@@ -60,12 +61,14 @@ export default function App() {
 
   // Navigation & Interactive Modals State
   const [activeTab, setActiveTab] = useState('contests'); // 'home' | 'browse' | 'create' | 'contests' | 'profile'
+  const [previousTab, setPreviousTab] = useState('home');
   const [browseCategory, setBrowseCategory] = useState('All');
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [videoModal, setVideoModal] = useState({ visible: false, url: '', title: '' });
   const [submissionModalVisible, setSubmissionModalVisible] = useState(false);
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);
   const [reviewsModalVisible, setReviewsModalVisible] = useState(false);
+  const [infoModal, setInfoModal] = useState({ visible: false, title: '', message: '', icon: 'information-circle' });
   const [toastMessage, setToastMessage] = useState('');
 
   const colors = getThemeColors(isDarkMode);
@@ -74,6 +77,9 @@ export default function App() {
     if (tab === 'create') {
       setCreateModalVisible(true);
       return;
+    }
+    if (tab !== activeTab) {
+      setPreviousTab(activeTab);
     }
     setActiveTab(tab);
     if (tab === 'home') showToast('Switched to Home Feed');
@@ -88,12 +94,24 @@ export default function App() {
   };
 
   const handleBackPress = () => {
-    if (activeTab !== 'contests') {
+    if (activeTab === 'contests') {
+      // If on contests, go back to previous tab or home feed
+      const target = previousTab && previousTab !== 'contests' ? previousTab : 'home';
+      setActiveTab(target);
+      showToast('Switched to Home Feed');
+    } else {
       setActiveTab('contests');
       showToast('Back to Competition Details');
-    } else {
-      showToast('You are on the Competition Details screen');
     }
+  };
+
+  const handleShowInfo = (title, message, icon = 'information-circle') => {
+    setInfoModal({
+      visible: true,
+      title: title || 'Information',
+      message: message || '',
+      icon: icon || 'information-circle',
+    });
   };
 
   // Show temporary toast notification
@@ -377,6 +395,7 @@ export default function App() {
             <ProfileScreen
               activeUser={activeUser}
               onShowToast={showToast}
+              onShowInfo={handleShowInfo}
               onGoToContest={() => {
                 setActiveTab('contests');
                 showToast('Competition Details Screen');
@@ -398,12 +417,14 @@ export default function App() {
                 computed={computed}
                 language={language}
                 isDarkMode={isDarkMode}
+                onShowInfo={handleShowInfo}
               />
 
               {/* 2. Judge Card */}
               <JudgeCard
                 judge={competition?.judge}
                 onPlayVideo={(url, name) => handlePlayVideo(url, `Judge: ${name}`)}
+                onShowInfo={handleShowInfo}
                 language={language}
                 isDarkMode={isDarkMode}
               />
@@ -421,6 +442,7 @@ export default function App() {
                 language={language}
                 isDarkMode={isDarkMode}
                 onShowToast={showToast}
+                onShowInfo={handleShowInfo}
               />
 
               {/* 5. Previous Winners */}
@@ -436,6 +458,7 @@ export default function App() {
                 competition={competition}
                 language={language}
                 isDarkMode={isDarkMode}
+                onShowInfo={handleShowInfo}
               />
 
               {/* 7. Rewards List */}
@@ -443,6 +466,7 @@ export default function App() {
                 rewards={competition?.rewards}
                 language={language}
                 isDarkMode={isDarkMode}
+                onShowInfo={handleShowInfo}
               />
 
               {/* 8. Trust & Policies */}
@@ -455,11 +479,13 @@ export default function App() {
                   )
                 }
                 onOpenRefundPolicy={() =>
-                  Alert.alert(
+                  handleShowInfo(
                     'Feedants Refund Policy',
-                    '100% refund is issued if the competition is cancelled by Feedants. Registrations can be transferred up to 24 hours before the registration deadline.'
+                    '100% refund is issued if the competition is cancelled by Feedants. Registrations can be transferred up to 24 hours before the registration deadline.',
+                    'shield-checkmark-outline'
                   )
                 }
+                onShowInfo={handleShowInfo}
                 language={language}
                 isDarkMode={isDarkMode}
               />
@@ -475,6 +501,7 @@ export default function App() {
               {/* 10. Feedback & Ad */}
               <UserFeedbackBanner
                 onFeedbackPress={() => setReviewsModalVisible(true)}
+                onShowInfo={handleShowInfo}
                 language={language}
                 isDarkMode={isDarkMode}
               />
@@ -488,6 +515,7 @@ export default function App() {
               computed={computed}
               onRegisterPress={handleRegisterPress}
               onSubmitPress={handleSubmitPress}
+              onShowInfo={handleShowInfo}
               loading={actionLoading}
               language={language}
               isDarkMode={isDarkMode}
@@ -514,6 +542,7 @@ export default function App() {
               computed={computed}
               onRegisterPress={handleRegisterPress}
               onSubmitPress={handleSubmitPress}
+              onShowInfo={handleShowInfo}
               loading={actionLoading}
               language={language}
               isDarkMode={isDarkMode}
@@ -563,6 +592,15 @@ export default function App() {
         onClose={() => setReviewsModalVisible(false)}
         isDarkMode={isDarkMode}
         language={language}
+      />
+
+      <InfoModal
+        visible={infoModal.visible}
+        onClose={() => setInfoModal((prev) => ({ ...prev, visible: false }))}
+        title={infoModal.title}
+        message={infoModal.message}
+        icon={infoModal.icon}
+        isDarkMode={isDarkMode}
       />
     </SafeAreaView>
   );

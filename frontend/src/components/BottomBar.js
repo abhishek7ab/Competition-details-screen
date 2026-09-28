@@ -7,6 +7,7 @@ export default function BottomBar({
   computed,
   onRegisterPress,
   onSubmitPress,
+  onShowInfo,
   loading,
   language,
   isDarkMode = false,
@@ -53,6 +54,24 @@ export default function BottomBar({
     actionHandler = onRegisterPress;
   }
 
+  const handleDisabledPress = () => {
+    if (onShowInfo) {
+      if (isRegistrationFull) {
+        onShowInfo(
+          'Registration Full',
+          'All available spots for this competition have been filled. You can test open states or switch personas using the Evaluator Dev Tools (hardware chip icon in header).',
+          'lock-closed-outline'
+        );
+      } else {
+        onShowInfo(
+          'Registration Closed',
+          'The deadline for registration has passed. You can use the Evaluator Dev Tools (hardware chip icon in header) to test REGISTRATION_OPEN or reset the demo.',
+          'stopwatch-outline'
+        );
+      }
+    }
+  };
+
   return (
     <View
       style={[
@@ -68,8 +87,8 @@ export default function BottomBar({
           styles.button,
           { backgroundColor: isPrimary ? colors.primary : isDarkMode ? '#334155' : '#E2E8F0' },
         ]}
-        onPress={actionHandler}
-        disabled={isActionDisabled || loading}
+        onPress={isActionDisabled ? handleDisabledPress : actionHandler}
+        disabled={loading}
         activeOpacity={0.85}
       >
         {loading ? (

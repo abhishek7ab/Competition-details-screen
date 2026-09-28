@@ -55,7 +55,13 @@ export default function HomeScreen({
       showsVerticalScrollIndicator={false}
     >
       {/* Welcome Banner */}
-      <View style={[styles.welcomeCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <TouchableOpacity
+        style={[styles.welcomeCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+        onPress={() => onSelectCategory && onSelectCategory('All')}
+        activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Go to Categories"
+      >
         <View style={styles.welcomeTextCol}>
           <Text style={[styles.greeting, { color: colors.textPrimary }]}>
             {language === 'hi' ? 'नमस्ते,' : 'Hello,'} {activeUser?.name || 'Artist'}
@@ -72,7 +78,7 @@ export default function HomeScreen({
           }}
           style={[styles.avatar, { borderColor: colors.primary }]}
         />
-      </View>
+      </TouchableOpacity>
 
       {/* Hero Spotlight: Current Competition */}
       <View style={styles.sectionHeader}>
@@ -115,15 +121,11 @@ export default function HomeScreen({
             </Text>
           </View>
 
-          <TouchableOpacity
-            style={[styles.enterBtn, { backgroundColor: colors.primary }]}
-            onPress={onGoToContest}
-            activeOpacity={0.8}
-          >
+          <View style={[styles.enterBtn, { backgroundColor: colors.primary }]}>
             <Text style={styles.enterBtnText}>
               {language === 'hi' ? 'विवरण देखें →' : 'View Details →'}
             </Text>
-          </TouchableOpacity>
+          </View>
         </View>
       </TouchableOpacity>
 

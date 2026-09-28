@@ -3,19 +3,28 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform, Alert } from 'react
 import { THEME, getThemeColors } from '../constants/theme';
 import Icon from './Icon';
 
-export default function UserFeedbackBanner({ onFeedbackPress, language, isDarkMode = false }) {
+export default function UserFeedbackBanner({ onFeedbackPress, onShowInfo, language, isDarkMode = false }) {
   const colors = getThemeColors(isDarkMode);
 
   const handleAdPress = () => {
-    Alert.alert(
-      'Sponsor & Partner with Feedants',
-      'Promote your dance academy, musical institute, or youth brand to 50,000+ classical artists across India.\n\n📧 Partnership Desk: partner@feedants.com\n📞 Contact: +91 98765 43210'
-    );
+    const msg =
+      'Promote your dance academy, musical institute, or brand to 50,000+ classical artists across India.\n\n• Partnership Desk: partner@feedants.com\n• Contact: +91 98765 43210';
+    if (onShowInfo) {
+      onShowInfo('Sponsor & Partner with Feedants', msg, 'megaphone-outline');
+    } else {
+      Alert.alert('Sponsor & Partner with Feedants', msg);
+    }
   };
 
   const handleDefaultFeedbackPress = () => {
     if (onFeedbackPress) {
       onFeedbackPress();
+    } else if (onShowInfo) {
+      onShowInfo(
+        'Feedants Dancer Community (4.9 ★)',
+        'Based on 1,420+ verified participant reviews:\n\n"The jury feedback from Manju Dubey helped me refine my Kathak footwork tremendously." — Ananya S., Delhi\n\n"Instant prize disbursal to UPI within 24 hours of results. Very transparent platform!" — Priya M., Bangalore',
+        'chatbubble-ellipses-outline'
+      );
     } else {
       Alert.alert(
         'Feedants Dancer Community (4.9 / 5.0 ★)',

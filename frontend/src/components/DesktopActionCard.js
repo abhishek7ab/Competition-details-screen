@@ -8,6 +8,7 @@ export default function DesktopActionCard({
   computed,
   onRegisterPress,
   onSubmitPress,
+  onShowInfo,
   loading,
   language,
   isDarkMode = false,
@@ -68,6 +69,47 @@ export default function DesktopActionCard({
     buttonIcon = 'flash';
   }
 
+  const handleDisabledPress = () => {
+    if (onShowInfo) {
+      if (isRegistrationFull) {
+        onShowInfo(
+          'Registration Full',
+          'All available spots for this competition have been filled. You can test open states or switch personas using the Evaluator Dev Tools (hardware chip icon in header).',
+          'lock-closed-outline'
+        );
+      } else {
+        onShowInfo(
+          'Registration Closed',
+          'The deadline for registration has passed. You can use the Evaluator Dev Tools (hardware chip icon in header) to test REGISTRATION_OPEN or reset the demo.',
+          'stopwatch-outline'
+        );
+      }
+    }
+  };
+
+  const handleTrustPress = (type) => {
+    if (!onShowInfo) return;
+    if (type === 'razorpay') {
+      onShowInfo(
+        'Razorpay 256-Bit SSL',
+        'All payment transactions are encrypted with PCI-DSS Level 1 compliance. Safe and immediate spot confirmation.',
+        'lock-closed'
+      );
+    } else if (type === 'upi') {
+      onShowInfo(
+        'Instant UPI Disbursal',
+        'Prizes and registration fees support all major UPI applications including Google Pay, PhonePe, Paytm, and BHIM.',
+        'flash'
+      );
+    } else if (type === 'refund') {
+      onShowInfo(
+        '100% Refund Guarantee',
+        'If the competition is cancelled or rescheduled by Feedants, full entry fee refund is processed within 24 hours.',
+        'shield-checkmark'
+      );
+    }
+  };
+
   return (
     <View
       style={[
@@ -107,7 +149,7 @@ export default function DesktopActionCard({
         <View style={styles.prizePoolBox}>
           <Text style={[styles.prizeLabel, { color: colors.textMuted }]}>CASH POOL</Text>
           <Text style={[styles.prizeValue, { color: colors.primary }]}>
-            ₹{(competition?.prizePool || 1500).toLocaleString('en-IN')}
+            ₹{(competition?.prizePool || 2000).toLocaleString('en-IN')}
           </Text>
         </View>
       </View>
@@ -138,8 +180,8 @@ export default function DesktopActionCard({
           { backgroundColor: colors.primary },
           buttonVariant === 'disabled' && [styles.btnDisabled, { backgroundColor: isDarkMode ? '#334155' : '#E2E8F0' }],
         ]}
-        onPress={actionHandler}
-        disabled={isActionDisabled || loading}
+        onPress={isActionDisabled ? handleDisabledPress : actionHandler}
+        disabled={loading}
         activeOpacity={0.85}
         accessibilityRole="button"
       >
@@ -178,18 +220,30 @@ export default function DesktopActionCard({
 
       {/* Security & Trust Badges */}
       <View style={[styles.trustBadgesRow, { borderTopColor: colors.border }]}>
-        <View style={styles.trustItem}>
+        <TouchableOpacity
+          style={styles.trustItem}
+          onPress={() => handleTrustPress('razorpay')}
+          activeOpacity={0.7}
+        >
           <Icon name="lock-closed" size={12} color={colors.primary} />
           <Text style={[styles.trustText, { color: colors.textSecondary }]}>Razorpay 256-Bit</Text>
-        </View>
-        <View style={styles.trustItem}>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.trustItem}
+          onPress={() => handleTrustPress('upi')}
+          activeOpacity={0.7}
+        >
           <Icon name="flash" size={12} color={colors.gold} />
           <Text style={[styles.trustText, { color: colors.textSecondary }]}>Instant UPI</Text>
-        </View>
-        <View style={styles.trustItem}>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.trustItem}
+          onPress={() => handleTrustPress('refund')}
+          activeOpacity={0.7}
+        >
           <Icon name="shield-checkmark" size={12} color={colors.primary} />
           <Text style={[styles.trustText, { color: colors.textSecondary }]}>100% Refundable</Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );

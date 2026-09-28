@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Platform, TouchableOpacity, Alert } from 'react
 import { THEME, getThemeColors } from '../constants/theme';
 import Icon from './Icon';
 
-export default function ImportantDatesCard({ competition, language, isDarkMode = false, onShowToast }) {
+export default function ImportantDatesCard({ competition, language, isDarkMode = false, onShowToast, onShowInfo }) {
   const colors = getThemeColors(isDarkMode);
 
   const formatDateParts = (dateString, fallbackDate, fallbackTime) => {
@@ -68,11 +68,12 @@ export default function ImportantDatesCard({ competition, language, isDarkMode =
   ];
 
   const handleDatePress = (item) => {
-    Alert.alert(
-      item.label,
-      `${item.detail}\n\n📅 Date: ${item.date}\n⏰ Time: ${item.time}\n\n🔔 Reminder notification set!`,
-      [{ text: 'OK' }]
-    );
+    const msg = `${item.detail}\n\nMilestone Date: ${item.date}\nMilestone Time: ${item.time}\n\nReminder notification set for this competition timeline!`;
+    if (onShowInfo) {
+      onShowInfo(item.label, msg, item.icon);
+    } else {
+      Alert.alert(item.label, msg);
+    }
   };
 
   return (

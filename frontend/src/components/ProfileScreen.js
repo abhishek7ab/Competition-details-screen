@@ -6,6 +6,7 @@ import Icon from './Icon';
 export default function ProfileScreen({
   activeUser,
   onShowToast,
+  onShowInfo,
   onGoToContest,
   language,
   isDarkMode = false,
@@ -15,17 +16,47 @@ export default function ProfileScreen({
   const isPooja = activeUser?.name === 'Pooja Sharma';
 
   const handleWalletPress = () => {
-    Alert.alert(
-      'Feedants Artist Wallet',
-      'Balance: ₹250\n\nYour winnings from past competitions are held in escrow and can be withdrawn directly to UPI at any time with 0% processing fee.'
-    );
+    const msg =
+      'Balance: ₹250\n\nYour winnings from past competitions are held in escrow and can be withdrawn directly to UPI at any time with 0% processing fee.';
+    if (onShowInfo) {
+      onShowInfo('Feedants Artist Wallet', msg, 'wallet-outline');
+    } else {
+      Alert.alert('Feedants Artist Wallet', msg);
+    }
   };
 
   const handleSecurityPolicyPress = () => {
-    Alert.alert(
-      'Security & Refund Guarantee',
-      'Feedants guarantees 100% refund on cancelled contests via Razorpay. All user submissions and judging scorecards are recorded securely.'
-    );
+    const msg =
+      'Feedants guarantees 100% refund on cancelled contests via Razorpay. All user submissions and judging scorecards are recorded securely on our cloud infrastructure.';
+    if (onShowInfo) {
+      onShowInfo('Security & Refund Guarantee', msg, 'shield-checkmark-outline');
+    } else {
+      Alert.alert('Security & Refund Guarantee', msg);
+    }
+  };
+
+  const handleContestsStatPress = () => {
+    if (isPooja) {
+      onGoToContest();
+    } else if (onShowInfo) {
+      onShowInfo(
+        'Contests Joined (0)',
+        'You have not registered for any active competitions yet. Check the Discover feed to explore and participate!',
+        'trophy-outline'
+      );
+    }
+  };
+
+  const handleSubmissionsStatPress = () => {
+    if (isPooja) {
+      onGoToContest();
+    } else if (onShowInfo) {
+      onShowInfo(
+        'Submissions (0)',
+        'Once registered, you can upload performance video links for official jury judging by Manju Dubey.',
+        'cloud-upload-outline'
+      );
+    }
   };
 
   return (
@@ -65,15 +96,15 @@ export default function ProfileScreen({
 
       {/* Stats Counter */}
       <View style={[styles.statsRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <View style={styles.statBox}>
+        <TouchableOpacity style={styles.statBox} onPress={handleContestsStatPress} activeOpacity={0.7}>
           <Text style={[styles.statNum, { color: colors.textPrimary }]}>{isPooja ? '1' : '0'}</Text>
           <Text style={[styles.statLabel, { color: colors.textMuted }]}>Contests Joined</Text>
-        </View>
+        </TouchableOpacity>
         <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-        <View style={styles.statBox}>
+        <TouchableOpacity style={styles.statBox} onPress={handleSubmissionsStatPress} activeOpacity={0.7}>
           <Text style={[styles.statNum, { color: colors.textPrimary }]}>{isPooja ? '1' : '0'}</Text>
           <Text style={[styles.statLabel, { color: colors.textMuted }]}>Submissions</Text>
-        </View>
+        </TouchableOpacity>
         <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
         <TouchableOpacity style={styles.statBox} onPress={handleWalletPress} activeOpacity={0.7}>
           <Text style={[styles.statNum, { color: colors.gold }]}>₹250</Text>
@@ -141,7 +172,15 @@ export default function ProfileScreen({
       <View style={[styles.optionsList, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <TouchableOpacity
           style={[styles.optionRow, { borderBottomColor: colors.border }]}
-          onPress={() => onShowToast && onShowToast('Referral code copied!')}
+          onPress={() => {
+            const code = activeUser?.referralCode || 'feed123';
+            if (typeof navigator !== 'undefined' && navigator.clipboard) {
+              navigator.clipboard.writeText(`https://feedants.com/r/${code}`);
+            }
+            if (onShowToast) {
+              onShowToast(`Referral link for code ${code} copied!`);
+            }
+          }}
           activeOpacity={0.7}
         >
           <View style={styles.optionLeft}>

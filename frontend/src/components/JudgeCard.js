@@ -3,15 +3,17 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Platform, Alert } from
 import { THEME, getThemeColors } from '../constants/theme';
 import Icon from './Icon';
 
-export default function JudgeCard({ judge, onPlayVideo, language, isDarkMode = false }) {
+export default function JudgeCard({ judge, onPlayVideo, language, isDarkMode = false, onShowInfo }) {
   if (!judge) return null;
   const colors = getThemeColors(isDarkMode);
 
   const handleJudgePress = () => {
-    Alert.alert(
-      judge.name || 'Manju Dubey',
-      `${judge.role} with ${judge.experience}. Head of classical dance jury panel for Feedants competitions. Watch the intro video to understand her judging criteria.`
-    );
+    const msg = `${judge.role} with ${judge.experience}. Head of classical dance jury panel for Feedants competitions. Watch her intro video to understand Kathak choreography and judging criteria.`;
+    if (onShowInfo) {
+      onShowInfo(judge.name || 'Manju Dubey', msg, 'person-circle-outline');
+    } else {
+      Alert.alert(judge.name || 'Manju Dubey', msg);
+    }
   };
 
   return (

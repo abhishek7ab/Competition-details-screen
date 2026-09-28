@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, Platform } from 'react
 import { THEME, getThemeColors } from '../constants/theme';
 import Icon from './Icon';
 
-export default function HeroCard({ competition, computed, language, isDarkMode = false }) {
+export default function HeroCard({ competition, computed, language, isDarkMode = false, onShowInfo }) {
   const colors = getThemeColors(isDarkMode);
   const isRegistered = computed?.userState?.isRegistered;
   const spotsRemaining = computed?.spotsRemaining ?? 19;
@@ -16,19 +16,35 @@ export default function HeroCard({ competition, computed, language, isDarkMode =
   const badgeText = language === 'hi' ? competition?.badgeTextHindi : competition?.badgeText;
 
   const handleTagPress = (tag) => {
-    Alert.alert(
-      tag,
+    const msg =
       tag === 'Multi-Win'
         ? 'Participants can submit multiple classical entries or win in multiple prize categories!'
-        : `Category: ${tag}. Standard Feedants judging criteria applies.`
-    );
+        : `Category: ${tag}. Standard Feedants judging criteria applies. All choreography must be traditional classical.`;
+    if (onShowInfo) {
+      onShowInfo(tag, msg, 'pricetag-outline');
+    } else {
+      Alert.alert(tag, msg);
+    }
   };
 
   const handleCertPress = () => {
-    Alert.alert(
-      'Verified Certificate Guarantee',
-      'All top 6 winners and participating finalists receive an official Feedants Certified Performer certificate signed by Judge Manju Dubey.'
-    );
+    const msg =
+      'All top 6 winners and participating finalists receive an official Feedants Certified Performer certificate signed by Judge Manju Dubey.';
+    if (onShowInfo) {
+      onShowInfo('Verified Certificate Guarantee', msg, 'trophy-outline');
+    } else {
+      Alert.alert('Verified Certificate Guarantee', msg);
+    }
+  };
+
+  const handleRegisteredPress = () => {
+    const msg =
+      'You have an active spot reserved in this competition. You can upload your performance video submission anytime before the submission deadline!';
+    if (onShowInfo) {
+      onShowInfo('Registration Verified', msg, 'checkmark-circle');
+    } else {
+      Alert.alert('Registration Verified', msg);
+    }
   };
 
   return (
@@ -43,7 +59,7 @@ export default function HeroCard({ competition, computed, language, isDarkMode =
           <TouchableOpacity
             style={[styles.registeredBadge, { backgroundColor: colors.primaryBg }]}
             activeOpacity={0.8}
-            onPress={() => Alert.alert('Registration Verified', 'You have an active spot reserved in this competition.')}
+            onPress={handleRegisteredPress}
           >
             <Icon name="checkmark-circle" size={15} color={colors.primary} />
             <Text style={[styles.registeredText, { color: colors.primary }]}>
@@ -92,7 +108,7 @@ export default function HeroCard({ competition, computed, language, isDarkMode =
             {language === 'hi' ? 'पुरस्कार राशि' : 'Prize Pool'}
           </Text>
           <Text style={[styles.prizePoolText, { color: colors.primary }]}>
-            ₹ {(competition?.prizePool || 1500).toLocaleString('en-IN')}
+            ₹ {(competition?.prizePool || 2000).toLocaleString('en-IN')}
           </Text>
         </View>
 

@@ -165,13 +165,9 @@ export default function BrowseScreen({ onGoToContest, language, isDarkMode = fal
                   <Text style={[styles.footerLabel, { color: colors.textMuted }]}>Prize Pool</Text>
                   <Text style={[styles.footerPrize, { color: colors.primary }]}>{item.prize}</Text>
                 </View>
-                <TouchableOpacity
-                  style={[styles.viewContestBtn, { backgroundColor: colors.primary }]}
-                  onPress={onGoToContest}
-                  activeOpacity={0.8}
-                >
+                <View style={[styles.viewContestBtn, { backgroundColor: colors.primary }]}>
                   <Text style={styles.viewContestText}>Open Contest →</Text>
-                </TouchableOpacity>
+                </View>
               </View>
             </TouchableOpacity>
           ))}
