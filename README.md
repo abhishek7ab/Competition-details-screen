@@ -38,6 +38,8 @@ For local development, if `MONGODB_URI` is not set, the backend uses a temporary
 
 ### Step 2: Start the Frontend
 
+For a deployed backend or a physical mobile device, copy `frontend/.env.example` to `frontend/.env` and set `EXPO_PUBLIC_API_BASE_URL` to your backend API URL (including `/api`). The default `http://localhost:5000/api` works for local web/simulator development.
+
 Open another terminal and run:
 
 ```bash
