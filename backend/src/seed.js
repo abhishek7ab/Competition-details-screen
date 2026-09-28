@@ -49,7 +49,7 @@ const seedDatabase = async () => {
       tags: ['Dance', 'Multi-Win'],
       badgeText: 'Winners get certificate',
       badgeTextHindi: 'विजेताओं को प्रमाणपत्र मिलेगा',
-      prizePool: 1500,
+      prizePool: 2000,
       entryFee: 99,
       maxSpots: 20,
       bookedSpots: 1, // Matches "1 / 20 Booked" and "Only 19 spots left"
@@ -143,12 +143,12 @@ const seedDatabase = async () => {
         },
       ],
       rewards: [
-        { rank: 1, title: '1st Winner', amount: 550 },
-        { rank: 2, title: '2nd Winner', amount: 300 },
-        { rank: 3, title: '3rd Winner', amount: 240 },
-        { rank: 4, title: '4th Winner', amount: 200 },
-        { rank: 5, title: '5th Winner', amount: 130 },
-        { rank: 6, title: '6th Winner', amount: 80 },
+        { rank: 1, title: '1st Prize + Trophy + Certificate', amount: 1000 },
+        { rank: 2, title: '2nd Prize + Medal + Certificate', amount: 350 },
+        { rank: 3, title: '3rd Prize + Certificate of Excellence', amount: 250 },
+        { rank: 4, title: '4th Rank - Commendation Certificate', amount: 150 },
+        { rank: 5, title: '5th Rank - Merit Certificate', amount: 150 },
+        { rank: 6, title: '6th Rank - Participation Certificate', amount: 100 },
       ],
       disclaimer: {
         en: 'Only contributions from paid participants will be considered for judging.',

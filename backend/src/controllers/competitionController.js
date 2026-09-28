@@ -300,6 +300,15 @@ const resetDemoState = async (req, res) => {
     const actualRegistrations = await Registration.countDocuments({ competitionId: competition._id });
     competition.bookedSpots = Math.min(competition.maxSpots, actualRegistrations);
     competition.statusOverride = 'AUTO';
+    competition.prizePool = 2000;
+    competition.rewards = [
+      { rank: 1, title: '1st Prize + Trophy + Certificate', amount: 1000 },
+      { rank: 2, title: '2nd Prize + Medal + Certificate', amount: 350 },
+      { rank: 3, title: '3rd Prize + Certificate of Excellence', amount: 250 },
+      { rank: 4, title: '4th Rank - Commendation Certificate', amount: 150 },
+      { rank: 5, title: '5th Rank - Merit Certificate', amount: 150 },
+      { rank: 6, title: '6th Rank - Participation Certificate', amount: 100 },
+    ];
     await competition.save();
 
     return res.status(200).json({

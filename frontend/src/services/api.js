@@ -11,7 +11,7 @@ const FALLBACK_COMPETITION = {
   tags: ['Dance', 'Multi-Win'],
   badgeText: 'Winners get certificate',
   badgeTextHindi: 'विजेताओं को प्रमाणपत्र मिलेगा',
-  prizePool: 1500,
+  prizePool: 2000,
   entryFee: 99,
   maxSpots: 20,
   bookedSpots: 1,
@@ -69,7 +69,7 @@ const FALLBACK_COMPETITION = {
     { rule: 'High video and audio clarity required.', ruleHindi: 'उच्च वीडियो और ऑडियो स्पष्टता आवश्यक है।' },
   ],
   rewards: [
-    { rank: 1, title: '1st Prize + Trophy + Certificate', amount: 500 },
+    { rank: 1, title: '1st Prize + Trophy + Certificate', amount: 1000 },
     { rank: 2, title: '2nd Prize + Medal + Certificate', amount: 350 },
     { rank: 3, title: '3rd Prize + Certificate of Excellence', amount: 250 },
     { rank: 4, title: '4th Rank - Commendation Certificate', amount: 150 },

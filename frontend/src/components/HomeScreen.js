@@ -25,7 +25,7 @@ export default function HomeScreen({
     {
       id: 'current',
       title: language === 'hi' ? 'फीडएंट्स क्लासिकल डांस' : 'Feedants Classical Dance',
-      prize: '₹1,500',
+      prize: '₹2,000',
       fee: '₹99',
       badge: 'Closes Soon',
       category: 'Dance',
@@ -111,7 +111,7 @@ export default function HomeScreen({
           <View>
             <Text style={[styles.spotlightPrizeLabel, { color: colors.textMuted }]}>Prize Pool</Text>
             <Text style={[styles.spotlightPrize, { color: colors.primary }]}>
-              ₹{(competition?.prizePool || 1500).toLocaleString('en-IN')}
+              ₹{(competition?.prizePool || 2000).toLocaleString('en-IN')}
             </Text>
           </View>
 

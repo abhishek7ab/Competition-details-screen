@@ -22,7 +22,7 @@ export default function BrowseScreen({ onGoToContest, language, isDarkMode = fal
       title: 'Feedants Classical Dance Championship',
       category: 'Dance',
       judge: 'Manju Dubey (Kathak)',
-      prize: '₹1,500',
+      prize: '₹2,000',
       fee: '₹99',
       status: 'Open for Registration',
       statusColor: colors.primary,

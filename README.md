@@ -11,7 +11,7 @@ Here is a step-by-step explanation of what the application does and how a user i
 ### 1. Dynamic Competition Information
 When you open the page, the application fetches all competition data directly from the Node.js backend and MongoDB database. It is not hardcoded. The page shows:
 - The competition title, category, and fee (Rs. 99)
-- Total prize pool (Rs. 1,500) and breakdown from 1st to 6th rank
+- Total prize pool (Rs. 2,000) with 1st Prize at Rs. 1,000 and breakdown from 1st to 6th rank
 - Judge profile (Manju Dubey, Kathak expert) with background experience
 - Key competition dates (Registration close date, Submission window, Result date)
 - Competition description, judging parameters with percentage weights, and rules
