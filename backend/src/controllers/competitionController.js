@@ -89,7 +89,7 @@ const registerForCompetition = async (req, res) => {
     if (process.env.NODE_ENV === 'production') {
       return res.status(503).json({ success: false, message: 'Verified payment processing is not configured. Registration is disabled in production.' });
     }
-    if (!isValidId(id) || !isValidId(userId)) {
+    if (typeof id !== 'string' || !isValidId(id) || typeof userId !== 'string' || !isValidId(userId)) {
       return res.status(400).json({ success: false, message: 'Valid competition id and userId are required' });
     }
 
