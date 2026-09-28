@@ -27,7 +27,7 @@ app.use(cors({
     return callback(new Error('Origin is not allowed by CORS'));
   },
 }));
-app.use(express.json());
+app.use(express.json({ limit: '100kb' }));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -36,6 +36,17 @@ app.get('/health', (req, res) => {
 
 // Mount API routes
 app.use('/api', apiRoutes);
+
+// Return consistent JSON errors for malformed or oversized JSON request bodies.
+app.use((error, req, res, next) => {
+  if (error && error.type === 'entity.too.large') {
+    return res.status(413).json({ success: false, message: 'Request body is too large. Maximum size is 100 KB.' });
+  }
+  if (error instanceof SyntaxError && error.status === 400 && 'body' in error) {
+    return res.status(400).json({ success: false, message: 'Invalid JSON request body.' });
+  }
+  return next(error);
+});
 
 // Start server
 const startServer = async () => {
