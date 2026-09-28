@@ -45,6 +45,11 @@ app.get('/health', (req, res) => {
 // Mount API routes
 app.use('/api', apiRoutes);
 
+// Return a consistent JSON response for unknown routes.
+app.use((req, res) => {
+  return res.status(404).json({ success: false, message: 'Route not found' });
+});
+
 // Return consistent JSON errors for malformed, oversized, and unexpected errors.
 app.use((error, req, res, next) => {
   if (res.headersSent) {
