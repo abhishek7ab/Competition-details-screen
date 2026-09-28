@@ -52,7 +52,7 @@ This will open the app in your browser at: `http://localhost:8081`
 
 ## Environment configuration
 
-Copy `backend/.env.example` to `backend/.env` and set `MONGODB_URI` to your MongoDB connection string. Keep credentials out of Git.
+Copy `backend/.env.example` to `backend/.env` and set `MONGODB_URI` to your MongoDB connection string. Keep credentials out of Git. Set `CORS_ORIGINS` to a comma-separated list of trusted frontend origins in production; development defaults allow common local Expo web origins.
 
 Demo-only controls are available in development. They are disabled when `NODE_ENV=production`. The current demo user-switching flow is not authentication; the API accepts user IDs and is intended only for the assignment demo.
 
