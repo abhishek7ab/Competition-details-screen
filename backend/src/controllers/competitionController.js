@@ -194,10 +194,10 @@ const submitEntry = async (req, res) => {
     if (typeof videoUrl !== 'string' || !isHttpUrl(videoUrl)) {
       return res.status(400).json({ success: false, message: 'A valid HTTP(S) videoUrl is required' });
     }
-    if (danceStyle != null && (typeof danceStyle !== 'string' || danceStyle.length > 80)) {
+    if (danceStyle != null && (typeof danceStyle !== 'string' || danceStyle.trim().length > 80)) {
       return res.status(400).json({ success: false, message: 'danceStyle must be 80 characters or fewer' });
     }
-    if (description != null && (typeof description !== 'string' || description.length > 2000)) {
+    if (description != null && (typeof description !== 'string' || description.trim().length > 2000)) {
       return res.status(400).json({ success: false, message: 'description must be 2000 characters or fewer' });
     }
 
@@ -229,7 +229,7 @@ const submitEntry = async (req, res) => {
       { userId, competitionId: id },
       {
         title: title.trim(),
-        danceStyle: (danceStyle || 'Classical Dance').trim(),
+        danceStyle: typeof danceStyle === 'string' && danceStyle.trim() ? danceStyle.trim() : 'Classical Dance',
         videoUrl: videoUrl.trim(),
         description: (description || '').trim(),
         submittedAt: now,
