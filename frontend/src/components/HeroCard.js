@@ -140,12 +140,12 @@ export default function HeroCard({ competition, computed, language, isDarkMode =
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 22,
+    padding: 20,
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: 16,
     ...Platform.select({
-      web: { boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' },
+      web: { boxShadow: '0 8px 24px rgba(15, 23, 42, 0.06)' },
     }),
   },
   titleRow: {
@@ -155,10 +155,11 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   title: {
-    fontSize: 20,
+    fontSize: 23,
+    lineHeight: 29,
     fontWeight: '800',
     flex: 1,
-    letterSpacing: -0.3,
+    letterSpacing: -0.55,
   },
   registeredBadge: {
     flexDirection: 'row',
@@ -208,8 +209,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    marginTop: 18,
-    gap: 8,
+    marginTop: 22,
+    gap: 12,
   },
   metricBox: {
     gap: 2,
@@ -219,12 +220,12 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   prizePoolText: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '900',
     letterSpacing: -0.5,
   },
   entryFeeText: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '800',
     letterSpacing: -0.5,
   },
