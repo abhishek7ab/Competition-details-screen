@@ -34,6 +34,7 @@ import HomeScreen from './src/components/HomeScreen';
 import BrowseScreen from './src/components/BrowseScreen';
 import ProfileScreen from './src/components/ProfileScreen';
 import DevToolbar from './src/components/DevToolbar';
+import SidebarNav from './src/components/SidebarNav';
 import DesktopActionCard from './src/components/DesktopActionCard';
 import {
   VideoModal,
@@ -235,6 +236,20 @@ export default function App() {
          Desktop (>= 900px): Wide content area with a simple action card
          ═══════════════════════════════════════════════════════════ */}
       <View style={[styles.mainLayoutWrapper, isDesktop && styles.desktopLayoutRow]}>
+        {/* Left Sidebar (Desktop Only) */}
+        {isDesktop && (
+          <SidebarNav
+            activeTab={activeTab}
+            onSelectTab={handleSelectTab}
+            activeUser={activeUser}
+            onCreatePress={() => setCreateModalVisible(true)}
+            language={language}
+            setLanguage={setLanguage}
+            isDarkMode={isDarkMode}
+            onToggleDarkMode={() => setIsDarkMode((v) => !v)}
+          />
+        )}
+
         {/* Center Screen Container */}
         <View
           style={[
@@ -251,7 +266,7 @@ export default function App() {
             },
             isDesktop
               ? {
-                  maxWidth: 820,
+                  maxWidth: activeTab === 'contests' ? 720 : 1060,
                   minWidth: 0,
                   flex: 1,
                   width: '100%',
@@ -272,6 +287,7 @@ export default function App() {
             isDevToolbarOpen={devToolbarVisible}
             isDarkMode={isDarkMode}
             onToggleDarkMode={() => setIsDarkMode((v) => !v)}
+            isDesktop={isDesktop}
           />
 
           {/* Evaluator DevToolbar */}
@@ -344,6 +360,7 @@ export default function App() {
               }}
               language={language}
               isDarkMode={isDarkMode}
+              isDesktop={isDesktop}
             />
           ) : activeTab === 'browse' ? (
             <BrowseScreen
@@ -354,6 +371,7 @@ export default function App() {
               initialCategory={browseCategory}
               language={language}
               isDarkMode={isDarkMode}
+              isDesktop={isDesktop}
             />
           ) : activeTab === 'profile' ? (
             <ProfileScreen
@@ -365,6 +383,7 @@ export default function App() {
               }}
               language={language}
               isDarkMode={isDarkMode}
+              isDesktop={isDesktop}
             />
           ) : (
             /* Default: Full Competition Details Screen */
@@ -475,14 +494,16 @@ export default function App() {
             />
           )}
 
-          {/* Navigation for mobile and desktop */}
-          <BottomNav
-            activeTab={activeTab}
-            onSelectTab={handleSelectTab}
-            activeUser={activeUser}
-            language={language}
-            isDarkMode={isDarkMode}
-          />
+          {/* Navigation for mobile ONLY */}
+          {!isDesktop && (
+            <BottomNav
+              activeTab={activeTab}
+              onSelectTab={handleSelectTab}
+              activeUser={activeUser}
+              language={language}
+              isDarkMode={isDarkMode}
+            />
+          )}
         </View>
 
         {/* Right Action Column (Desktop Only when on Contests) */}
@@ -557,15 +578,16 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    flex: 1,
   },
   desktopLayoutRow: {
     flexDirection: 'row',
     alignItems: 'stretch',
     justifyContent: 'center',
     width: '100%',
-    maxWidth: 1240,
-    paddingHorizontal: 24,
-    columnGap: 24,
+    maxWidth: 1440,
+    paddingHorizontal: 16,
+    columnGap: 20,
     ...Platform.select({
       web: {
         height: '100vh',
@@ -574,14 +596,16 @@ const styles = StyleSheet.create({
     }),
   },
   desktopActionColumn: {
-    width: 320,
-    paddingTop: 24,
+    width: 330,
+    paddingTop: 16,
     paddingBottom: 24,
     flexShrink: 0,
     ...Platform.select({
       web: {
         position: 'sticky',
         top: 0,
+        height: '100vh',
+        overflowY: 'auto',
       },
     }),
   },

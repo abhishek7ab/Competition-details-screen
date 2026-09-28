@@ -3,7 +3,7 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet, Platfo
 import { THEME, getThemeColors } from '../constants/theme';
 import Icon from './Icon';
 
-export default function BrowseScreen({ onGoToContest, language, isDarkMode = false, initialCategory = 'All' }) {
+export default function BrowseScreen({ onGoToContest, language, isDarkMode = false, initialCategory = 'All', isDesktop = false }) {
   const colors = getThemeColors(isDarkMode);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
@@ -135,41 +135,47 @@ export default function BrowseScreen({ onGoToContest, language, isDarkMode = fal
           Showing {filteredContests.length} {filteredContests.length === 1 ? 'Contest' : 'Contests'}
         </Text>
 
-        {filteredContests.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
-            onPress={onGoToContest}
-            activeOpacity={0.85}
-          >
-            <View style={styles.cardTop}>
-              <View style={[styles.cardCategoryBadge, { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
-                <Text style={[styles.cardCategoryText, { color: colors.primary }]}>{item.category}</Text>
+        <View style={[styles.cardGrid, isDesktop && styles.cardGridDesktop]}>
+          {filteredContests.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={[
+                styles.card,
+                isDesktop && styles.cardDesktop,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+              ]}
+              onPress={onGoToContest}
+              activeOpacity={0.85}
+            >
+              <View style={styles.cardTop}>
+                <View style={[styles.cardCategoryBadge, { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
+                  <Text style={[styles.cardCategoryText, { color: colors.primary }]}>{item.category}</Text>
+                </View>
+                <View style={[styles.statusBadge, { backgroundColor: `${item.statusColor}20` }]}>
+                  <Icon name={item.icon} size={12} color={item.statusColor} />
+                  <Text style={[styles.statusText, { color: item.statusColor }]}>{item.status}</Text>
+                </View>
               </View>
-              <View style={[styles.statusBadge, { backgroundColor: `${item.statusColor}20` }]}>
-                <Icon name={item.icon} size={12} color={item.statusColor} />
-                <Text style={[styles.statusText, { color: item.statusColor }]}>{item.status}</Text>
-              </View>
-            </View>
 
-            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>{item.title}</Text>
-            <Text style={[styles.cardJudge, { color: colors.textSecondary }]}>Jury: {item.judge}</Text>
+              <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>{item.title}</Text>
+              <Text style={[styles.cardJudge, { color: colors.textSecondary }]}>Jury: {item.judge}</Text>
 
-            <View style={[styles.cardFooter, { borderTopColor: colors.border }]}>
-              <View>
-                <Text style={[styles.footerLabel, { color: colors.textMuted }]}>Prize Pool</Text>
-                <Text style={[styles.footerPrize, { color: colors.primary }]}>{item.prize}</Text>
+              <View style={[styles.cardFooter, { borderTopColor: colors.border }]}>
+                <View>
+                  <Text style={[styles.footerLabel, { color: colors.textMuted }]}>Prize Pool</Text>
+                  <Text style={[styles.footerPrize, { color: colors.primary }]}>{item.prize}</Text>
+                </View>
+                <TouchableOpacity
+                  style={[styles.viewContestBtn, { backgroundColor: colors.primary }]}
+                  onPress={onGoToContest}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.viewContestText}>Open Contest →</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                style={[styles.viewContestBtn, { backgroundColor: colors.primary }]}
-                onPress={onGoToContest}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.viewContestText}>Open Contest →</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        ))}
+            </TouchableOpacity>
+          ))}
+        </View>
       </ScrollView>
     </View>
   );
@@ -232,6 +238,14 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
+  cardGrid: {
+    gap: 12,
+  },
+  cardGridDesktop: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
+  },
   card: {
     borderRadius: 16,
     padding: 16,
@@ -239,6 +253,10 @@ const styles = StyleSheet.create({
     ...Platform.select({
       web: { boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', cursor: 'pointer' },
     }),
+  },
+  cardDesktop: {
+    flex: 1,
+    minWidth: 280,
   },
   cardTop: {
     flexDirection: 'row',

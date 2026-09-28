@@ -9,6 +9,7 @@ export default function ProfileScreen({
   onGoToContest,
   language,
   isDarkMode = false,
+  isDesktop = false,
 }) {
   const colors = getThemeColors(isDarkMode);
   const isPooja = activeUser?.name === 'Pooja Sharma';

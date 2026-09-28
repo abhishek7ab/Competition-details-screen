@@ -12,32 +12,53 @@ export default function Header({
   isDevToolbarOpen,
   isDarkMode = false,
   onToggleDarkMode,
+  isDesktop = false,
 }) {
   const colors = getThemeColors(isDarkMode);
 
   const titles = {
-    contests: { en: 'Go back', hi: 'वापस जाएं' },
-    home: { en: 'Go back', hi: 'वापस जाएं' },
-    browse: { en: 'Go back', hi: 'वापस जाएं' },
-    profile: { en: 'Go back', hi: 'वापस जाएं' },
+    contests: {
+      mobile: { en: 'Go back', hi: 'वापस जाएं' },
+      desktop: { en: 'Competition Details', hi: 'प्रतियोगिता विवरण' },
+      icon: 'arrow-back',
+    },
+    home: {
+      mobile: { en: 'Discover & Feed', hi: 'मुख्य फ़ीड' },
+      desktop: { en: 'Discover & Feed', hi: 'मुख्य फ़ीड' },
+      icon: 'home',
+    },
+    browse: {
+      mobile: { en: 'Browse Competitions', hi: 'प्रतियोगिताएं खोजें' },
+      desktop: { en: 'Browse Competitions', hi: 'प्रतियोगिताएं खोजें' },
+      icon: 'compass',
+    },
+    profile: {
+      mobile: { en: 'Performer Profile', hi: 'कलाकार प्रोफ़ाइल' },
+      desktop: { en: 'Performer Profile', hi: 'कलाकार प्रोफ़ाइल' },
+      icon: 'person',
+    },
   };
 
-  const currentTitle = titles[activeTab] || titles.contests;
+  const current = titles[activeTab] || titles.contests;
+  const displayText = isDesktop
+    ? (language === 'hi' ? current.desktop.hi : current.desktop.en)
+    : (language === 'hi' ? current.mobile.hi : current.mobile.en);
+  const iconName = activeTab === 'contests' ? 'arrow-back' : current.icon;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
       <View style={styles.innerRow}>
-        {/* Left: Authentic Go Back Button */}
+        {/* Left: Screen Title / Back Navigation */}
         <TouchableOpacity
           style={styles.backButton}
           onPress={onBackPress}
           activeOpacity={0.7}
           accessibilityRole="button"
-          accessibilityLabel="Go back"
+          accessibilityLabel={displayText}
         >
-          <Icon name="arrow-back" size={20} color={colors.textPrimary} />
+          <Icon name={iconName} size={19} color={colors.textPrimary} />
           <Text style={[styles.backTitleText, { color: colors.textPrimary }]}>
-            {language === 'hi' ? currentTitle.hi : currentTitle.en}
+            {displayText}
           </Text>
         </TouchableOpacity>
 

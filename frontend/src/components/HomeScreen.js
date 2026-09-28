@@ -10,6 +10,7 @@ export default function HomeScreen({
   onSelectCategory,
   language,
   isDarkMode = false,
+  isDesktop = false,
 }) {
   const colors = getThemeColors(isDarkMode);
 
@@ -134,12 +135,13 @@ export default function HomeScreen({
         </Text>
       </View>
 
-      <View style={styles.categoryGrid}>
+      <View style={[styles.categoryGrid, isDesktop && styles.categoryGridDesktop]}>
         {categories.map((cat, idx) => (
           <TouchableOpacity
             key={idx}
             style={[
               styles.categoryCard,
+              isDesktop && styles.categoryCardDesktop,
               { backgroundColor: colors.surface, borderColor: colors.border },
             ]}
             onPress={() => onSelectCategory && onSelectCategory(cat.categoryKey)}
@@ -164,38 +166,41 @@ export default function HomeScreen({
         </Text>
       </View>
 
-      {featured.map((item, idx) => (
-        <TouchableOpacity
-          key={idx}
-          style={[
-            styles.trendingCard,
-            { backgroundColor: colors.surface, borderColor: colors.border },
-          ]}
-          onPress={() => {
-            if (item.id === 'current') {
-              onGoToContest();
-            } else if (onSelectCategory) {
-              onSelectCategory(item.category);
-            }
-          }}
-          activeOpacity={0.8}
-        >
-          <View style={styles.trendingLeft}>
-            <View style={[styles.badgePill, { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
-              <Text style={[styles.badgePillText, { color: colors.primary }]}>{item.badge}</Text>
+      <View style={[styles.trendingList, isDesktop && styles.trendingGridDesktop]}>
+        {featured.map((item, idx) => (
+          <TouchableOpacity
+            key={idx}
+            style={[
+              styles.trendingCard,
+              isDesktop && styles.trendingCardDesktop,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+            onPress={() => {
+              if (item.id === 'current') {
+                onGoToContest();
+              } else if (onSelectCategory) {
+                onSelectCategory(item.category);
+              }
+            }}
+            activeOpacity={0.8}
+          >
+            <View style={styles.trendingLeft}>
+              <View style={[styles.badgePill, { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
+                <Text style={[styles.badgePillText, { color: colors.primary }]}>{item.badge}</Text>
+              </View>
+              <Text style={[styles.trendingTitle, { color: colors.textPrimary }]}>{item.title}</Text>
+              <Text style={[styles.trendingCategory, { color: colors.textSecondary }]}>
+                {item.category} • Certified Jury
+              </Text>
             </View>
-            <Text style={[styles.trendingTitle, { color: colors.textPrimary }]}>{item.title}</Text>
-            <Text style={[styles.trendingCategory, { color: colors.textSecondary }]}>
-              {item.category} • Certified Jury
-            </Text>
-          </View>
 
-          <View style={styles.trendingRight}>
-            <Text style={[styles.trendingPrize, { color: colors.gold }]}>{item.prize}</Text>
-            <Text style={[styles.trendingFee, { color: colors.textMuted }]}>Fee: {item.fee}</Text>
-          </View>
-        </TouchableOpacity>
-      ))}
+            <View style={[styles.trendingRight, isDesktop && styles.trendingRightDesktop]}>
+              <Text style={[styles.trendingPrize, { color: colors.gold }]}>{item.prize}</Text>
+              <Text style={[styles.trendingFee, { color: colors.textMuted }]}>Fee: {item.fee}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </View>
     </ScrollView>
   );
 }
@@ -328,6 +333,11 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 10,
   },
+  categoryGridDesktop: {
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    gap: 12,
+  },
   categoryCard: {
     width: '48%',
     padding: 14,
@@ -338,6 +348,11 @@ const styles = StyleSheet.create({
     ...Platform.select({
       web: { cursor: 'pointer' },
     }),
+  },
+  categoryCardDesktop: {
+    width: undefined,
+    flex: 1,
+    padding: 16,
   },
   catIconWrap: {
     width: 44,
@@ -355,6 +370,14 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '600',
   },
+  trendingList: {
+    gap: 10,
+  },
+  trendingGridDesktop: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 14,
+  },
   trendingCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -365,6 +388,13 @@ const styles = StyleSheet.create({
     ...Platform.select({
       web: { cursor: 'pointer' },
     }),
+  },
+  trendingCardDesktop: {
+    flex: 1,
+    minWidth: 260,
+  },
+  trendingRightDesktop: {
+    alignItems: 'flex-end',
   },
   trendingLeft: {
     flex: 1,
