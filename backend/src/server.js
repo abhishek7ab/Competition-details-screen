@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const { connectDB } = require('./config/db');
 const apiRoutes = require('./routes/api');
 const { seedDatabase } = require('./seed');
@@ -31,9 +32,14 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '100kb' }));
 
-// Health check endpoint
+// Readiness check: report unavailable when MongoDB is disconnected.
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'UP', timestamp: new Date() });
+  const databaseConnected = mongoose.connection.readyState === 1;
+  return res.status(databaseConnected ? 200 : 503).json({
+    status: databaseConnected ? 'UP' : 'DOWN',
+    database: databaseConnected ? 'connected' : 'disconnected',
+    timestamp: new Date(),
+  });
 });
 
 // Mount API routes
