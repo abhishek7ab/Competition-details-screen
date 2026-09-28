@@ -125,9 +125,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     borderTopWidth: 1,
-    paddingTop: 8,
-    paddingBottom: 16,
-    paddingHorizontal: 8,
+    paddingTop: 12,
+    paddingBottom: 18,
+    paddingHorizontal: 10,
     width: '100%',
     ...Platform.select({
       web: {
@@ -158,9 +158,9 @@ const styles = StyleSheet.create({
     }),
   },
   addCircle: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: -8,
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   },
   navLabel: {
     fontSize: 11,
-    fontWeight: '500',
-    marginTop: 2,
+    fontWeight: '600',
+    marginTop: 3,
   },
 });

@@ -104,9 +104,9 @@ export default function BottomBar({
 const styles = StyleSheet.create({
   container: {
     borderTopWidth: 1,
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingHorizontal: 18,
+    paddingTop: 14,
+    paddingBottom: 14,
     width: '100%',
     ...Platform.select({
       web: {
@@ -115,8 +115,8 @@ const styles = StyleSheet.create({
     }),
   },
   button: {
-    borderRadius: 12,
-    paddingVertical: 12,
+    borderRadius: 16,
+    paddingVertical: 15,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -125,8 +125,8 @@ const styles = StyleSheet.create({
     gap: 1,
   },
   buttonTitle: {
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: '800',
     color: '#FFFFFF',
   },
   buttonSubtext: {
