@@ -3,45 +3,49 @@ const mongoose = require('mongoose');
 let mongod = null;
 
 const connectDB = async () => {
-  try {
-    const mongoUri = process.env.MONGODB_URI;
+  const mongoUri = process.env.MONGODB_URI;
+  const isProduction = process.env.NODE_ENV === 'production';
 
+  if (isProduction && !mongoUri) {
+    throw new Error('MONGODB_URI is required in production; refusing to start with temporary storage.');
+  }
+
+  try {
     if (mongoUri) {
-      console.log(`[DB] Connecting to provided MongoDB URI: ${mongoUri}`);
-      await mongoose.connect(mongoUri, {
-        serverSelectionTimeoutMS: 5000,
-      });
-      console.log('[DB] Connected to External MongoDB successfully!');
-    } else {
-      console.log('[DB] No MONGODB_URI found. Initializing MongoMemoryServer for standalone zero-config execution...');
-      const { MongoMemoryServer } = require('mongodb-memory-server');
-      mongod = await MongoMemoryServer.create();
-      const inMemoryUri = mongod.getUri();
-      console.log(`[DB] In-Memory MongoDB running at: ${inMemoryUri}`);
-      await mongoose.connect(inMemoryUri);
-      console.log('[DB] Connected to In-Memory MongoDB successfully!');
+      // Never log the connection string because it may contain credentials.
+      console.log('[DB] Connecting to configured MongoDB...');
+      await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 5000 });
+      console.log('[DB] Connected to MongoDB successfully.');
+      return;
     }
+
+    console.log('[DB] MONGODB_URI is not set. Starting temporary in-memory MongoDB for local development.');
+    const { MongoMemoryServer } = require('mongodb-memory-server');
+    mongod = await MongoMemoryServer.create();
+    await mongoose.connect(mongod.getUri());
+    console.log('[DB] Connected to temporary in-memory MongoDB.');
   } catch (error) {
-    console.warn(`[DB] Connection to MongoDB URI failed: ${error.message}`);
-    console.log('[DB] Falling back to In-Memory MongoDB Server so the app runs without external setup...');
+    if (isProduction) {
+      throw new Error(`MongoDB connection failed in production: ${error.message}`);
+    }
+
+    console.warn(`[DB] Configured MongoDB connection failed: ${error.message}`);
+    console.log('[DB] Falling back to temporary in-memory MongoDB for local development.');
     try {
       const { MongoMemoryServer } = require('mongodb-memory-server');
       mongod = await MongoMemoryServer.create();
-      const inMemoryUri = mongod.getUri();
-      await mongoose.connect(inMemoryUri);
-      console.log('[DB] Connected to In-Memory MongoDB fallback successfully!');
+      await mongoose.connect(mongod.getUri());
+      console.log('[DB] Connected to in-memory MongoDB fallback.');
     } catch (fallbackErr) {
       console.error('[DB] Critical error starting in-memory database:', fallbackErr);
-      process.exit(1);
+      throw fallbackErr;
     }
   }
 };
 
 const disconnectDB = async () => {
   await mongoose.disconnect();
-  if (mongod) {
-    await mongod.stop();
-  }
+  if (mongod) await mongod.stop();
 };
 
 module.exports = { connectDB, disconnectDB };
