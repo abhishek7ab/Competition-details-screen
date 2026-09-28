@@ -118,7 +118,6 @@ const registerForCompetition = async (req, res) => {
         {
           statusOverride: 'AUTO',
           registrationDeadline: { $gt: now },
-          submissionStartDate: { $gt: now },
         },
       ],
     };
@@ -149,7 +148,7 @@ const registerForCompetition = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: 'Spot reserved. Payment is pending verification.',
+      message: 'Demo registration successful. Payment is simulated.',
       data: {
         registration,
         bookedSpots: updated.bookedSpots,
