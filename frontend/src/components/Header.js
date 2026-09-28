@@ -8,9 +8,11 @@ export default function Header({
   onBackPress,
   language,
   setLanguage,
+  onToggleDevToolbar,
+  isDevToolbarOpen,
 }) {
   const titles = {
-    contests: { en: 'Competition Details', hi: 'प्रतियोगिता विवरण' },
+    contests: { en: 'Go back', hi: 'वापस जाएं' },
     home: { en: 'Feed & Discover', hi: 'मुख्य फ़ीड' },
     browse: { en: 'Browse Contests', hi: 'प्रतियोगिताएं खोजें' },
     profile: { en: 'My Profile & Stats', hi: 'प्रोफ़ाइल' },
@@ -22,22 +24,33 @@ export default function Header({
     <View style={styles.container}>
       <View style={styles.innerRow}>
         <TouchableOpacity style={styles.backButton} onPress={onBackPress} activeOpacity={0.7}>
-          <View style={styles.backIconWrap}>
-            <Ionicons
-              name={activeTab === 'home' ? 'grid-outline' : 'arrow-back'}
-              size={17}
-              color="#0F172A"
-            />
-          </View>
-          <View>
-            <Text style={styles.brandName}>FEEDANTS</Text>
-            <Text style={styles.backLabel}>
-              {language === 'hi' ? currentTitle.hi : currentTitle.en}
-            </Text>
-          </View>
+          <Ionicons
+            name={activeTab === 'home' ? 'grid-outline' : 'arrow-back'}
+            size={20}
+            color="#0F172A"
+          />
+          <Text style={styles.backTitleText}>
+            {language === 'hi' ? currentTitle.hi : currentTitle.en}
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.rightActions}>
+          {/* Evaluator Dev Tools Toggle */}
+          {onToggleDevToolbar && (
+            <TouchableOpacity
+              style={[styles.devIconBtn, isDevToolbarOpen && styles.devIconBtnActive]}
+              onPress={onToggleDevToolbar}
+              activeOpacity={0.7}
+              title="Evaluator Dev Tools"
+            >
+              <Ionicons
+                name={isDevToolbarOpen ? 'hardware-chip' : 'hardware-chip-outline'}
+                size={17}
+                color={isDevToolbarOpen ? '#FFFFFF' : '#0A7075'}
+              />
+            </TouchableOpacity>
+          )}
+
           {/* Language Switcher */}
           <View style={styles.langPillContainer}>
             <TouchableOpacity
@@ -46,7 +59,7 @@ export default function Header({
               activeOpacity={0.8}
             >
               <Text style={[styles.langText, language === 'en' && styles.langTextActive]}>
-                EN
+                ENG
               </Text>
             </TouchableOpacity>
 
@@ -56,7 +69,7 @@ export default function Header({
               activeOpacity={0.8}
             >
               <Text style={[styles.langText, language === 'hi' && styles.langTextActive]}>
-                हि
+                हिंदी
               </Text>
             </TouchableOpacity>
           </View>
@@ -85,35 +98,31 @@ const styles = StyleSheet.create({
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
   },
-  backIconWrap: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  brandName: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#0A7075',
-    letterSpacing: 1.5,
-    lineHeight: 16,
-  },
-  backLabel: {
-    fontSize: 10,
-    color: '#64748B',
-    fontWeight: '500',
-    letterSpacing: 0.2,
+  backTitleText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#0F172A',
+    letterSpacing: -0.2,
   },
   rightActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
+  },
+  devIconBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    backgroundColor: '#E8F6F6',
+    borderWidth: 1,
+    borderColor: '#0A7075',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  devIconBtnActive: {
+    backgroundColor: '#0A7075',
   },
   langPillContainer: {
     flexDirection: 'row',

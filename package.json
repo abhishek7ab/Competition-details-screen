@@ -11,6 +11,8 @@
     "start:frontend": "npm --prefix frontend run web",
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run web",
-    "seed": "npm --prefix backend run seed"
+    "seed": "npm --prefix backend run seed",
+    "test": "npm --prefix backend test",
+    "test:concurrency": "npm --prefix backend run test:concurrency"
   }
 }

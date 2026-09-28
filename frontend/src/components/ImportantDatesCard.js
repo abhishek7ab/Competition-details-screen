@@ -13,7 +13,7 @@ export default function ImportantDatesCard({ competition, language }) {
     const day = d.getDate();
     const month = months[d.getMonth()];
     const year = String(d.getFullYear()).slice(-2);
-    const dateStr = `${day} ${month} '${year}`;
+    const dateStr = `${day} ${month} ${year}`;
 
     let hours = d.getHours();
     const minutes = String(d.getMinutes()).padStart(2, '0');

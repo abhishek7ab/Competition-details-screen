@@ -7,6 +7,9 @@ const RANK_ICONS = {
   1: { icon: 'trophy', color: '#F59E0B' },
   2: { icon: 'medal', color: '#9CA3AF' },
   3: { icon: 'medal-outline', color: '#D97706' },
+  4: { icon: 'star-outline', color: '#0A7075' },
+  5: { icon: 'star-outline', color: '#0A7075' },
+  6: { icon: 'star-outline', color: '#0A7075' },
 };
 
 export default function RewardsList({ rewards, language }) {

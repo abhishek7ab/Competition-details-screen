@@ -33,6 +33,7 @@ import BrowseScreen from './src/components/BrowseScreen';
 import ProfileScreen from './src/components/ProfileScreen';
 import SidebarNav from './src/components/SidebarNav';
 import DesktopActionCard from './src/components/DesktopActionCard';
+import DevToolbar from './src/components/DevToolbar';
 import { VideoModal, SubmissionModal, PaymentModal, CreateModal } from './src/components/Modals';
 
 export default function App() {
@@ -41,6 +42,8 @@ export default function App() {
   const [competition, setCompetition] = useState(null);
   const [computed, setComputed] = useState(null);
   const [activeUser, setActiveUser] = useState(null);
+  const [demoUsers, setDemoUsers] = useState([]);
+  const [devToolbarVisible, setDevToolbarVisible] = useState(false);
   const [language, setLanguage] = useState('en'); // 'en' | 'hi'
   const { width } = useWindowDimensions();
   const isDesktop = width >= 900;
@@ -87,6 +90,7 @@ export default function App() {
   const loadData = useCallback(async (selectedUserId) => {
     try {
       const fetchedUsers = await apiService.getDemoUsers();
+      setDemoUsers(fetchedUsers);
 
       const userToUse =
         selectedUserId || activeUser?._id || (fetchedUsers.length > 0 ? fetchedUsers[0]._id : null);
@@ -109,6 +113,35 @@ export default function App() {
   useEffect(() => {
     loadData();
   }, []);
+
+  // Evaluator Dev Controls
+  const handleSelectUser = async (user) => {
+    setActiveUser(user);
+    setLoading(true);
+    await loadData(user._id);
+    showToast(`Switched active user to: ${user.name}`);
+  };
+
+  const handleOverrideState = async (state) => {
+    if (!competition) return;
+    try {
+      await apiService.overrideState(competition._id, state);
+      await loadData(activeUser?._id);
+      showToast(`Lifecycle forced to: ${state}`);
+    } catch (err) {
+      showToast(`Failed to override state: ${err.message}`);
+    }
+  };
+
+  const handleResetDemo = async () => {
+    try {
+      await apiService.resetDemoState();
+      await loadData(activeUser?._id);
+      showToast('Demo state reset: 1/20 booked, 19 spots left');
+    } catch (err) {
+      showToast(`Reset failed: ${err.message}`);
+    }
+  };
 
 
 
@@ -194,6 +227,22 @@ export default function App() {
               onBackPress={handleBackPress}
               language={language}
               setLanguage={setLanguage}
+              onToggleDevToolbar={() => setDevToolbarVisible((v) => !v)}
+              isDevToolbarOpen={devToolbarVisible}
+            />
+
+            {/* Evaluator DevToolbar */}
+            <DevToolbar
+              visible={devToolbarVisible}
+              onClose={() => setDevToolbarVisible(false)}
+              users={demoUsers}
+              activeUser={activeUser}
+              onSelectUser={handleSelectUser}
+              currentState={computed?.currentState}
+              onOverrideState={handleOverrideState}
+              onResetDemo={handleResetDemo}
+              spotsRemaining={computed?.spotsRemaining ?? 19}
+              bookedSpots={competition?.bookedSpots ?? 1}
             />
 
             {/* Toast Banner */}
@@ -332,6 +381,22 @@ export default function App() {
             onBackPress={handleBackPress}
             language={language}
             setLanguage={setLanguage}
+            onToggleDevToolbar={() => setDevToolbarVisible((v) => !v)}
+            isDevToolbarOpen={devToolbarVisible}
+          />
+
+          {/* Evaluator DevToolbar */}
+          <DevToolbar
+            visible={devToolbarVisible}
+            onClose={() => setDevToolbarVisible(false)}
+            users={demoUsers}
+            activeUser={activeUser}
+            onSelectUser={handleSelectUser}
+            currentState={computed?.currentState}
+            onOverrideState={handleOverrideState}
+            onResetDemo={handleResetDemo}
+            spotsRemaining={computed?.spotsRemaining ?? 19}
+            bookedSpots={competition?.bookedSpots ?? 1}
           />
 
           {/* Toast Banner */}
