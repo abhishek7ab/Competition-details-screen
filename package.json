@@ -4,6 +4,7 @@
   "private": true,
   "description": "Feedants Full-Stack Technical Assignment: Functional Competition Details Screen with React Native, Node.js, Express & MongoDB",
   "scripts": {
+    "build": "cd frontend && npm install && npx expo export --platform web",
     "dev": "node run.js",
     "start": "node run.js",
     "web": "node run.js",
