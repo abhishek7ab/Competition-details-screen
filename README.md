@@ -59,7 +59,7 @@ Demo-only controls are available in development. They are disabled when `NODE_EN
 ## Current limitations / production work
 
 - Payment is simulated in development. Real payment gateway order creation, server-side signature/webhook verification, refunds, and payment reconciliation are not implemented. Registration endpoints return 503 in production until real payment verification is added.
-- Authentication and authorization are not implemented. Do not expose the demo APIs to real users.
+- Authentication and authorization are not implemented. Do not expose the demo APIs to real users. Production startup skips demo seed data, and production submissions are disabled until authentication and verified payment checks are implemented.
 - Registration spot reservation is guarded by an atomic conditional update and compensates if the registration insert fails. For full crash-safe atomicity, use a MongoDB replica set and a transaction-based reservation workflow.
 - Demo lifecycle override/reset endpoints are disabled in production.
 - Submission input validation and lifecycle checks are enforced by the backend.

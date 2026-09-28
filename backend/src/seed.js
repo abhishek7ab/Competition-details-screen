@@ -3,6 +3,12 @@ const User = require('./models/User');
 const Registration = require('./models/Registration');
 
 const seedDatabase = async () => {
+  // Demo accounts and their simulated PAID registration must never enter production.
+  if (process.env.NODE_ENV === 'production') {
+    console.log('[Seed] Skipping demo seed data in production.');
+    return;
+  }
+
   try {
     const existingComp = await Competition.findOne();
     if (existingComp) {
