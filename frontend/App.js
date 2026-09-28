@@ -34,7 +34,6 @@ import HomeScreen from './src/components/HomeScreen';
 import BrowseScreen from './src/components/BrowseScreen';
 import ProfileScreen from './src/components/ProfileScreen';
 import DevToolbar from './src/components/DevToolbar';
-import SidebarNav from './src/components/SidebarNav';
 import DesktopActionCard from './src/components/DesktopActionCard';
 import {
   VideoModal,
@@ -233,23 +232,9 @@ export default function App() {
       {/* ═══════════════════════════════════════════════════════════
          RESPONSIVE LAYOUT CONTAINER
          Mobile (< 900px): Clean centered mobile view + BottomNav
-         Desktop (>= 900px): Expansive 3-column dashboard with Sidebar
+         Desktop (>= 900px): Wide content area with a simple action card
          ═══════════════════════════════════════════════════════════ */}
       <View style={[styles.mainLayoutWrapper, isDesktop && styles.desktopLayoutRow]}>
-        {/* Left Sidebar (Desktop Only) */}
-        {isDesktop && (
-          <SidebarNav
-            activeTab={activeTab}
-            onSelectTab={handleSelectTab}
-            activeUser={activeUser}
-            onCreatePress={() => setCreateModalVisible(true)}
-            language={language}
-            setLanguage={setLanguage}
-            isDarkMode={isDarkMode}
-            onToggleDarkMode={() => setIsDarkMode((v) => !v)}
-          />
-        )}
-
         {/* Center Screen Container */}
         <View
           style={[
@@ -266,10 +251,10 @@ export default function App() {
             },
             isDesktop
               ? {
-                  maxWidth: 600,
+                  maxWidth: 820,
+                  minWidth: 0,
                   flex: 1,
-                  borderRightWidth: 1,
-                  borderRightColor: colors.border,
+                  width: '100%',
                 }
               : {
                   maxWidth: 480,
@@ -577,10 +562,12 @@ const styles = StyleSheet.create({
   },
   desktopLayoutRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'stretch',
     justifyContent: 'center',
     width: '100%',
-    maxWidth: 1280,
+    maxWidth: 1240,
+    paddingHorizontal: 24,
+    columnGap: 24,
     ...Platform.select({
       web: {
         height: '100vh',
@@ -589,8 +576,10 @@ const styles = StyleSheet.create({
     }),
   },
   desktopActionColumn: {
-    width: 350,
-    padding: 20,
+    width: 320,
+    paddingTop: 24,
+    paddingBottom: 24,
+    flexShrink: 0,
     ...Platform.select({
       web: {
         position: 'sticky',
@@ -610,6 +599,7 @@ const styles = StyleSheet.create({
   },
   appContainer: {
     flex: 1,
+    minWidth: 0,
     ...Platform.select({
       web: {
         height: '100vh',
