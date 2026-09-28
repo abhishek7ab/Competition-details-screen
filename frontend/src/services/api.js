@@ -58,6 +58,7 @@ export const apiService = {
     try {
       const res = await fetch(`${API_BASE_URL}/users`);
       const json = await res.json();
+      if (!res.ok) throw new Error(json.message || 'Failed to fetch demo users');
       return json.data || [];
     } catch (error) {
       console.error('API getDemoUsers error:', error);
