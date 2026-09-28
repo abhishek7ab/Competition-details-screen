@@ -139,8 +139,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 11,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
   },
   backButton: {
     flexDirection: 'row',
@@ -153,8 +153,8 @@ const styles = StyleSheet.create({
   },
   backTitleText: {
     fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: -0.2,
+    fontWeight: '800',
+    letterSpacing: -0.35,
   },
   rightActions: {
     flexDirection: 'row',
@@ -162,9 +162,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   iconBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
+    width: 36,
+    height: 36,
+    borderRadius: 11,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
