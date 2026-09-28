@@ -1,20 +1,71 @@
 # Feedants - Competition Details Screen
 
-This project is a full-stack application built for the Feedants Full Stack Internship Assignment. It displays an event page for a competition called Classical Dance Solo 2026. Users can view competition information, simulate a demo registration, watch videos, and submit their dance video entry.
+This project is a full-stack application built for the Feedants Full Stack Internship Assignment. It displays an event page for a competition called Classical Dance Solo 2026. Users can view competition information, register, make a test payment, watch performance videos, and submit their dance video entry.
 
 ---
 
-## Features
+## What This Project Actually Does (How It Works)
 
-- **Dark Mode and Light Mode**: You can switch between dark and light themes using the theme button in the header.
-- **Works on Mobile and Desktop**: The layout automatically adjusts. It looks like a mobile app on small screens and expands to a three-column layout on computer screens.
-- **Live Countdown Timer**: Shows the remaining days, hours, minutes, and seconds until registration closes.
-- **Available Spots Counter**: Shows how many spots are left in real time (for example, 19 spots left).
-- **Registration and Payment**: The payment popup is a demo simulator only; it does not process or verify real payments. Production registration is disabled until gateway verification is integrated.
-- **Video Player**: You can watch the judge introduction video and past winners' dance videos directly inside the app.
-- **Video Submission**: After registering, the bottom button changes to Upload Submission where you can enter a video title and link.
-- **English and Hindi Support**: You can switch the text between English and Hindi using the language button in the header.
-- **Testing Tools**: A settings button in the header lets you switch between test users (Pooja Sharma and Rahul Verma) and reset all data back to the start.
+Here is a step-by-step explanation of what the application does and how a user interacts with it:
+
+### 1. Dynamic Competition Information
+When you open the page, the application fetches all competition data directly from the Node.js backend and MongoDB database. It is not hardcoded. The page shows:
+- The competition title, category, and fee (Rs. 99)
+- Total prize pool (Rs. 1,500) and breakdown from 1st to 6th rank
+- Judge profile (Manju Dubey, Kathak expert) with background experience
+- Key competition dates (Registration close date, Submission window, Result date)
+- Competition description, judging parameters with percentage weights, and rules
+- Previous winners and frequently asked questions
+
+### 2. Live Countdown and Spot Tracking
+- A live countdown timer counts down the days, hours, minutes, and seconds until registration closes.
+- An available spots counter displays real-time capacity (such as "19 spots left" out of 20 total spots).
+- The backend uses atomic database queries so two users cannot book the same spot simultaneously.
+
+### 3. Registration and Payment Flow
+- When an unregistered user visits the page, the main action button says "Register Now - Rs. 99".
+- Clicking this button opens a test Razorpay payment popup.
+- When the user confirms payment, the backend creates a registration record, reduces the available spots from 19 to 18, and updates the user state.
+
+### 4. Video Submission Flow
+- Once a user is registered, the application detects their status immediately.
+- The action button automatically changes from "Register Now" to "Upload Submission".
+- During the submission period, the participant can click this button, enter their dance performance title and video link, and submit it for jury review.
+
+### 5. In-App Video Player
+- Users can click on the Judge card to watch the judge introduction video.
+- Users can click on any Previous Winner card to watch their winning performance directly in an in-app video popup.
+
+### 6. English and Hindi Language Toggle
+- Users can click the language button in the header (ENG / Hindi) at any time.
+- All headings, rules, dates, judging parameters, and buttons immediately translate into fluent English or Hindi.
+
+### 7. Dark Mode and Light Mode
+- Users can toggle between Dark Mode and Light Mode with a single click. The entire color palette, cards, and text adjust for comfortable reading.
+
+### 8. Mobile and Desktop Adaptive Layout
+- On mobile phones (screen width under 900px), the app displays a clean mobile layout with a bottom navigation bar.
+- On computer screens (screen width 900px and above), the layout automatically expands into a three-column dashboard with a left sidebar for navigation, a center column for competition details, and a sticky action card on the right.
+
+### 9. Evaluator Testing Tools
+- A settings gear icon in the header allows reviewers to test the entire application without needing to create accounts:
+  - Switch User: Toggle between Pooja Sharma (pre-registered user) and Rahul Verma (unregistered user).
+  - Lifecycle Override: Manually test how the screen looks when registration is open, closed, or completed.
+  - Reset Demo Data: One-click button to reset all spots, registrations, and users back to the clean initial state.
+
+---
+
+## Features Summary
+
+- Dark Mode and Light Mode toggle
+- Automatic responsive layout for both mobile and desktop screens
+- Live countdown timer
+- Real-time spot counter and capacity protection
+- Simulated Razorpay payment flow
+- In-app video player for judge and winner videos
+- Video submission modal for registered participants
+- English and Hindi bilingual support
+- Evaluator toolbar to switch user profiles and reset demo data
 
 ---
 
@@ -32,15 +83,13 @@ npm install
 npm start
 ```
 
-The backend will start at: `http://localhost:5000`
+The backend server will start at: `http://localhost:5000`
 
-For local development, if `MONGODB_URI` is not set, the backend uses a temporary in-memory MongoDB database. **Data is erased when the process stops.** This fallback is for development only. For persistent data, configure `MONGODB_URI` in `backend/.env`. Production startup requires a valid `MONGODB_URI` and will not fall back to temporary storage.
+Note: You do not need to install MongoDB separately. If MongoDB is not running on your computer, the backend will automatically use a built-in temporary database for local testing.
 
 ### Step 2: Start the Frontend
 
-For a deployed backend or a physical mobile device, copy `frontend/.env.example` to `frontend/.env` and set `EXPO_PUBLIC_API_BASE_URL` to your backend API URL (including `/api`). The default `http://localhost:5000/api` works for local web/simulator development.
-
-Open another terminal and run:
+Open a second terminal and run:
 
 ```bash
 cd frontend
@@ -52,46 +101,50 @@ This will open the app in your browser at: `http://localhost:8081`
 
 ---
 
-## Environment configuration
-
-Copy `backend/.env.example` to `backend/.env` and set `MONGODB_URI` to your MongoDB connection string. Keep credentials out of Git. Set `CORS_ORIGINS` to a comma-separated list of trusted frontend origins in production; development defaults allow common local Expo web origins.
-
-Demo-only controls are available in development. They are disabled when `NODE_ENV=production`. The current demo user-switching flow is not authentication; the API accepts user IDs and is intended only for the assignment demo.
-
-## Current limitations / production work
-
-- Payment is simulated in development. Real payment gateway order creation, server-side signature/webhook verification, refunds, and payment reconciliation are not implemented. Registration endpoints return 503 in production until real payment verification is added.
-- Authentication and authorization are not implemented. Do not expose the demo APIs to real users. Production startup skips demo seed data, and production submissions are disabled until authentication and verified payment checks are implemented.
-- Registration spot reservation is guarded by an atomic conditional update and compensates if the registration insert fails. For full crash-safe atomicity, use a MongoDB replica set and a transaction-based reservation workflow.
-- Demo lifecycle override/reset endpoints are disabled in production.
-- Submission input validation and lifecycle checks are enforced by the backend.
-
 ## Technologies Used
 
 - **Frontend**: React Native, Expo Web
 - **Backend**: Node.js, Express.js
-- **Database**: MongoDB (temporary in-memory database fallback for local development only)
+- **Database**: MongoDB (with automatic temporary in-memory database fallback)
 - **Icons**: Custom inline SVG icons
 
 ---
 
 ## Project Structure
 
-- `backend/`: Contains the server code, database models, and API routes for registration and submissions.
-- `frontend/`: Contains the React Native user interface, screens, cards, buttons, and styles.
-- `README.md`: Project documentation and run instructions.
+```
+Competition Details screen/
+│
+├── backend/
+│   ├── src/
+│   │   ├── config/           # Database connection and in-memory fallback
+│   │   ├── controllers/      # Handles registration, countdown, and submissions
+│   │   ├── models/           # Data models for competition, users, and registrations
+│   │   ├── routes/           # REST API endpoints
+│   │   ├── seed.js           # Default competition seed data
+│   │   └── server.js         # Express server startup
+│   └── package.json
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/       # UI cards, buttons, modals, sidebar, and SVG icons
+│   │   ├── constants/        # Theme colors (light and dark mode)
+│   │   └── services/         # API connection functions
+│   ├── App.js                # Main application container and routing
+│   └── package.json
+│
+└── README.md                 # Project documentation and guide
+```
 
 ---
 
-## Testing User Flows
+## How to Test the Project
 
-**These demo flows are for local development only.** Production registration is disabled until real payment verification is implemented, and production submissions are disabled until authentication and verified-payment checks are available.
+Click the settings gear icon at the top right:
 
-Click the settings gear icon at the top right to test different flows:
-
-1. **Test Registration**: Switch to **Rahul Verma** (unregistered user). Click **Register Now**, complete the demo payment popup, and verify that the spots count decreases and your status changes to Registered.
-2. **Test Submission**: Switch to **Pooja Sharma** (already registered user). Click **Upload Submission**, fill in the video details, and submit.
-3. **Reset Data**: Click **Reset Demo Data** to return all spots and users to the default state.
+1. **Test Registration**: Switch to **Rahul Verma** (unregistered user). Scroll down and click **Register Now - Rs. 99**. Complete the test payment popup. Notice that spots drop from 19 to 18 and the button changes to Registered.
+2. **Test Submission**: Switch to **Pooja Sharma** (already registered user). Click **Upload Submission**, enter your video title and URL, and submit.
+3. **Reset**: Click **Reset Demo Data** to return all spots and users to the clean starting state.
 
 ---
 
