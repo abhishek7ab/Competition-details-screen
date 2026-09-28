@@ -9,7 +9,6 @@ import {
   Text,
   Platform,
   Alert,
-  useWindowDimensions,
 } from 'react-native';
 import { apiService } from './src/services/api';
 import { THEME } from './src/constants/theme';
@@ -31,8 +30,6 @@ import BottomNav from './src/components/BottomNav';
 import HomeScreen from './src/components/HomeScreen';
 import BrowseScreen from './src/components/BrowseScreen';
 import ProfileScreen from './src/components/ProfileScreen';
-import SidebarNav from './src/components/SidebarNav';
-import DesktopActionCard from './src/components/DesktopActionCard';
 import DevToolbar from './src/components/DevToolbar';
 import { VideoModal, SubmissionModal, PaymentModal, CreateModal } from './src/components/Modals';
 
@@ -45,8 +42,6 @@ export default function App() {
   const [demoUsers, setDemoUsers] = useState([]);
   const [devToolbarVisible, setDevToolbarVisible] = useState(false);
   const [language, setLanguage] = useState('en'); // 'en' | 'hi'
-  const { width } = useWindowDimensions();
-  const isDesktop = width >= 900;
 
   // Navigation & Interactive Modals State
   const [activeTab, setActiveTab] = useState('contests'); // 'home' | 'browse' | 'create' | 'contests' | 'profile'
@@ -203,178 +198,12 @@ export default function App() {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-      {isDesktop ? (
-        /* ═══════════════════════════════════════════════════════════
-           DESKTOP RESPONSIVE LAYOUT (>= 900px)
-           Sidebar navigation on left, 2-column split dashboard on right
-           ═══════════════════════════════════════════════════════════ */
-        <View style={styles.desktopLayout}>
-          {/* Left Sidebar Navigation */}
-          <SidebarNav
-            activeTab={activeTab}
-            onSelectTab={handleSelectTab}
-            activeUser={activeUser}
-            onCreatePress={() => setCreateModalVisible(true)}
-            language={language}
-            setLanguage={setLanguage}
-          />
-
-          {/* Right Main Content Panel */}
-          <View style={styles.desktopMainView}>
-            {/* Desktop Header */}
-            <Header
-              activeTab={activeTab}
-              onBackPress={handleBackPress}
-              language={language}
-              setLanguage={setLanguage}
-              onToggleDevToolbar={() => setDevToolbarVisible((v) => !v)}
-              isDevToolbarOpen={devToolbarVisible}
-            />
-
-            {/* Evaluator DevToolbar */}
-            <DevToolbar
-              visible={devToolbarVisible}
-              onClose={() => setDevToolbarVisible(false)}
-              users={demoUsers}
-              activeUser={activeUser}
-              onSelectUser={handleSelectUser}
-              currentState={computed?.currentState}
-              onOverrideState={handleOverrideState}
-              onResetDemo={handleResetDemo}
-              spotsRemaining={computed?.spotsRemaining ?? 19}
-              bookedSpots={competition?.bookedSpots ?? 1}
-            />
-
-            {/* Toast Banner */}
-            {toastMessage ? (
-              <View style={styles.toastContainer}>
-                <Text style={styles.toastText}>{toastMessage}</Text>
-              </View>
-            ) : null}
-
-            {/* Desktop Screen Content */}
-            {loading ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={THEME.colors.primary} />
-                <Text style={styles.loadingText}>Connecting to Feedants API...</Text>
-              </View>
-            ) : !competition && activeTab === 'contests' ? (
-              <View style={styles.loadingContainer}>
-                <Ionicons name="cloud-offline-outline" size={40} color={THEME.colors.rose} />
-                <Text style={[styles.loadingText, { color: THEME.colors.rose, marginTop: 10 }]}>
-                  Unable to reach Backend API (:5000)
-                </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setLoading(true);
-                    loadData();
-                  }}
-                  style={styles.retryBtn}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.retryBtnText}>Retry Connection</Text>
-                </TouchableOpacity>
-              </View>
-            ) : activeTab === 'home' ? (
-              <HomeScreen
-                activeUser={activeUser}
-                competition={competition}
-                onGoToContest={() => setActiveTab('contests')}
-                onSelectCategory={(cat) => {
-                  setActiveTab('browse');
-                  showToast(`Browsing ${cat}`);
-                }}
-                language={language}
-              />
-            ) : activeTab === 'browse' ? (
-              <BrowseScreen
-                onGoToContest={() => setActiveTab('contests')}
-                language={language}
-              />
-            ) : activeTab === 'profile' ? (
-              <ProfileScreen
-                activeUser={activeUser}
-                onShowToast={showToast}
-                onGoToContest={() => setActiveTab('contests')}
-                language={language}
-              />
-            ) : (
-              /* Desktop Split 2-Column Contest Details */
-              <View style={styles.desktopTwoColContainer}>
-                {/* Left Column: Hero, Jury, Criteria & Rules, Hall of Fame */}
-                <ScrollView
-                  style={styles.desktopLeftScroll}
-                  contentContainerStyle={styles.desktopLeftScrollContent}
-                  showsVerticalScrollIndicator={false}
-                >
-                  <HeroCard competition={competition} computed={computed} language={language} />
-                  <JudgeCard
-                    judge={competition?.judge}
-                    onPlayVideo={(url, name) => handlePlayVideo(url, `Judge: ${name}`)}
-                    language={language}
-                  />
-                  <TabsSection competition={competition} language={language} />
-                  <RewardsList rewards={competition?.rewards} language={language} />
-                  <PreviousWinners
-                    winners={competition?.previousWinners}
-                    onPlayVideo={handlePlayVideo}
-                    language={language}
-                  />
-                </ScrollView>
-
-                {/* Right Column: Pricing, Live Action CTA, Dates, Trust, Referral */}
-                <ScrollView
-                  style={styles.desktopRightScroll}
-                  contentContainerStyle={styles.desktopRightScrollContent}
-                  showsVerticalScrollIndicator={false}
-                >
-                  <CountdownBanner
-                    targetDate={competition?.registrationDeadline}
-                    language={language}
-                  />
-                  <DesktopActionCard
-                    competition={competition}
-                    computed={computed}
-                    onRegisterPress={handleRegisterPress}
-                    onSubmitPress={handleSubmitPress}
-                    loading={actionLoading}
-                    language={language}
-                  />
-                  <ImportantDatesCard competition={competition} language={language} />
-                  <TrustSection
-                    disclaimer={competition?.disclaimer}
-                    onWatchPrizeVideo={() =>
-                      handlePlayVideo(
-                        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                        'Prize Distribution Process'
-                      )
-                    }
-                    onOpenRefundPolicy={() =>
-                      Alert.alert(
-                        'Feedants Refund Policy',
-                        '100% refund is issued if the competition is cancelled by Feedants. Registrations can be transferred up to 24 hours before the registration deadline.'
-                      )
-                    }
-                    language={language}
-                  />
-                  <ReferralCard user={activeUser} onShowToast={showToast} language={language} />
-                  <UserFeedbackBanner
-                    onFeedbackPress={() =>
-                      showToast('Feedants reviews: 4.8/5 based on 1,200+ dancers.')
-                    }
-                    language={language}
-                  />
-                </ScrollView>
-              </View>
-            )}
-          </View>
-        </View>
-      ) : (
-        /* ═══════════════════════════════════════════════════════════
-           MOBILE RESPONSIVE LAYOUT (< 900px)
-           Clean stacked phone view with sticky BottomBar and BottomNav
-           ═══════════════════════════════════════════════════════════ */
-        <View style={styles.appContainer}>
+      {/* ═══════════════════════════════════════════════════════════
+         FEEDANTS COMPETITION DETAILS SCREEN
+         Clean centered mobile container on Web (maxWidth: 480)
+         Full native view on mobile devices
+         ═══════════════════════════════════════════════════════════ */}
+      <View style={styles.appContainer}>
           {/* Top Header */}
           <Header
             activeTab={activeTab}
@@ -542,7 +371,6 @@ export default function App() {
             language={language}
           />
         </View>
-      )}
 
         {/* Interactive Modals */}
         <VideoModal
@@ -585,49 +413,6 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#F5F7FA',
     alignItems: 'center',
-  },
-  desktopLayout: {
-    flex: 1,
-    flexDirection: 'row',
-    width: '100%',
-    height: '100vh',
-    backgroundColor: '#F5F7FA',
-    overflow: 'hidden',
-  },
-  desktopMainView: {
-    flex: 1,
-    height: '100vh',
-    backgroundColor: '#F5F7FA',
-    overflow: 'hidden',
-  },
-  desktopTwoColContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: '#F5F7FA',
-    overflow: 'hidden',
-  },
-  desktopLeftScroll: {
-    flex: 1.6,
-    borderRightWidth: 1,
-    borderRightColor: '#E2E8F0',
-  },
-  desktopLeftScrollContent: {
-    padding: 24,
-    paddingBottom: 64,
-    gap: 16,
-    maxWidth: 850,
-    alignSelf: 'center',
-    width: '100%',
-  },
-  desktopRightScroll: {
-    width: 380,
-    flexShrink: 0,
-    backgroundColor: '#F5F7FA',
-  },
-  desktopRightScrollContent: {
-    padding: 20,
-    paddingBottom: 64,
-    gap: 16,
   },
   retryBtn: {
     marginTop: 16,
