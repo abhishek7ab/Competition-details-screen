@@ -1,6 +1,6 @@
 // Set EXPO_PUBLIC_API_BASE_URL in frontend/.env for deployed or physical-device builds.
 // Example: EXPO_PUBLIC_API_BASE_URL=http://192.168.1.10:5000/api
-export const API_BASE_URL = (process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api').replace(/\\/$/, '');
+export const API_BASE_URL = (process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api').replace(/\/$/, '');
 
 export const apiService = {
   // Fetch competition details with user state
