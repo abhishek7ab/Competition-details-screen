@@ -148,6 +148,39 @@ Click the settings gear icon at the top right:
 
 ---
 
+## Future Scope
+
+Here are the planned improvements and next features for future versions of the platform:
+
+### 1. Direct Video File Uploads
+- Currently, participants submit a video link (YouTube, Drive, or MP4 URL).
+- In the future, participants will be able to directly upload raw video files (.mp4, .mov) with automated cloud compression using AWS S3 or Cloudinary.
+
+### 2. Live Payment Gateway Integration
+- Replace the simulated test payment popup with live Razorpay and Stripe payment gateway credentials.
+- Add instant UPI QR code generation, downloadable tax invoices, and automated payment failure retries.
+
+### 3. Dedicated Jury Evaluation Portal
+- Create a private dashboard specifically for judges like Manju Dubey.
+- Allow judges to watch submissions, grade each parameter (such as Rhythm and Expressions) using interactive sliders, and leave voice notes or written comments.
+
+### 4. Audience Voting and Community Awards
+- Introduce a public voting round where fans and family members can vote for their favorite performances.
+- Add an "Audience Choice Award" alongside the jury-selected prizes.
+
+### 5. Automated PDF E-Certificates with QR Verification
+- Automatically generate high-resolution PDF certificates signed by the judge for all winners and participants upon result announcement.
+- Include a unique QR code on every certificate so schools, academies, and employers can verify authenticity online.
+
+### 6. Mobile App Store Release
+- Export the shared React Native codebase into native Android (.apk) and iOS (.ipa) applications.
+- Publish the mobile app on Google Play Store and Apple App Store.
+
+### 7. WhatsApp and SMS Notifications
+- Send automated WhatsApp and SMS reminders to participants before registration closes, when the submission window opens, and when winners are announced.
+
+---
+
 ## Author
 
 - **Name**: Abhishek
