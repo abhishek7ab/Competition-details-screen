@@ -201,8 +201,8 @@ export function PaymentModal({
           <View style={[styles.paymentHeader, { borderBottomColor: colors.border }]}>
             <View style={styles.razorpayRow}>
               <Icon name="flash" size={16} color="#58A6FF" />
-              <Text style={styles.razorpayLogo}>Razorpay</Text>
-              <Text style={styles.secureBadge}>Verified</Text>
+              <Text style={styles.razorpayLogo}>Payment Demo</Text>
+              <Text style={styles.secureBadge}>Demo mode</Text>
             </View>
             <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn} activeOpacity={0.7} accessibilityRole="button">
               <Icon name="close" size={20} color={colors.textSecondary} />
