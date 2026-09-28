@@ -1,6 +1,6 @@
 # Feedants - Competition Details Screen
 
-This project is a full-stack application built for the Feedants Full Stack Internship Assignment. It displays an event page for a competition called Classical Dance Solo 2026. Users can view competition information, register, make a test payment, watch videos, and submit their dance video entry.
+This project is a full-stack application built for the Feedants Full Stack Internship Assignment. It displays an event page for a competition called Classical Dance Solo 2026. Users can view competition information, simulate a demo registration, watch videos, and submit their dance video entry.
 
 ---
 
@@ -85,7 +85,7 @@ Demo-only controls are available in development. They are disabled when `NODE_EN
 
 Click the settings gear icon at the top right to test different flows:
 
-1. **Test Registration**: Switch to **Rahul Verma** (unregistered user). Click **Register Now**, complete the payment popup, and verify that the spots count decreases and your status changes to Registered.
+1. **Test Registration**: Switch to **Rahul Verma** (unregistered user). Click **Register Now**, complete the demo payment popup, and verify that the spots count decreases and your status changes to Registered.
 2. **Test Submission**: Switch to **Pooja Sharma** (already registered user). Click **Upload Submission**, fill in the video details, and submit.
 3. **Reset Data**: Click **Reset Demo Data** to return all spots and users to the default state.
 
