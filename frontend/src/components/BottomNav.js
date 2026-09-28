@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Platform } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 
 const NAV_ITEMS = [
   { key: 'home', icon: 'home-outline', iconActive: 'home', label: 'Home', labelHi: 'होम' },
@@ -11,9 +11,25 @@ const NAV_ITEMS = [
   { key: 'profile', label: 'Profile', labelHi: 'प्रोफ़ाइल', isProfile: true },
 ];
 
-export default function BottomNav({ activeTab = 'contests', onSelectTab, activeUser, language }) {
+export default function BottomNav({
+  activeTab = 'contests',
+  onSelectTab,
+  activeUser,
+  language,
+  isDarkMode = false,
+}) {
+  const colors = getThemeColors(isDarkMode);
+
   return (
-    <View style={styles.navBar}>
+    <View
+      style={[
+        styles.navBar,
+        {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+        },
+      ]}
+    >
       {NAV_ITEMS.map((item) => {
         const isActive = activeTab === item.key;
 
@@ -25,7 +41,7 @@ export default function BottomNav({ activeTab = 'contests', onSelectTab, activeU
               onPress={() => onSelectTab && onSelectTab('create')}
               activeOpacity={0.85}
             >
-              <View style={styles.addCircle}>
+              <View style={[styles.addCircle, { backgroundColor: colors.primary }]}>
                 <Feather name="plus" size={24} color="#FFFFFF" />
               </View>
             </TouchableOpacity>
@@ -46,9 +62,18 @@ export default function BottomNav({ activeTab = 'contests', onSelectTab, activeU
                     activeUser?.avatarUrl ||
                     'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200',
                 }}
-                style={[styles.profileAvatar, isActive && styles.profileAvatarActive]}
+                style={[
+                  styles.profileAvatar,
+                  isActive && [styles.profileAvatarActive, { borderColor: colors.primary }],
+                ]}
               />
-              <Text style={[styles.navLabel, isActive && styles.navLabelActive]}>
+              <Text
+                style={[
+                  styles.navLabel,
+                  { color: isActive ? colors.primary : colors.textMuted },
+                  isActive && { fontWeight: '700' },
+                ]}
+              >
                 {language === 'hi' ? item.labelHi : item.label}
               </Text>
             </TouchableOpacity>
@@ -65,9 +90,15 @@ export default function BottomNav({ activeTab = 'contests', onSelectTab, activeU
             <Ionicons
               name={isActive ? item.iconActive : item.icon}
               size={21}
-              color={isActive ? '#0A7075' : '#64748B'}
+              color={isActive ? colors.primary : colors.textMuted}
             />
-            <Text style={[styles.navLabel, isActive && styles.navLabelActive]}>
+            <Text
+              style={[
+                styles.navLabel,
+                { color: isActive ? colors.primary : colors.textMuted },
+                isActive && { fontWeight: '700' },
+              ]}
+            >
               {language === 'hi' ? item.labelHi : item.label}
             </Text>
           </TouchableOpacity>
@@ -82,9 +113,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
     paddingTop: 8,
     paddingBottom: 16,
     paddingHorizontal: 8,
@@ -104,7 +133,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#0A7075',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: -6,
@@ -116,15 +144,9 @@ const styles = StyleSheet.create({
   },
   profileAvatarActive: {
     borderWidth: 2,
-    borderColor: '#0A7075',
   },
   navLabel: {
     fontSize: 10,
     fontWeight: '500',
-    color: '#64748B',
-  },
-  navLabelActive: {
-    color: '#0A7075',
-    fontWeight: '700',
   },
 });

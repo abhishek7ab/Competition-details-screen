@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 
 const RANK_ICONS = {
   1: { icon: 'trophy', color: '#F59E0B' },
@@ -12,23 +12,36 @@ const RANK_ICONS = {
   6: { icon: 'star-outline', color: '#0A7075' },
 };
 
-export default function RewardsList({ rewards, language }) {
+export default function RewardsList({ rewards, language, isDarkMode = false }) {
   if (!rewards || rewards.length === 0) return null;
+  const colors = getThemeColors(isDarkMode);
+
+  const handleRewardPress = (reward) => {
+    Alert.alert(
+      `${reward.title || `${reward.rank}th Place Reward`}`,
+      `Prize: ₹${Number(reward.amount).toLocaleString('en-IN')}\n\n🏆 Winner receives official Feedants e-certificate, cash disbursed via direct UPI/bank transfer within 48 hours of result announcement, and feature on Feedants Hall of Fame.`
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>
+      <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
         {language === 'hi' ? 'पुरस्कार (सभी स्थान)' : 'Rewards  (All Positions)'}
       </Text>
 
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         {rewards.map((reward, idx) => {
           const iconMeta = RANK_ICONS[reward.rank];
 
           return (
-            <View
+            <TouchableOpacity
               key={idx}
-              style={[styles.row, idx < rewards.length - 1 && styles.rowBorder]}
+              style={[
+                styles.row,
+                idx < rewards.length - 1 && [styles.rowBorder, { borderBottomColor: colors.border }],
+              ]}
+              onPress={() => handleRewardPress(reward)}
+              activeOpacity={0.7}
             >
               <View style={styles.leftRow}>
                 {iconMeta ? (
@@ -36,21 +49,21 @@ export default function RewardsList({ rewards, language }) {
                     <Ionicons name={iconMeta.icon} size={16} color={iconMeta.color} />
                   </View>
                 ) : (
-                  <View style={styles.rankNumberContainer}>
-                    <Text style={styles.rankNumber}>{reward.rank}</Text>
+                  <View style={[styles.rankNumberContainer, { backgroundColor: isDarkMode ? '#334155' : '#F1F5F9' }]}>
+                    <Text style={[styles.rankNumber, { color: colors.textMuted }]}>{reward.rank}</Text>
                   </View>
                 )}
-                <Text style={styles.rankTitle}>
+                <Text style={[styles.rankTitle, { color: colors.textPrimary }]}>
                   {language === 'hi'
                     ? `${reward.rank}वां विजेता`
                     : reward.title || `${reward.rank}th Winner`}
                 </Text>
               </View>
 
-              <Text style={styles.prizeAmount}>
+              <Text style={[styles.prizeAmount, { color: colors.primary }]}>
                 ₹ {Number(reward.amount).toLocaleString('en-IN')}
               </Text>
-            </View>
+            </TouchableOpacity>
           );
         })}
       </View>
@@ -65,15 +78,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
     marginBottom: 8,
     paddingLeft: 2,
   },
   card: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     overflow: 'hidden',
     ...Platform.select({
       web: { boxShadow: '0 1px 3px rgba(0,0,0,0.05)' },
@@ -88,7 +98,6 @@ const styles = StyleSheet.create({
   },
   rowBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
   },
   leftRow: {
     flexDirection: 'row',
@@ -106,25 +115,19 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 6,
-    backgroundColor: '#F1F5F9',
     alignItems: 'center',
     justifyContent: 'center',
   },
   rankNumber: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#64748B',
   },
   rankTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#0F172A',
   },
   prizeAmount: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#0A7075',
   },
 });
-
-

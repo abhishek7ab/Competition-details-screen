@@ -1,104 +1,162 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Platform } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Platform, Alert } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 
-export default function ProfileScreen({ activeUser, onShowToast, onGoToContest, language }) {
+export default function ProfileScreen({
+  activeUser,
+  onShowToast,
+  onGoToContest,
+  language,
+  isDarkMode = false,
+}) {
+  const colors = getThemeColors(isDarkMode);
   const isPooja = activeUser?.name === 'Pooja Sharma';
 
+  const handleWalletPress = () => {
+    Alert.alert(
+      'Feedants Artist Wallet',
+      'Balance: ₹250\n\nYour winnings from past competitions are held in escrow and can be withdrawn directly to UPI at any time with 0% processing fee.'
+    );
+  };
+
+  const handleSecurityPolicyPress = () => {
+    Alert.alert(
+      'Security & Refund Guarantee',
+      'Feedants guarantees 100% refund on cancelled contests via Razorpay. All user submissions and judging scorecards are recorded securely.'
+    );
+  };
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={[styles.container, { backgroundColor: colors.bg }]}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
       {/* Profile Header Card */}
-      <View style={styles.profileCard}>
+      <View style={[styles.profileCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <Image
           source={{
             uri: activeUser?.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300',
           }}
-          style={styles.avatar}
+          style={[styles.avatar, { borderColor: colors.primary }]}
         />
         <View style={styles.profileInfo}>
           <View style={styles.nameRow}>
-            <Text style={styles.name}>{activeUser?.name || 'Artist'}</Text>
-            <Ionicons name="checkmark-circle" size={16} color={THEME.colors.primary} />
+            <Text style={[styles.name, { color: colors.textPrimary }]}>{activeUser?.name || 'Artist'}</Text>
+            <Ionicons name="checkmark-circle" size={16} color={colors.primary} />
           </View>
-          <Text style={styles.email}>{activeUser?.email || 'user@feedants.com'}</Text>
-          <View style={styles.roleBadge}>
-            <Text style={styles.roleText}>{isPooja ? 'Registered Performer' : 'Participant'}</Text>
+          <Text style={[styles.email, { color: colors.textSecondary }]}>
+            {activeUser?.email || 'user@feedants.com'}
+          </Text>
+          <View
+            style={[
+              styles.roleBadge,
+              { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' },
+            ]}
+          >
+            <Text style={[styles.roleText, { color: colors.primary }]}>
+              {isPooja ? 'Registered Performer' : 'Participant'}
+            </Text>
           </View>
         </View>
       </View>
 
       {/* Stats Counter */}
-      <View style={styles.statsRow}>
+      <View style={[styles.statsRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <View style={styles.statBox}>
-          <Text style={styles.statNum}>{isPooja ? '1' : '0'}</Text>
-          <Text style={styles.statLabel}>Contests Joined</Text>
+          <Text style={[styles.statNum, { color: colors.textPrimary }]}>{isPooja ? '1' : '0'}</Text>
+          <Text style={[styles.statLabel, { color: colors.textMuted }]}>Contests Joined</Text>
         </View>
-        <View style={styles.statDivider} />
+        <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
         <View style={styles.statBox}>
-          <Text style={styles.statNum}>{isPooja ? '1' : '0'}</Text>
-          <Text style={styles.statLabel}>Submissions</Text>
+          <Text style={[styles.statNum, { color: colors.textPrimary }]}>{isPooja ? '1' : '0'}</Text>
+          <Text style={[styles.statLabel, { color: colors.textMuted }]}>Submissions</Text>
         </View>
-        <View style={styles.statDivider} />
-        <View style={styles.statBox}>
-          <Text style={[styles.statNum, { color: THEME.colors.gold }]}>₹250</Text>
-          <Text style={styles.statLabel}>Wallet Balance</Text>
-        </View>
+        <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+        <TouchableOpacity style={styles.statBox} onPress={handleWalletPress} activeOpacity={0.7}>
+          <Text style={[styles.statNum, { color: colors.gold }]}>₹250</Text>
+          <Text style={[styles.statLabel, { color: colors.textMuted }]}>Wallet Balance</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Active Registrations Card */}
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>
+        <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>
           {language === 'hi' ? '🎟️ मेरी प्रतियोगिताएं' : '🎟️ MY ACTIVE ENTRIES'}
         </Text>
       </View>
 
       {isPooja ? (
-        <TouchableOpacity style={styles.entryCard} onPress={onGoToContest} activeOpacity={0.85}>
+        <TouchableOpacity
+          style={[
+            styles.entryCard,
+            {
+              backgroundColor: colors.surface,
+              borderColor: isDarkMode ? '#14B8A6' : '#0A7075',
+            },
+          ]}
+          onPress={onGoToContest}
+          activeOpacity={0.85}
+        >
           <View style={styles.entryTop}>
-            <Text style={styles.entryBadge}>Kathak Dance</Text>
-            <Text style={styles.entryStatus}>Spot Reserved ✓</Text>
+            <Text style={[styles.entryBadge, { color: colors.primary, backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
+              Kathak Dance
+            </Text>
+            <Text style={[styles.entryStatus, { color: colors.primary }]}>Spot Reserved ✓</Text>
           </View>
-          <Text style={styles.entryTitle}>Feedants Classical Dance Championship</Text>
-          <Text style={styles.entrySub}>Jury: Manju Dubey • Deadline: 10 Aug</Text>
-          <View style={styles.entryActionRow}>
-            <Text style={styles.entryOpenLink}>Open Entry & Upload Video →</Text>
+          <Text style={[styles.entryTitle, { color: colors.textPrimary }]}>
+            Feedants Classical Dance Championship
+          </Text>
+          <Text style={[styles.entrySub, { color: colors.textSecondary }]}>
+            Jury: Manju Dubey • Deadline: 10 Aug
+          </Text>
+          <View style={[styles.entryActionRow, { borderTopColor: colors.border }]}>
+            <Text style={[styles.entryOpenLink, { color: colors.primary }]}>
+              Open Entry & Upload Video →
+            </Text>
           </View>
         </TouchableOpacity>
       ) : (
-        <View style={styles.emptyCard}>
-          <Ionicons name="ticket-outline" size={28} color={THEME.colors.textMuted} />
-          <Text style={styles.emptyText}>No registered competitions yet.</Text>
-          <TouchableOpacity style={styles.browseNowBtn} onPress={onGoToContest} activeOpacity={0.8}>
+        <View style={[styles.emptyCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Ionicons name="ticket-outline" size={28} color={colors.textMuted} />
+          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No registered competitions yet.</Text>
+          <TouchableOpacity
+            style={[styles.browseNowBtn, { backgroundColor: colors.primary }]}
+            onPress={onGoToContest}
+            activeOpacity={0.8}
+          >
             <Text style={styles.browseNowText}>Register for Classical Dance</Text>
           </TouchableOpacity>
         </View>
       )}
 
       {/* Settings / Options List */}
-      <View style={styles.optionsList}>
+      <View style={[styles.optionsList, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <TouchableOpacity
-          style={styles.optionRow}
-          onPress={() => onShowToast('Referral code copied!')}
+          style={[styles.optionRow, { borderBottomColor: colors.border }]}
+          onPress={() => onShowToast && onShowToast('Referral code copied!')}
           activeOpacity={0.7}
         >
           <View style={styles.optionLeft}>
-            <Ionicons name="gift-outline" size={18} color={THEME.colors.primary} />
-            <Text style={styles.optionTitle}>Referral Program (Code: {activeUser?.referralCode || 'feed123'})</Text>
+            <Ionicons name="gift-outline" size={18} color={colors.primary} />
+            <Text style={[styles.optionTitle, { color: colors.textPrimary }]}>
+              Referral Program (Code: {activeUser?.referralCode || 'feed123'})
+            </Text>
           </View>
-          <Feather name="chevron-right" size={18} color={THEME.colors.textMuted} />
+          <Feather name="chevron-right" size={18} color={colors.textMuted} />
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.optionRow}
-          onPress={() => onShowToast('Refund guarantee backed by Razorpay.')}
+          style={[styles.optionRow, { borderBottomColor: colors.border }]}
+          onPress={handleSecurityPolicyPress}
           activeOpacity={0.7}
         >
           <View style={styles.optionLeft}>
-            <Ionicons name="shield-checkmark-outline" size={18} color={THEME.colors.primary} />
-            <Text style={styles.optionTitle}>Security & Refund Policy</Text>
+            <Ionicons name="shield-checkmark-outline" size={18} color={colors.primary} />
+            <Text style={[styles.optionTitle, { color: colors.textPrimary }]}>Security & Refund Policy</Text>
           </View>
-          <Feather name="chevron-right" size={18} color={THEME.colors.textMuted} />
+          <Feather name="chevron-right" size={18} color={colors.textMuted} />
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -108,7 +166,6 @@ export default function ProfileScreen({ activeUser, onShowToast, onGoToContest, 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.colors.bg,
   },
   content: {
     padding: 16,
@@ -118,11 +175,9 @@ const styles = StyleSheet.create({
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: THEME.colors.surface,
     padding: 18,
-    borderRadius: THEME.borderRadius.lg,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
     gap: 14,
   },
   avatar: {
@@ -130,7 +185,6 @@ const styles = StyleSheet.create({
     height: 64,
     borderRadius: 32,
     borderWidth: 2,
-    borderColor: THEME.colors.primary,
   },
   profileInfo: {
     flex: 1,
@@ -143,16 +197,13 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 16,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.textPrimary,
+    fontWeight: '800',
   },
   email: {
     fontSize: 12,
-    color: THEME.colors.textSecondary,
   },
   roleBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: THEME.colors.primaryBg,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
@@ -160,25 +211,21 @@ const styles = StyleSheet.create({
   },
   roleText: {
     fontSize: 10,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.primary,
+    fontWeight: '700',
   },
   sectionHeader: {
     marginTop: 6,
   },
   sectionTitle: {
     fontSize: 10,
-    fontWeight: THEME.typography.weights.black,
-    color: THEME.colors.textMuted,
+    fontWeight: '800',
     letterSpacing: 1.5,
   },
   statsRow: {
     flexDirection: 'row',
-    backgroundColor: THEME.colors.surface,
-    borderRadius: THEME.borderRadius.lg,
+    borderRadius: 16,
     padding: 14,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
   },
   statBox: {
     flex: 1,
@@ -187,23 +234,18 @@ const styles = StyleSheet.create({
   },
   statNum: {
     fontSize: 18,
-    fontWeight: THEME.typography.weights.black,
-    color: THEME.colors.textPrimary,
+    fontWeight: '800',
   },
   statLabel: {
     fontSize: 10,
-    color: THEME.colors.textMuted,
   },
   statDivider: {
     width: 1,
-    backgroundColor: THEME.colors.border,
   },
   entryCard: {
-    backgroundColor: THEME.colors.surfaceElevated,
-    borderRadius: THEME.borderRadius.lg,
+    borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: THEME.colors.primaryBorder,
     gap: 6,
   },
   entryTop: {
@@ -213,68 +255,55 @@ const styles = StyleSheet.create({
   },
   entryBadge: {
     fontSize: 10,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.primary,
-    backgroundColor: THEME.colors.primaryBg,
+    fontWeight: '700',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
   },
   entryStatus: {
     fontSize: 11,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.primary,
+    fontWeight: '700',
   },
   entryTitle: {
     fontSize: 14,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.textPrimary,
+    fontWeight: '700',
   },
   entrySub: {
     fontSize: 11,
-    color: THEME.colors.textSecondary,
   },
   entryActionRow: {
     borderTopWidth: 1,
-    borderTopColor: THEME.colors.border,
     paddingTop: 8,
     marginTop: 4,
   },
   entryOpenLink: {
     fontSize: 11,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.primary,
+    fontWeight: '700',
   },
   emptyCard: {
-    backgroundColor: THEME.colors.surface,
-    borderRadius: THEME.borderRadius.lg,
+    borderRadius: 16,
     padding: 20,
     alignItems: 'center',
     gap: 8,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
   },
   emptyText: {
     fontSize: 12,
-    color: THEME.colors.textSecondary,
   },
   browseNowBtn: {
-    backgroundColor: THEME.colors.primary,
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: THEME.borderRadius.md,
+    borderRadius: 8,
     marginTop: 4,
   },
   browseNowText: {
     fontSize: 11,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.bg,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   optionsList: {
-    backgroundColor: THEME.colors.surface,
-    borderRadius: THEME.borderRadius.lg,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
     overflow: 'hidden',
   },
   optionRow: {
@@ -283,7 +312,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 14,
     borderBottomWidth: 1,
-    borderBottomColor: THEME.colors.border,
   },
   optionLeft: {
     flexDirection: 'row',
@@ -292,7 +320,6 @@ const styles = StyleSheet.create({
   },
   optionTitle: {
     fontSize: 12,
-    fontWeight: THEME.typography.weights.medium,
-    color: THEME.colors.textPrimary,
+    fontWeight: '600',
   },
 });

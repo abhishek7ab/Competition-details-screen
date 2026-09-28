@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 
 export default function Header({
   activeTab = 'contests',
@@ -10,7 +10,11 @@ export default function Header({
   setLanguage,
   onToggleDevToolbar,
   isDevToolbarOpen,
+  isDarkMode = false,
+  onToggleDarkMode,
 }) {
+  const colors = getThemeColors(isDarkMode);
+
   const titles = {
     contests: { en: 'Go back', hi: 'वापस जाएं' },
     home: { en: 'Feed & Discover', hi: 'मुख्य फ़ीड' },
@@ -21,54 +25,78 @@ export default function Header({
   const currentTitle = titles[activeTab] || titles.contests;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
       <View style={styles.innerRow}>
         <TouchableOpacity style={styles.backButton} onPress={onBackPress} activeOpacity={0.7}>
           <Ionicons
             name={activeTab === 'home' ? 'grid-outline' : 'arrow-back'}
             size={20}
-            color="#0F172A"
+            color={colors.textPrimary}
           />
-          <Text style={styles.backTitleText}>
+          <Text style={[styles.backTitleText, { color: colors.textPrimary }]}>
             {language === 'hi' ? currentTitle.hi : currentTitle.en}
           </Text>
         </TouchableOpacity>
 
         <View style={styles.rightActions}>
+          {/* Dark Mode Toggle */}
+          {onToggleDarkMode && (
+            <TouchableOpacity
+              style={[
+                styles.iconBtn,
+                { backgroundColor: isDarkMode ? '#334155' : '#F1F5F9', borderColor: colors.border },
+              ]}
+              onPress={onToggleDarkMode}
+              activeOpacity={0.7}
+              title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              <Ionicons
+                name={isDarkMode ? 'sunny' : 'moon-outline'}
+                size={16}
+                color={isDarkMode ? '#FBBF24' : '#0F172A'}
+              />
+            </TouchableOpacity>
+          )}
+
           {/* Evaluator Dev Tools Toggle */}
           {onToggleDevToolbar && (
             <TouchableOpacity
-              style={[styles.devIconBtn, isDevToolbarOpen && styles.devIconBtnActive]}
+              style={[
+                styles.iconBtn,
+                isDevToolbarOpen
+                  ? { backgroundColor: colors.primary, borderColor: colors.primary }
+                  : { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6', borderColor: colors.primary },
+              ]}
               onPress={onToggleDevToolbar}
               activeOpacity={0.7}
               title="Evaluator Dev Tools"
             >
               <Ionicons
                 name={isDevToolbarOpen ? 'hardware-chip' : 'hardware-chip-outline'}
-                size={17}
-                color={isDevToolbarOpen ? '#FFFFFF' : '#0A7075'}
+                size={16}
+                color={isDevToolbarOpen ? '#FFFFFF' : colors.primary}
               />
             </TouchableOpacity>
           )}
 
           {/* Language Switcher */}
-          <View style={styles.langPillContainer}>
+          <View style={[styles.langPillContainer, { backgroundColor: isDarkMode ? '#0F172A' : '#F1F5F9', borderColor: colors.border }]}>
             <TouchableOpacity
-              style={[styles.langPill, language === 'en' && styles.langPillActive]}
+              style={[styles.langPill, language === 'en' && { backgroundColor: colors.primary }]}
               onPress={() => setLanguage('en')}
               activeOpacity={0.8}
             >
-              <Text style={[styles.langText, language === 'en' && styles.langTextActive]}>
+              <Text style={[styles.langText, language === 'en' ? styles.langTextActive : { color: colors.textSecondary }]}>
                 ENG
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.langPill, language === 'hi' && styles.langPillActive]}
+              style={[styles.langPill, language === 'hi' && { backgroundColor: colors.primary }]}
               onPress={() => setLanguage('hi')}
               activeOpacity={0.8}
             >
-              <Text style={[styles.langText, language === 'hi' && styles.langTextActive]}>
+              <Text style={[styles.langText, language === 'hi' ? styles.langTextActive : { color: colors.textSecondary }]}>
                 हिंदी
               </Text>
             </TouchableOpacity>
@@ -81,9 +109,7 @@ export default function Header({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
     ...Platform.select({
       web: { boxShadow: '0 1px 3px rgba(0,0,0,0.03)' },
     }),
@@ -103,7 +129,6 @@ const styles = StyleSheet.create({
   backTitleText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0F172A',
     letterSpacing: -0.2,
   },
   rightActions: {
@@ -111,26 +136,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  devIconBtn: {
-    width: 30,
-    height: 30,
+  iconBtn: {
+    width: 32,
+    height: 32,
     borderRadius: 8,
-    backgroundColor: '#E8F6F6',
     borderWidth: 1,
-    borderColor: '#0A7075',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  devIconBtnActive: {
-    backgroundColor: '#0A7075',
-  },
   langPillContainer: {
     flexDirection: 'row',
-    backgroundColor: '#F1F5F9',
     borderRadius: 9999,
     padding: 2,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     gap: 2,
   },
   langPill: {
@@ -138,13 +156,9 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 9999,
   },
-  langPillActive: {
-    backgroundColor: '#0A7075',
-  },
   langText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#64748B',
   },
   langTextActive: {
     color: '#FFFFFF',

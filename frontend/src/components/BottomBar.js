@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Platform } from 'react-native';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 
 export default function BottomBar({
   competition,
@@ -9,7 +9,9 @@ export default function BottomBar({
   onSubmitPress,
   loading,
   language,
+  isDarkMode = false,
 }) {
+  const colors = getThemeColors(isDarkMode);
   const isRegistered = computed?.userState?.isRegistered;
   const hasSubmitted = computed?.userState?.hasSubmitted;
   const currentState = computed?.currentState || 'REGISTRATION_OPEN';
@@ -52,9 +54,20 @@ export default function BottomBar({
   }
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+        },
+      ]}
+    >
       <TouchableOpacity
-        style={[styles.button, !isPrimary && styles.buttonDisabled]}
+        style={[
+          styles.button,
+          { backgroundColor: isPrimary ? colors.primary : isDarkMode ? '#334155' : '#E2E8F0' },
+        ]}
         onPress={actionHandler}
         disabled={isActionDisabled || loading}
         activeOpacity={0.85}
@@ -63,11 +76,21 @@ export default function BottomBar({
           <ActivityIndicator color="#FFFFFF" size="small" />
         ) : (
           <View style={styles.textContainer}>
-            <Text style={[styles.buttonTitle, !isPrimary && styles.buttonTitleDisabled]}>
+            <Text
+              style={[
+                styles.buttonTitle,
+                !isPrimary && { color: colors.textMuted },
+              ]}
+            >
               {buttonTitle}
             </Text>
             {buttonSubtext ? (
-              <Text style={[styles.buttonSubtext, !isPrimary && styles.buttonSubtextDisabled]}>
+              <Text
+                style={[
+                  styles.buttonSubtext,
+                  !isPrimary && { color: colors.textMuted },
+                ]}
+              >
                 {buttonSubtext}
               </Text>
             ) : null}
@@ -80,9 +103,7 @@ export default function BottomBar({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
     paddingHorizontal: 16,
     paddingTop: 10,
     paddingBottom: 10,
@@ -94,14 +115,10 @@ const styles = StyleSheet.create({
     }),
   },
   button: {
-    backgroundColor: '#0A7075',
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  buttonDisabled: {
-    backgroundColor: '#E2E8F0',
   },
   textContainer: {
     alignItems: 'center',
@@ -112,15 +129,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#FFFFFF',
   },
-  buttonTitleDisabled: {
-    color: '#94A3B8',
-  },
   buttonSubtext: {
     fontSize: 11,
     fontWeight: '500',
     color: 'rgba(255, 255, 255, 0.85)',
-  },
-  buttonSubtextDisabled: {
-    color: '#94A3B8',
   },
 });

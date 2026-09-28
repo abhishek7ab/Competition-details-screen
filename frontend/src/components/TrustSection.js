@@ -1,20 +1,35 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 
-export default function TrustSection({ disclaimer, onWatchPrizeVideo, onOpenRefundPolicy, language }) {
+export default function TrustSection({
+  disclaimer,
+  onWatchPrizeVideo,
+  onOpenRefundPolicy,
+  language,
+  isDarkMode = false,
+}) {
+  const colors = getThemeColors(isDarkMode);
+
   const disclaimerText =
     language === 'hi'
       ? disclaimer?.hi || 'केवल सशुल्क प्रतिभागियों के योगदान को ही निर्णय के लिए मान्य माना जाएगा।'
       : disclaimer?.en || 'Only contributions from paid participants will be considered for judging.';
 
+  const handleRazorpayPress = () => {
+    Alert.alert(
+      'Razorpay Verified Security',
+      'All payments on Feedants are processed via Razorpay with 256-bit SSL encryption.\n\n✓ Supports UPI (GPay, PhonePe, Paytm, BHIM)\n✓ All Credit/Debit Cards & Net Banking\n✓ Instant automated refund if event is cancelled.'
+    );
+  };
+
   return (
     <View style={styles.container}>
       {/* 1. Disclaimer Banner */}
-      <View style={styles.disclaimerBox}>
-        <Ionicons name="information-circle-outline" size={17} color="#0A7075" style={styles.infoIcon} />
-        <Text style={styles.disclaimerText}>
+      <View style={[styles.disclaimerBox, { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
+        <Ionicons name="information-circle-outline" size={17} color={colors.primary} style={styles.infoIcon} />
+        <Text style={[styles.disclaimerText, { color: isDarkMode ? '#5EEAD4' : '#0A7075' }]}>
           <Text style={styles.disclaimerBold}>
             {language === 'hi' ? 'अस्वीकरण: ' : 'Disclaimer: '}
           </Text>
@@ -26,45 +41,54 @@ export default function TrustSection({ disclaimer, onWatchPrizeVideo, onOpenRefu
       <View style={styles.cardsRow}>
         {/* Left: How will you receive prize money? */}
         <TouchableOpacity
-          style={styles.videoCard}
+          style={[
+            styles.videoCard,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
           onPress={onWatchPrizeVideo}
           activeOpacity={0.8}
         >
-          <View style={styles.playBox}>
-            <Ionicons name="play" size={16} color="#0A7075" style={{ marginLeft: 2 }} />
+          <View style={[styles.playBox, { backgroundColor: isDarkMode ? '#172234' : '#E8F6F6' }]}>
+            <Ionicons name="play" size={16} color={colors.primary} style={{ marginLeft: 2 }} />
           </View>
           <View style={styles.videoCardText}>
-            <Text style={styles.videoTitle}>
+            <Text style={[styles.videoTitle, { color: colors.textPrimary }]}>
               {language === 'hi' ? 'पुरस्कार राशि कैसे प्राप्त करें?' : 'How will you receive prize money?'}
             </Text>
-            <Text style={styles.videoSub}>
+            <Text style={[styles.videoSub, { color: colors.textMuted }]}>
               {language === 'hi' ? 'अधिक जानने के लिए वीडियो देखें' : 'Watch video to know more'}
             </Text>
           </View>
         </TouchableOpacity>
 
         {/* Right: Refund policy & Razorpay */}
-        <View style={styles.policyCard}>
+        <View style={[styles.policyCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <TouchableOpacity
             style={styles.policyRow}
             onPress={onOpenRefundPolicy}
             activeOpacity={0.7}
           >
-            <Ionicons name="shield-checkmark-outline" size={16} color="#0A7075" />
-            <Text style={styles.policyText}>
+            <Ionicons name="shield-checkmark-outline" size={16} color={colors.primary} />
+            <Text style={[styles.policyText, { color: colors.textSecondary }]}>
               {language === 'hi' ? 'वापसी नीति' : 'Refund policy'}
             </Text>
           </TouchableOpacity>
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
-          <View style={styles.policyRow}>
-            <Ionicons name="shield-checkmark-outline" size={16} color="#0A7075" />
-            <Text style={styles.policyText}>
+          <TouchableOpacity
+            style={styles.policyRow}
+            onPress={handleRazorpayPress}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="shield-checkmark-outline" size={16} color={colors.primary} />
+            <Text style={[styles.policyText, { color: colors.textSecondary }]}>
               {language === 'hi' ? 'सुरक्षित भुगतान ' : 'Secure payments powered by '}
-              <Text style={styles.razorpayBrand}>Razorpay</Text>
+              <Text style={[styles.razorpayBrand, { color: isDarkMode ? '#93C5FD' : '#0C2340' }]}>
+                Razorpay
+              </Text>
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -78,7 +102,6 @@ const styles = StyleSheet.create({
   disclaimerBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#E8F6F6',
     borderRadius: 12,
     padding: 12,
     gap: 8,
@@ -90,7 +113,6 @@ const styles = StyleSheet.create({
   disclaimerText: {
     flex: 1,
     fontSize: 12,
-    color: '#0A7075',
     lineHeight: 17,
   },
   disclaimerBold: {
@@ -102,11 +124,9 @@ const styles = StyleSheet.create({
   },
   videoCard: {
     flex: 1.1,
-    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
@@ -118,7 +138,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: '#E8F6F6',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -129,20 +148,16 @@ const styles = StyleSheet.create({
   videoTitle: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F172A',
     lineHeight: 15,
   },
   videoSub: {
     fontSize: 10,
-    color: '#64748B',
   },
   policyCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     justifyContent: 'center',
     gap: 6,
     ...Platform.select({
@@ -157,14 +172,11 @@ const styles = StyleSheet.create({
   policyText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#334155',
   },
   razorpayBrand: {
     fontWeight: '800',
-    color: '#0C2340',
   },
   divider: {
     height: 1,
-    backgroundColor: '#F1F5F9',
   },
 });

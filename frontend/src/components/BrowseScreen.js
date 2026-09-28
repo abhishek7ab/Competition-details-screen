@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 
-export default function BrowseScreen({ onGoToContest, language }) {
+export default function BrowseScreen({ onGoToContest, language, isDarkMode = false }) {
+  const colors = getThemeColors(isDarkMode);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
@@ -18,7 +19,7 @@ export default function BrowseScreen({ onGoToContest, language }) {
       prize: '₹1,500',
       fee: '₹99',
       status: 'Open for Registration',
-      statusColor: THEME.colors.primary,
+      statusColor: colors.primary,
       icon: 'sparkles',
     },
     {
@@ -29,7 +30,7 @@ export default function BrowseScreen({ onGoToContest, language }) {
       prize: '₹5,000',
       fee: '₹199',
       status: 'Submissions Open',
-      statusColor: THEME.colors.amber,
+      statusColor: '#D97706',
       icon: 'flame',
     },
     {
@@ -40,7 +41,7 @@ export default function BrowseScreen({ onGoToContest, language }) {
       prize: '₹2,500',
       fee: '₹120',
       status: 'Closes in 2 Days',
-      statusColor: THEME.colors.rose,
+      statusColor: '#DC2626',
       icon: 'time',
     },
     {
@@ -51,33 +52,42 @@ export default function BrowseScreen({ onGoToContest, language }) {
       prize: '₹3,000',
       fee: '₹80',
       status: 'Open for Registration',
-      statusColor: THEME.colors.primary,
+      statusColor: colors.primary,
       icon: 'sparkles',
     },
   ];
 
   const filteredContests = contests.filter((c) => {
     const matchesCat = selectedCategory === 'All' || c.category === selectedCategory;
-    const matchesQuery = c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         c.judge.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesQuery =
+      c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.judge.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCat && matchesQuery;
   });
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       {/* Search Input Bar */}
-      <View style={styles.searchWrap}>
-        <Ionicons name="search" size={18} color={THEME.colors.textMuted} style={styles.searchIcon} />
+      <View
+        style={[
+          styles.searchWrap,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          },
+        ]}
+      >
+        <Ionicons name="search" size={18} color={colors.textMuted} style={styles.searchIcon} />
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, { color: colors.textPrimary }]}
           placeholder="Search competitions, dances, judges..."
-          placeholderTextColor={THEME.colors.textMuted}
+          placeholderTextColor={colors.textMuted}
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
         {searchQuery ? (
           <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <Ionicons name="close-circle" size={18} color={THEME.colors.textMuted} />
+            <Ionicons name="close-circle" size={18} color={colors.textMuted} />
           </TouchableOpacity>
         ) : null}
       </View>
@@ -89,11 +99,23 @@ export default function BrowseScreen({ onGoToContest, language }) {
           return (
             <TouchableOpacity
               key={cat}
-              style={[styles.catPill, isSelected && styles.catPillSelected]}
+              style={[
+                styles.catPill,
+                {
+                  backgroundColor: isSelected ? colors.primary : colors.surface,
+                  borderColor: isSelected ? colors.primary : colors.border,
+                },
+              ]}
               onPress={() => setSelectedCategory(cat)}
               activeOpacity={0.8}
             >
-              <Text style={[styles.catPillText, isSelected && styles.catPillTextSelected]}>
+              <Text
+                style={[
+                  styles.catPillText,
+                  { color: isSelected ? '#FFFFFF' : colors.textSecondary },
+                  isSelected && { fontWeight: '700' },
+                ]}
+              >
                 {cat}
               </Text>
             </TouchableOpacity>
@@ -103,20 +125,20 @@ export default function BrowseScreen({ onGoToContest, language }) {
 
       {/* Contests List */}
       <ScrollView style={styles.list} contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.resultsCount}>
+        <Text style={[styles.resultsCount, { color: colors.textMuted }]}>
           Showing {filteredContests.length} {filteredContests.length === 1 ? 'Contest' : 'Contests'}
         </Text>
 
         {filteredContests.map((item) => (
           <TouchableOpacity
             key={item.id}
-            style={styles.card}
+            style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
             onPress={onGoToContest}
             activeOpacity={0.85}
           >
             <View style={styles.cardTop}>
-              <View style={styles.cardCategoryBadge}>
-                <Text style={styles.cardCategoryText}>{item.category}</Text>
+              <View style={[styles.cardCategoryBadge, { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
+                <Text style={[styles.cardCategoryText, { color: colors.primary }]}>{item.category}</Text>
               </View>
               <View style={[styles.statusBadge, { backgroundColor: `${item.statusColor}20` }]}>
                 <Ionicons name={item.icon} size={11} color={item.statusColor} />
@@ -124,15 +146,15 @@ export default function BrowseScreen({ onGoToContest, language }) {
               </View>
             </View>
 
-            <Text style={styles.cardTitle}>{item.title}</Text>
-            <Text style={styles.cardJudge}>Jury: {item.judge}</Text>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>{item.title}</Text>
+            <Text style={[styles.cardJudge, { color: colors.textSecondary }]}>Jury: {item.judge}</Text>
 
-            <View style={styles.cardFooter}>
+            <View style={[styles.cardFooter, { borderTopColor: colors.border }]}>
               <View>
-                <Text style={styles.footerLabel}>Prize Pool</Text>
-                <Text style={styles.footerPrize}>{item.prize}</Text>
+                <Text style={[styles.footerLabel, { color: colors.textMuted }]}>Prize Pool</Text>
+                <Text style={[styles.footerPrize, { color: colors.primary }]}>{item.prize}</Text>
               </View>
-              <View style={styles.viewContestBtn}>
+              <View style={[styles.viewContestBtn, { backgroundColor: colors.primary }]}>
                 <Text style={styles.viewContestText}>Open Contest →</Text>
               </View>
             </View>
@@ -146,15 +168,12 @@ export default function BrowseScreen({ onGoToContest, language }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.colors.bg,
   },
   searchWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: THEME.colors.surfaceElevated,
-    borderRadius: THEME.borderRadius.md,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
     marginHorizontal: 16,
     marginTop: 14,
     marginBottom: 10,
@@ -167,7 +186,6 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    color: THEME.colors.textPrimary,
     fontSize: 13,
   },
   catPillsRow: {
@@ -178,47 +196,33 @@ const styles = StyleSheet.create({
   catPill: {
     paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: THEME.borderRadius.full,
-    backgroundColor: THEME.colors.surface,
+    borderRadius: 9999,
     borderWidth: 1,
-    borderColor: THEME.colors.border,
-  },
-  catPillSelected: {
-    backgroundColor: THEME.colors.primary,
-    borderColor: THEME.colors.primary,
   },
   catPillText: {
     fontSize: 11,
-    fontWeight: THEME.typography.weights.semibold,
-    color: THEME.colors.textSecondary,
-  },
-  catPillTextSelected: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    fontWeight: '600',
   },
   list: {
     flex: 1,
   },
   listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 24,
+    padding: 16,
+    paddingTop: 4,
+    paddingBottom: 32,
     gap: 12,
   },
   resultsCount: {
     fontSize: 11,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+    fontWeight: '700',
     marginBottom: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   card: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    gap: 8,
     ...Platform.select({
       web: { boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' },
     }),
@@ -227,17 +231,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 8,
   },
   cardCategoryBadge: {
-    backgroundColor: THEME.colors.surfaceElevated,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
   cardCategoryText: {
     fontSize: 10,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.textSecondary,
+    fontWeight: '700',
   },
   statusBadge: {
     flexDirection: 'row',
@@ -245,51 +248,44 @@ const styles = StyleSheet.create({
     gap: 4,
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 6,
+    borderRadius: 9999,
   },
   statusText: {
     fontSize: 10,
-    fontWeight: THEME.typography.weights.bold,
+    fontWeight: '700',
   },
   cardTitle: {
-    fontSize: 14,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.textPrimary,
+    fontSize: 15,
+    fontWeight: '800',
+    marginBottom: 4,
   },
   cardJudge: {
-    fontSize: 11,
-    color: THEME.colors.textSecondary,
+    fontSize: 12,
+    marginBottom: 14,
   },
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     borderTopWidth: 1,
-    borderTopColor: THEME.colors.border,
-    paddingTop: 10,
-    marginTop: 4,
+    paddingTop: 12,
   },
   footerLabel: {
-    fontSize: 9,
-    color: THEME.colors.textMuted,
+    fontSize: 10,
     textTransform: 'uppercase',
   },
   footerPrize: {
     fontSize: 16,
-    fontWeight: THEME.typography.weights.black,
-    color: THEME.colors.gold,
+    fontWeight: '800',
   },
   viewContestBtn: {
-    backgroundColor: THEME.colors.primaryBg,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: THEME.borderRadius.sm,
-    borderWidth: 1,
-    borderColor: THEME.colors.primaryBorder,
+    borderRadius: 8,
   },
   viewContestText: {
     fontSize: 11,
-    fontWeight: THEME.typography.weights.bold,
-    color: THEME.colors.primary,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });

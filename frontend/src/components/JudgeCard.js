@@ -1,14 +1,26 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Platform, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 
-export default function JudgeCard({ judge, onPlayVideo, language }) {
+export default function JudgeCard({ judge, onPlayVideo, language, isDarkMode = false }) {
   if (!judge) return null;
+  const colors = getThemeColors(isDarkMode);
+
+  const handleJudgePress = () => {
+    Alert.alert(
+      judge.name || 'Manju Dubey',
+      `${judge.role} with ${judge.experience}. Head of classical dance jury panel for Feedants competitions. Watch the intro video to understand her judging criteria.`
+    );
+  };
 
   return (
-    <View style={styles.card}>
-      <View style={styles.leftCol}>
+    <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <TouchableOpacity
+        style={styles.leftCol}
+        onPress={handleJudgePress}
+        activeOpacity={0.8}
+      >
         <Image
           source={{
             uri:
@@ -18,28 +30,28 @@ export default function JudgeCard({ judge, onPlayVideo, language }) {
           style={styles.avatar}
         />
         <View style={styles.bio}>
-          <Text style={styles.sectionLabel}>
+          <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>
             {language === 'hi' ? 'निर्णायक' : 'Judge'}
           </Text>
-          <Text style={styles.judgeName}>{judge.name || 'Manju Dubey'}</Text>
-          <Text style={styles.judgeRole}>
+          <Text style={[styles.judgeName, { color: colors.textPrimary }]}>{judge.name || 'Manju Dubey'}</Text>
+          <Text style={[styles.judgeRole, { color: colors.textSecondary }]}>
             {judge.role || 'Professional Kathak Dancer'}
           </Text>
-          <Text style={styles.judgeExp}>
+          <Text style={[styles.judgeExp, { color: colors.textMuted }]}>
             {judge.experience || '12+ Years of Experience'}
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.videoBtn}
         onPress={() => onPlayVideo(judge.introVideoUrl || '', judge.name)}
         activeOpacity={0.7}
       >
-        <View style={styles.playCircle}>
-          <Ionicons name="play" size={16} color="#0A7075" style={{ marginLeft: 2 }} />
+        <View style={[styles.playCircle, { backgroundColor: colors.primaryBg }]}>
+          <Ionicons name="play" size={16} color={colors.primary} style={{ marginLeft: 2 }} />
         </View>
-        <Text style={styles.videoLabel}>
+        <Text style={[styles.videoLabel, { color: colors.primary }]}>
           {language === 'hi' ? 'परिचय वीडियो' : 'Intro Video'}
         </Text>
       </TouchableOpacity>
@@ -49,11 +61,9 @@ export default function JudgeCard({ judge, onPlayVideo, language }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -83,22 +93,18 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#64748B',
   },
   judgeName: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
     letterSpacing: -0.2,
   },
   judgeRole: {
     fontSize: 13,
-    color: '#475569',
     fontWeight: '500',
   },
   judgeExp: {
     fontSize: 12,
-    color: '#94A3B8',
     fontWeight: '400',
   },
   videoBtn: {
@@ -110,15 +116,11 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#E8F6F6',
     alignItems: 'center',
     justifyContent: 'center',
   },
   videoLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#0A7075',
   },
 });
-
-

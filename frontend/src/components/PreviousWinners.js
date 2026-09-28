@@ -1,14 +1,15 @@
 import React from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 
-export default function PreviousWinners({ winners, onPlayVideo, language }) {
+export default function PreviousWinners({ winners, onPlayVideo, language, isDarkMode = false }) {
   if (!winners || winners.length === 0) return null;
+  const colors = getThemeColors(isDarkMode);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>
+      <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
         {language === 'hi' ? 'पूर्व विजेता' : 'Previous Winners'}
       </Text>
 
@@ -20,7 +21,10 @@ export default function PreviousWinners({ winners, onPlayVideo, language }) {
         {winners.map((winner, idx) => (
           <TouchableOpacity
             key={idx}
-            style={styles.winnerCard}
+            style={[
+              styles.winnerCard,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
             onPress={() => onPlayVideo(winner.videoUrl, `${winner.name} (${winner.rankTitle})`)}
             activeOpacity={0.8}
           >
@@ -28,17 +32,17 @@ export default function PreviousWinners({ winners, onPlayVideo, language }) {
             <View style={styles.imageWrapper}>
               <Image source={{ uri: winner.avatarUrl }} style={styles.image} />
               {/* Circular Play Badge Icon */}
-              <View style={styles.playBadge}>
+              <View style={[styles.playBadge, { backgroundColor: colors.primary }]}>
                 <Ionicons name="play" size={11} color="#FFFFFF" style={{ marginLeft: 1 }} />
               </View>
             </View>
 
             {/* Winner Info */}
             <View style={styles.infoWrapper}>
-              <Text style={styles.name} numberOfLines={1}>
+              <Text style={[styles.name, { color: colors.textPrimary }]} numberOfLines={1}>
                 {winner.name}
               </Text>
-              <Text style={styles.rankTitle} numberOfLines={1}>
+              <Text style={[styles.rankTitle, { color: colors.primary }]} numberOfLines={1}>
                 {winner.rankTitle}
               </Text>
             </View>
@@ -56,7 +60,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
     marginBottom: 8,
     paddingLeft: 2,
   },
@@ -67,11 +70,9 @@ const styles = StyleSheet.create({
   winnerCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     width: 175,
     ...Platform.select({
       web: { boxShadow: '0 1px 3px rgba(0,0,0,0.05)' },
@@ -96,7 +97,6 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#0A7075',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -109,12 +109,9 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0F172A',
   },
   rankTitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#0A7075',
   },
 });
-

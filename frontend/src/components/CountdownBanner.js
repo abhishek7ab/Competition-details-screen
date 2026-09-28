@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 
-export default function CountdownBanner({ targetDate, language }) {
+export default function CountdownBanner({ targetDate, language, isDarkMode = false }) {
+  const colors = getThemeColors(isDarkMode);
   const [timeLeft, setTimeLeft] = useState({
     days: '01', hours: '06', minutes: '28', seconds: '32', isExpired: false,
   });
@@ -34,24 +35,24 @@ export default function CountdownBanner({ targetDate, language }) {
   }, [targetDate]);
 
   return (
-    <View style={styles.banner}>
+    <View style={[styles.banner, { backgroundColor: colors.primaryBg }]}>
       {/* Left: Hourglass + Registration closes in */}
       <View style={styles.leftSide}>
-        <Ionicons name="hourglass-outline" size={15} color="#0A7075" />
-        <Text style={styles.label}>
+        <Ionicons name="hourglass-outline" size={15} color={colors.primary} />
+        <Text style={[styles.label, { color: colors.primary }]}>
           {language === 'hi' ? 'पंजीकरण समाप्त' : 'Registration closes in'}
         </Text>
       </View>
 
       {/* Center: Clean Countdown String 01d : 06h : 28m : 32s */}
-      <Text style={styles.timerText}>
+      <Text style={[styles.timerText, { color: colors.primary }]}>
         {timeLeft.days}d : {timeLeft.hours}h : {timeLeft.minutes}m : {timeLeft.seconds}s
       </Text>
 
       {/* Right: Hurry up! */}
       <View style={styles.rightSide}>
-        <Ionicons name="stopwatch-outline" size={14} color="#0A7075" />
-        <Text style={styles.hurryText}>
+        <Ionicons name="stopwatch-outline" size={14} color={colors.primary} />
+        <Text style={[styles.hurryText, { color: colors.primary }]}>
           {language === 'hi' ? 'जल्दी करें!' : 'Hurry up!'}
         </Text>
       </View>
@@ -61,7 +62,6 @@ export default function CountdownBanner({ targetDate, language }) {
 
 const styles = StyleSheet.create({
   banner: {
-    backgroundColor: '#E8F6F6',
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -78,12 +78,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#0A7075',
   },
   timerText: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#0A7075',
     letterSpacing: 0.3,
   },
   rightSide: {
@@ -94,7 +92,5 @@ const styles = StyleSheet.create({
   hurryText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0A7075',
   },
 });
-

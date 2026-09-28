@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 
-export default function TabsSection({ competition, language }) {
+export default function TabsSection({ competition, language, isDarkMode = false }) {
+  const colors = getThemeColors(isDarkMode);
   const [activeTab, setActiveTab] = useState('about'); // 'about' | 'parameters' | 'rules'
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -19,23 +20,42 @@ export default function TabsSection({ competition, language }) {
       : competition?.aboutText?.en ||
         'This is an online classical dance competition open for all age groups. Participate from anywhere and showcase your talent. Express your passion through traditional dance.';
 
+  const handleParamPress = (item) => {
+    Alert.alert(
+      item.parameter,
+      `Weightage: ${item.weightage}\n\n${item.description || 'Evaluated strictly according to standard Indian classical choreography standards by Judge Manju Dubey.'}`
+    );
+  };
+
+  const handleRulePress = (rule) => {
+    Alert.alert('Competition Rule', rule);
+  };
+
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {/* Authentic Underlined Tab Headers */}
-      <View style={styles.tabHeadersRow}>
+      <View style={[styles.tabHeadersRow, { borderBottomColor: colors.border }]}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.key;
           return (
             <TouchableOpacity
               key={tab.key}
-              style={[styles.tabHeader, isActive && styles.tabHeaderActive]}
+              style={styles.tabHeader}
               onPress={() => setActiveTab(tab.key)}
               activeOpacity={0.7}
             >
-              <Text style={[styles.tabHeaderText, isActive && styles.tabHeaderTextActive]}>
+              <Text
+                style={[
+                  styles.tabHeaderText,
+                  { color: isActive ? colors.primary : colors.textMuted },
+                  isActive && { fontWeight: '700' },
+                ]}
+              >
                 {tab.label}
               </Text>
-              {isActive && <View style={styles.activeUnderline} />}
+              {isActive && (
+                <View style={[styles.activeUnderline, { backgroundColor: colors.primary }]} />
+              )}
             </TouchableOpacity>
           );
         })}
@@ -47,7 +67,7 @@ export default function TabsSection({ competition, language }) {
         {activeTab === 'about' && (
           <View>
             <Text
-              style={styles.paragraph}
+              style={[styles.paragraph, { color: colors.textSecondary }]}
               numberOfLines={isExpanded ? undefined : 4}
             >
               {aboutText}
@@ -58,7 +78,7 @@ export default function TabsSection({ competition, language }) {
               onPress={() => setIsExpanded(!isExpanded)}
               activeOpacity={0.7}
             >
-              <Text style={styles.viewMoreText}>
+              <Text style={[styles.viewMoreText, { color: colors.primary }]}>
                 {isExpanded
                   ? language === 'hi'
                     ? 'कम देखें'
@@ -70,7 +90,7 @@ export default function TabsSection({ competition, language }) {
               <Ionicons
                 name={isExpanded ? 'chevron-up' : 'chevron-down'}
                 size={14}
-                color="#0A7075"
+                color={colors.primary}
               />
             </TouchableOpacity>
           </View>
@@ -80,19 +100,30 @@ export default function TabsSection({ competition, language }) {
         {activeTab === 'parameters' && (
           <View style={styles.paramList}>
             {(competition?.judgingParameters || []).map((item, idx) => (
-              <View key={idx} style={styles.paramItem}>
+              <TouchableOpacity
+                key={idx}
+                style={[
+                  styles.paramItem,
+                  {
+                    backgroundColor: isDarkMode ? '#172234' : '#F8FAFC',
+                    borderColor: colors.border,
+                  },
+                ]}
+                onPress={() => handleParamPress(item)}
+                activeOpacity={0.7}
+              >
                 <View style={styles.paramTop}>
-                  <Text style={styles.paramName}>
+                  <Text style={[styles.paramName, { color: colors.textPrimary }]}>
                     {language === 'hi' && item.parameterHindi ? item.parameterHindi : item.parameter}
                   </Text>
-                  <View style={styles.weightChip}>
-                    <Text style={styles.weightText}>{item.weightage}</Text>
+                  <View style={[styles.weightChip, { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
+                    <Text style={[styles.weightText, { color: colors.primary }]}>{item.weightage}</Text>
                   </View>
                 </View>
                 {item.description ? (
-                  <Text style={styles.paramDesc}>{item.description}</Text>
+                  <Text style={[styles.paramDesc, { color: colors.textMuted }]}>{item.description}</Text>
                 ) : null}
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         )}
@@ -100,19 +131,33 @@ export default function TabsSection({ competition, language }) {
         {/* Tab 3: Rules & Eligibility */}
         {activeTab === 'rules' && (
           <View style={styles.rulesList}>
-            {(competition?.rulesAndEligibility || []).map((item, idx) => (
-              <View key={idx} style={styles.ruleItem}>
-                <Ionicons
-                  name="checkmark-circle"
-                  size={16}
-                  color="#0A7075"
-                  style={styles.ruleIcon}
-                />
-                <Text style={styles.ruleText}>
-                  {language === 'hi' && item.ruleHindi ? item.ruleHindi : item.rule}
-                </Text>
-              </View>
-            ))}
+            {(competition?.rulesAndEligibility || []).map((item, idx) => {
+              const ruleTextStr = language === 'hi' && item.ruleHindi ? item.ruleHindi : item.rule;
+              return (
+                <TouchableOpacity
+                  key={idx}
+                  style={[
+                    styles.ruleItem,
+                    {
+                      backgroundColor: isDarkMode ? '#172234' : '#F8FAFC',
+                      borderColor: colors.border,
+                    },
+                  ]}
+                  onPress={() => handleRulePress(ruleTextStr)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={16}
+                    color={colors.primary}
+                    style={styles.ruleIcon}
+                  />
+                  <Text style={[styles.ruleText, { color: colors.textSecondary }]}>
+                    {ruleTextStr}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         )}
       </View>
@@ -122,10 +167,8 @@ export default function TabsSection({ competition, language }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     overflow: 'hidden',
     marginBottom: 12,
     ...Platform.select({
@@ -135,7 +178,6 @@ const styles = StyleSheet.create({
   tabHeadersRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
   },
   tabHeader: {
     flex: 1,
@@ -144,16 +186,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
   },
-  tabHeaderActive: {},
   tabHeaderText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#64748B',
     textAlign: 'center',
-  },
-  tabHeaderTextActive: {
-    color: '#0A7075',
-    fontWeight: '700',
   },
   activeUnderline: {
     position: 'absolute',
@@ -161,7 +197,6 @@ const styles = StyleSheet.create({
     left: 12,
     right: 12,
     height: 2.5,
-    backgroundColor: '#0A7075',
     borderRadius: 2,
   },
   contentBox: {
@@ -169,7 +204,6 @@ const styles = StyleSheet.create({
   },
   paragraph: {
     fontSize: 13,
-    color: '#475569',
     lineHeight: 21,
   },
   viewMoreButton: {
@@ -183,17 +217,14 @@ const styles = StyleSheet.create({
   viewMoreText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#0A7075',
   },
   paramList: {
     gap: 10,
   },
   paramItem: {
-    backgroundColor: '#F8FAFC',
     borderRadius: 10,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
   paramTop: {
     flexDirection: 'row',
@@ -203,10 +234,8 @@ const styles = StyleSheet.create({
   paramName: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0F172A',
   },
   weightChip: {
-    backgroundColor: '#E8F6F6',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 6,
@@ -214,11 +243,9 @@ const styles = StyleSheet.create({
   weightText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0A7075',
   },
   paramDesc: {
     fontSize: 12,
-    color: '#64748B',
     marginTop: 4,
     lineHeight: 17,
   },
@@ -229,11 +256,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 8,
-    backgroundColor: '#F8FAFC',
     padding: 10,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
   ruleIcon: {
     marginTop: 1,
@@ -241,8 +266,6 @@ const styles = StyleSheet.create({
   ruleText: {
     flex: 1,
     fontSize: 12,
-    color: '#475569',
     lineHeight: 18,
   },
 });
-

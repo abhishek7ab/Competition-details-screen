@@ -1,9 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 
-export default function ImportantDatesCard({ competition, language }) {
+export default function ImportantDatesCard({ competition, language, isDarkMode = false, onShowToast }) {
+  const colors = getThemeColors(isDarkMode);
+
   const formatDateParts = (dateString, fallbackDate, fallbackTime) => {
     if (!dateString) return { dateStr: fallbackDate, timeStr: fallbackTime };
     const d = new Date(dateString);
@@ -32,65 +34,83 @@ export default function ImportantDatesCard({ competition, language }) {
 
   const items = [
     {
+      id: 'reg',
       icon: 'calendar-outline',
       iconType: 'ionicons',
       label: language === 'hi' ? 'पंजीकरण अंतिम तिथि' : 'Register Before',
       date: regDate.dateStr,
       time: regDate.timeStr,
+      detail: language === 'hi' ? 'पंजीकरण बंद होने से पहले अपना स्थान आरक्षित करें।' : 'Deadline to register and secure your spot in the competition.',
     },
     {
+      id: 'sub_start',
       icon: 'send',
       iconType: 'feather',
       label: language === 'hi' ? 'प्रस्तुति प्रारंभ' : 'Submission Starts',
       date: subStartDate.dateStr,
       time: subStartDate.timeStr,
+      detail: language === 'hi' ? 'प्रतिभागी अपना नृत्य वीडियो अपलोड करना शुरू कर सकते हैं।' : 'Submission portal opens for uploading your performance video.',
     },
     {
+      id: 'sub_end',
       icon: 'upload',
       iconType: 'feather',
       label: language === 'hi' ? 'प्रस्तुति समाप्ति' : 'Submission Ends',
       date: subEndDate.dateStr,
       time: subEndDate.timeStr,
+      detail: language === 'hi' ? 'इस समय के बाद कोई प्रस्तुति स्वीकार नहीं की जाएगी।' : 'Final cut-off time for performance video uploads.',
     },
     {
+      id: 'result',
       icon: 'trophy-outline',
       iconType: 'ionicons',
       label: language === 'hi' ? 'परिणाम तिथि' : 'Result Date',
       date: resultDate.dateStr,
       time: resultDate.timeStr,
+      detail: language === 'hi' ? 'जूरी मंजू दुबे द्वारा विजेता और पुरस्कारों की घोषणा।' : 'Winners & cash rewards announced by Head Judge Manju Dubey.',
     },
   ];
 
+  const handleDatePress = (item) => {
+    Alert.alert(
+      item.label,
+      `${item.detail}\n\n📅 Date: ${item.date}\n⏰ Time: ${item.time}\n\n🔔 Reminder notification will be sent to your device 1 hour prior.`,
+      [{ text: 'OK' }]
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>
+      <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
         {language === 'hi' ? 'महत्वपूर्ण तिथियां' : 'Important Dates'}
       </Text>
 
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <View style={styles.grid}>
           {items.map((item, idx) => (
-            <View
+            <TouchableOpacity
               key={idx}
               style={[
                 styles.cell,
-                idx % 2 === 0 && styles.cellLeft,
-                idx < 2 && styles.cellTop,
+                idx % 2 === 0 && [styles.cellLeft, { borderRightColor: colors.border }],
+                idx < 2 && [styles.cellTop, { borderBottomColor: colors.border }],
               ]}
+              onPress={() => handleDatePress(item)}
+              activeOpacity={0.7}
             >
-              <View style={styles.iconWrap}>
+              <View style={[styles.iconWrap, { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
                 {item.iconType === 'ionicons' ? (
-                  <Ionicons name={item.icon} size={18} color="#0A7075" />
+                  <Ionicons name={item.icon} size={18} color={colors.primary} />
                 ) : (
-                  <Feather name={item.icon} size={16} color="#0A7075" />
+                  <Feather name={item.icon} size={16} color={colors.primary} />
                 )}
               </View>
               <View style={styles.cellContent}>
-                <Text style={styles.label}>{item.label}</Text>
-                <Text style={styles.dateText}>{item.date}</Text>
-                <Text style={styles.timeText}>{item.time}</Text>
+                <Text style={[styles.label, { color: colors.textMuted }]}>{item.label}</Text>
+                <Text style={[styles.dateText, { color: colors.primary }]}>{item.date}</Text>
+                <Text style={[styles.timeText, { color: colors.textPrimary }]}>{item.time}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
       </View>
@@ -105,15 +125,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
     marginBottom: 8,
     paddingLeft: 2,
   },
   card: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     overflow: 'hidden',
     ...Platform.select({
       web: { boxShadow: '0 1px 3px rgba(0,0,0,0.05)' },
@@ -132,17 +149,14 @@ const styles = StyleSheet.create({
   },
   cellLeft: {
     borderRightWidth: 1,
-    borderRightColor: '#F1F5F9',
   },
   cellTop: {
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
   },
   iconWrap: {
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: '#E8F6F6',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -151,19 +165,16 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 11,
-    color: '#64748B',
     fontWeight: '500',
     marginBottom: 2,
   },
   dateText: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0A7075',
   },
   timeText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F172A',
     marginTop: 1,
   },
 });

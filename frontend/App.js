@@ -9,9 +9,11 @@ import {
   Text,
   Platform,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { apiService } from './src/services/api';
-import { THEME } from './src/constants/theme';
+import { THEME, getThemeColors } from './src/constants/theme';
 
 // Components
 import Header from './src/components/Header';
@@ -31,7 +33,13 @@ import HomeScreen from './src/components/HomeScreen';
 import BrowseScreen from './src/components/BrowseScreen';
 import ProfileScreen from './src/components/ProfileScreen';
 import DevToolbar from './src/components/DevToolbar';
-import { VideoModal, SubmissionModal, PaymentModal, CreateModal } from './src/components/Modals';
+import {
+  VideoModal,
+  SubmissionModal,
+  PaymentModal,
+  CreateModal,
+  ReviewsModal,
+} from './src/components/Modals';
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -42,6 +50,7 @@ export default function App() {
   const [demoUsers, setDemoUsers] = useState([]);
   const [devToolbarVisible, setDevToolbarVisible] = useState(false);
   const [language, setLanguage] = useState('en'); // 'en' | 'hi'
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Navigation & Interactive Modals State
   const [activeTab, setActiveTab] = useState('contests'); // 'home' | 'browse' | 'create' | 'contests' | 'profile'
@@ -49,7 +58,10 @@ export default function App() {
   const [videoModal, setVideoModal] = useState({ visible: false, url: '', title: '' });
   const [submissionModalVisible, setSubmissionModalVisible] = useState(false);
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);
+  const [reviewsModalVisible, setReviewsModalVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+
+  const colors = getThemeColors(isDarkMode);
 
   const handleSelectTab = (tab) => {
     if (tab === 'create') {
@@ -68,8 +80,27 @@ export default function App() {
       setActiveTab('contests');
       showToast('Back to Competition Details');
     } else {
-      setActiveTab('home');
-      showToast('Navigated to Feedants Home');
+      Alert.alert(
+        'Feedants Navigation',
+        'You are currently viewing Competition Details. Where would you like to navigate?',
+        [
+          { text: 'Stay Here', style: 'cancel' },
+          {
+            text: 'Go to Home Feed',
+            onPress: () => {
+              setActiveTab('home');
+              showToast('Feedants Home');
+            },
+          },
+          {
+            text: 'Explore Contests',
+            onPress: () => {
+              setActiveTab('browse');
+              showToast('Explore Contests');
+            },
+          },
+        ]
+      );
     }
   };
 
@@ -82,28 +113,31 @@ export default function App() {
   };
 
   // 1. Initial Load: Fetch Users & Competition Data
-  const loadData = useCallback(async (selectedUserId) => {
-    try {
-      const fetchedUsers = await apiService.getDemoUsers();
-      setDemoUsers(fetchedUsers);
+  const loadData = useCallback(
+    async (selectedUserId) => {
+      try {
+        const fetchedUsers = await apiService.getDemoUsers();
+        setDemoUsers(fetchedUsers);
 
-      const userToUse =
-        selectedUserId || activeUser?._id || (fetchedUsers.length > 0 ? fetchedUsers[0]._id : null);
+        const userToUse =
+          selectedUserId || activeUser?._id || (fetchedUsers.length > 0 ? fetchedUsers[0]._id : null);
 
-      if (fetchedUsers.length > 0 && !activeUser) {
-        setActiveUser(fetchedUsers[0]);
+        if (fetchedUsers.length > 0 && !activeUser) {
+          setActiveUser(fetchedUsers[0]);
+        }
+
+        const compData = await apiService.getCompetition(userToUse);
+        setCompetition(compData.competition);
+        setComputed(compData.computed);
+      } catch (err) {
+        console.error('Failed to load competition data:', err);
+        showToast('Backend connection error. Make sure backend is running on :5000');
+      } finally {
+        setLoading(false);
       }
-
-      const compData = await apiService.getCompetition(userToUse);
-      setCompetition(compData.competition);
-      setComputed(compData.computed);
-    } catch (err) {
-      console.error('Failed to load competition data:', err);
-      showToast('Backend connection error. Make sure backend is running on :5000');
-    } finally {
-      setLoading(false);
-    }
-  }, [activeUser]);
+    },
+    [activeUser]
+  );
 
   useEffect(() => {
     loadData();
@@ -137,8 +171,6 @@ export default function App() {
       showToast(`Reset failed: ${err.message}`);
     }
   };
-
-
 
   // 3. Handle Registration CTA
   const handleRegisterPress = () => {
@@ -195,214 +227,291 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        { backgroundColor: isDarkMode ? '#020617' : '#E2E8F0' },
+      ]}
+    >
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={isDarkMode ? '#0F172A' : '#FFFFFF'}
+      />
 
       {/* ═══════════════════════════════════════════════════════════
          FEEDANTS COMPETITION DETAILS SCREEN
          Clean centered mobile container on Web (maxWidth: 480)
          Full native view on mobile devices
          ═══════════════════════════════════════════════════════════ */}
-      <View style={styles.appContainer}>
-          {/* Top Header */}
-          <Header
-            activeTab={activeTab}
-            onBackPress={handleBackPress}
-            language={language}
-            setLanguage={setLanguage}
-            onToggleDevToolbar={() => setDevToolbarVisible((v) => !v)}
-            isDevToolbarOpen={devToolbarVisible}
-          />
+      <View
+        style={[
+          styles.appContainer,
+          {
+            backgroundColor: colors.bg,
+            ...(Platform.OS === 'web'
+              ? {
+                  boxShadow: isDarkMode
+                    ? '0 0 40px rgba(0,0,0,0.5)'
+                    : '0 0 30px rgba(0,0,0,0.06)',
+                }
+              : {}),
+          },
+        ]}
+      >
+        {/* Top Header */}
+        <Header
+          activeTab={activeTab}
+          onBackPress={handleBackPress}
+          language={language}
+          setLanguage={setLanguage}
+          onToggleDevToolbar={() => setDevToolbarVisible((v) => !v)}
+          isDevToolbarOpen={devToolbarVisible}
+          isDarkMode={isDarkMode}
+          onToggleDarkMode={() => setIsDarkMode((v) => !v)}
+        />
 
-          {/* Evaluator DevToolbar */}
-          <DevToolbar
-            visible={devToolbarVisible}
-            onClose={() => setDevToolbarVisible(false)}
-            users={demoUsers}
-            activeUser={activeUser}
-            onSelectUser={handleSelectUser}
-            currentState={computed?.currentState}
-            onOverrideState={handleOverrideState}
-            onResetDemo={handleResetDemo}
-            spotsRemaining={computed?.spotsRemaining ?? 19}
-            bookedSpots={competition?.bookedSpots ?? 1}
-          />
+        {/* Evaluator DevToolbar */}
+        <DevToolbar
+          visible={devToolbarVisible}
+          onClose={() => setDevToolbarVisible(false)}
+          users={demoUsers}
+          activeUser={activeUser}
+          onSelectUser={handleSelectUser}
+          currentState={computed?.currentState}
+          onOverrideState={handleOverrideState}
+          onResetDemo={handleResetDemo}
+          spotsRemaining={computed?.spotsRemaining ?? 19}
+          bookedSpots={competition?.bookedSpots ?? 1}
+          isDarkMode={isDarkMode}
+        />
 
-          {/* Toast Banner */}
-          {toastMessage ? (
-            <View style={styles.toastContainer}>
-              <Text style={styles.toastText}>{toastMessage}</Text>
-            </View>
-          ) : null}
+        {/* Toast Banner */}
+        {toastMessage ? (
+          <View
+            style={[
+              styles.toastContainer,
+              {
+                backgroundColor: isDarkMode ? '#1E293B' : '#0F172A',
+                borderColor: isDarkMode ? '#334155' : '#1E293B',
+              },
+            ]}
+          >
+            <Text style={styles.toastText}>{toastMessage}</Text>
+          </View>
+        ) : null}
 
-          {/* Screen Routing based on BottomNav activeTab */}
-          {loading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color={THEME.colors.primary} />
-              <Text style={styles.loadingText}>Connecting to Feedants API...</Text>
-            </View>
-          ) : !competition && activeTab === 'contests' ? (
-            <View style={styles.loadingContainer}>
-              <Ionicons name="cloud-offline-outline" size={40} color={THEME.colors.rose} />
-              <Text style={[styles.loadingText, { color: THEME.colors.rose, marginTop: 10 }]}>
-                Unable to reach Backend API (:5000)
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setLoading(true);
-                  loadData();
-                }}
-                style={styles.retryBtn}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.retryBtnText}>Retry Connection</Text>
-              </TouchableOpacity>
-            </View>
-          ) : activeTab === 'home' ? (
-            <HomeScreen
-              activeUser={activeUser}
-              competition={competition}
-              onGoToContest={() => setActiveTab('contests')}
-              onSelectCategory={(cat) => {
-                setActiveTab('browse');
-                showToast(`Browsing ${cat}`);
+        {/* Screen Routing based on BottomNav activeTab */}
+        {loading ? (
+          <View style={[styles.loadingContainer, { backgroundColor: colors.bg }]}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={[styles.loadingText, { color: colors.primary }]}>
+              Connecting to Feedants API...
+            </Text>
+          </View>
+        ) : !competition && activeTab === 'contests' ? (
+          <View style={[styles.loadingContainer, { backgroundColor: colors.bg }]}>
+            <Ionicons name="cloud-offline-outline" size={40} color="#DC2626" />
+            <Text style={[styles.loadingText, { color: '#DC2626', marginTop: 10 }]}>
+              Unable to reach Backend API (:5000)
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setLoading(true);
+                loadData();
               }}
-              language={language}
-            />
-          ) : activeTab === 'browse' ? (
-            <BrowseScreen
-              onGoToContest={() => setActiveTab('contests')}
-              language={language}
-            />
-          ) : activeTab === 'profile' ? (
-            <ProfileScreen
-              activeUser={activeUser}
-              onShowToast={showToast}
-              onGoToContest={() => setActiveTab('contests')}
-              language={language}
-            />
-          ) : (
-            /* Default: Full Competition Details Screen */
-            <ScrollView
-              style={styles.scrollView}
-              contentContainerStyle={styles.scrollContent}
-              showsVerticalScrollIndicator={false}
+              style={[styles.retryBtn, { backgroundColor: colors.primary }]}
+              activeOpacity={0.8}
             >
-              {/* 1. Hero Card */}
-              <HeroCard competition={competition} computed={computed} language={language} />
-
-              {/* 2. Judge Card */}
-              <JudgeCard
-                judge={competition?.judge}
-                onPlayVideo={(url, name) => handlePlayVideo(url, `Judge: ${name}`)}
-                language={language}
-              />
-
-              {/* 3. Live Countdown Banner */}
-              <CountdownBanner
-                targetDate={competition?.registrationDeadline}
-                language={language}
-              />
-
-              {/* 4. Important Dates */}
-              <ImportantDatesCard competition={competition} language={language} />
-
-              {/* 5. Previous Winners */}
-              <PreviousWinners
-                winners={competition?.previousWinners}
-                onPlayVideo={handlePlayVideo}
-                language={language}
-              />
-
-              {/* 6. Tabs (About, Judging, Rules) */}
-              <TabsSection competition={competition} language={language} />
-
-              {/* 7. Rewards List */}
-              <RewardsList rewards={competition?.rewards} language={language} />
-
-              {/* 8. Trust & Policies */}
-              <TrustSection
-                disclaimer={competition?.disclaimer}
-                onWatchPrizeVideo={() =>
-                  handlePlayVideo(
-                    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                    'Prize Distribution Process'
-                  )
-                }
-                onOpenRefundPolicy={() =>
-                  Alert.alert(
-                    'Feedants Refund Policy',
-                    '100% refund is issued if the competition is cancelled by Feedants. Registrations can be transferred up to 24 hours before the registration deadline.'
-                  )
-                }
-                language={language}
-              />
-
-              {/* 9. Referral Card */}
-              <ReferralCard user={activeUser} onShowToast={showToast} language={language} />
-
-              {/* 10. Feedback & Ad */}
-              <UserFeedbackBanner
-                onFeedbackPress={() =>
-                  showToast('Feedants reviews: 4.8/5 based on 1,200+ dancers.')
-                }
-                language={language}
-              />
-            </ScrollView>
-          )}
-
-          {/* Sticky Action CTA Button (active when on Competition Details on Mobile) */}
-          {!loading && activeTab === 'contests' && (
-            <BottomBar
+              <Text style={styles.retryBtnText}>Retry Connection</Text>
+            </TouchableOpacity>
+          </View>
+        ) : activeTab === 'home' ? (
+          <HomeScreen
+            activeUser={activeUser}
+            competition={competition}
+            onGoToContest={() => setActiveTab('contests')}
+            onSelectCategory={(cat) => {
+              setActiveTab('browse');
+              showToast(`Browsing ${cat}`);
+            }}
+            language={language}
+            isDarkMode={isDarkMode}
+          />
+        ) : activeTab === 'browse' ? (
+          <BrowseScreen
+            onGoToContest={() => setActiveTab('contests')}
+            language={language}
+            isDarkMode={isDarkMode}
+          />
+        ) : activeTab === 'profile' ? (
+          <ProfileScreen
+            activeUser={activeUser}
+            onShowToast={showToast}
+            onGoToContest={() => setActiveTab('contests')}
+            language={language}
+            isDarkMode={isDarkMode}
+          />
+        ) : (
+          /* Default: Full Competition Details Screen */
+          <ScrollView
+            style={[styles.scrollView, { backgroundColor: colors.bg }]}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* 1. Hero Card */}
+            <HeroCard
               competition={competition}
               computed={computed}
-              onRegisterPress={handleRegisterPress}
-              onSubmitPress={handleSubmitPress}
-              loading={actionLoading}
               language={language}
+              isDarkMode={isDarkMode}
             />
-          )}
 
-          {/* Mobile Bottom Navigation */}
-          <BottomNav
-            activeTab={activeTab}
-            onSelectTab={handleSelectTab}
-            activeUser={activeUser}
+            {/* 2. Judge Card */}
+            <JudgeCard
+              judge={competition?.judge}
+              onPlayVideo={(url, name) => handlePlayVideo(url, `Judge: ${name}`)}
+              language={language}
+              isDarkMode={isDarkMode}
+            />
+
+            {/* 3. Live Countdown Banner */}
+            <CountdownBanner
+              targetDate={competition?.registrationDeadline}
+              language={language}
+              isDarkMode={isDarkMode}
+            />
+
+            {/* 4. Important Dates */}
+            <ImportantDatesCard
+              competition={competition}
+              language={language}
+              isDarkMode={isDarkMode}
+              onShowToast={showToast}
+            />
+
+            {/* 5. Previous Winners */}
+            <PreviousWinners
+              winners={competition?.previousWinners}
+              onPlayVideo={handlePlayVideo}
+              language={language}
+              isDarkMode={isDarkMode}
+            />
+
+            {/* 6. Tabs (About, Judging, Rules) */}
+            <TabsSection
+              competition={competition}
+              language={language}
+              isDarkMode={isDarkMode}
+            />
+
+            {/* 7. Rewards List */}
+            <RewardsList
+              rewards={competition?.rewards}
+              language={language}
+              isDarkMode={isDarkMode}
+            />
+
+            {/* 8. Trust & Policies */}
+            <TrustSection
+              disclaimer={competition?.disclaimer}
+              onWatchPrizeVideo={() =>
+                handlePlayVideo(
+                  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                  'Prize Distribution Process'
+                )
+              }
+              onOpenRefundPolicy={() =>
+                Alert.alert(
+                  'Feedants Refund Policy',
+                  '100% refund is issued if the competition is cancelled by Feedants. Registrations can be transferred up to 24 hours before the registration deadline.'
+                )
+              }
+              language={language}
+              isDarkMode={isDarkMode}
+            />
+
+            {/* 9. Referral Card */}
+            <ReferralCard
+              user={activeUser}
+              onShowToast={showToast}
+              language={language}
+              isDarkMode={isDarkMode}
+            />
+
+            {/* 10. Feedback & Ad */}
+            <UserFeedbackBanner
+              onFeedbackPress={() => setReviewsModalVisible(true)}
+              language={language}
+              isDarkMode={isDarkMode}
+            />
+          </ScrollView>
+        )}
+
+        {/* Sticky Action CTA Button (active when on Competition Details) */}
+        {!loading && activeTab === 'contests' && (
+          <BottomBar
+            competition={competition}
+            computed={computed}
+            onRegisterPress={handleRegisterPress}
+            onSubmitPress={handleSubmitPress}
+            loading={actionLoading}
             language={language}
+            isDarkMode={isDarkMode}
           />
-        </View>
+        )}
 
-        {/* Interactive Modals */}
-        <VideoModal
-          visible={videoModal.visible}
-          videoUrl={videoModal.url}
-          title={videoModal.title}
-          onClose={() => setVideoModal({ visible: false, url: '', title: '' })}
-        />
-
-        <SubmissionModal
-          visible={submissionModalVisible}
-          onClose={() => setSubmissionModalVisible(false)}
-          onSubmit={handleConfirmSubmission}
-          loading={actionLoading}
-          initialData={computed?.userState?.submission}
+        {/* Mobile Bottom Navigation */}
+        <BottomNav
+          activeTab={activeTab}
+          onSelectTab={handleSelectTab}
+          activeUser={activeUser}
           language={language}
+          isDarkMode={isDarkMode}
         />
+      </View>
 
-        <PaymentModal
-          visible={paymentModalVisible}
-          onClose={() => setPaymentModalVisible(false)}
-          onConfirm={handleConfirmPayment}
-          entryFee={competition?.entryFee}
-          spotsRemaining={computed?.spotsRemaining}
-          loading={actionLoading}
-        />
+      {/* Interactive Modals */}
+      <VideoModal
+        visible={videoModal.visible}
+        videoUrl={videoModal.url}
+        title={videoModal.title}
+        onClose={() => setVideoModal({ visible: false, url: '', title: '' })}
+        isDarkMode={isDarkMode}
+      />
 
-        <CreateModal
-          visible={createModalVisible}
-          onClose={() => setCreateModalVisible(false)}
-          onCreateSuccess={(newTitle) => showToast(`Created: ${newTitle}`)}
-        />
+      <SubmissionModal
+        visible={submissionModalVisible}
+        onClose={() => setSubmissionModalVisible(false)}
+        onSubmit={handleConfirmSubmission}
+        loading={actionLoading}
+        initialData={computed?.userState?.submission}
+        language={language}
+        isDarkMode={isDarkMode}
+      />
+
+      <PaymentModal
+        visible={paymentModalVisible}
+        onClose={() => setPaymentModalVisible(false)}
+        onConfirm={handleConfirmPayment}
+        entryFee={competition?.entryFee}
+        spotsRemaining={computed?.spotsRemaining}
+        loading={actionLoading}
+        isDarkMode={isDarkMode}
+      />
+
+      <CreateModal
+        visible={createModalVisible}
+        onClose={() => setCreateModalVisible(false)}
+        onCreateSuccess={(newTitle) => showToast(`Created: ${newTitle}`)}
+        isDarkMode={isDarkMode}
+      />
+
+      <ReviewsModal
+        visible={reviewsModalVisible}
+        onClose={() => setReviewsModalVisible(false)}
+        isDarkMode={isDarkMode}
+        language={language}
+      />
     </SafeAreaView>
   );
 }
@@ -411,12 +520,10 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     width: '100%',
-    backgroundColor: '#F5F7FA',
     alignItems: 'center',
   },
   retryBtn: {
     marginTop: 16,
-    backgroundColor: '#0A7075',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
@@ -429,10 +536,8 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     maxWidth: 480,
-    backgroundColor: '#F5F7FA',
     ...Platform.select({
       web: {
-        boxShadow: '0 0 30px rgba(0,0,0,0.06)',
         height: '100vh',
         minHeight: '100vh',
       },
@@ -440,7 +545,6 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    backgroundColor: '#F5F7FA',
   },
   scrollContent: {
     padding: 16,
@@ -451,12 +555,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 30,
-    backgroundColor: '#F5F7FA',
   },
   loadingText: {
     marginTop: 12,
     fontSize: 13,
-    color: '#0A7075',
     fontWeight: '600',
   },
   toastContainer: {
@@ -464,17 +566,15 @@ const styles = StyleSheet.create({
     top: 54,
     left: 20,
     right: 20,
-    backgroundColor: '#0F172A',
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#1E293B',
     zIndex: 9999,
     alignItems: 'center',
     ...Platform.select({
       web: {
-        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
       },
     }),
   },

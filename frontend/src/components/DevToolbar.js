@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 
 export default function DevToolbar({
   visible,
@@ -14,35 +14,59 @@ export default function DevToolbar({
   onResetDemo,
   spotsRemaining,
   bookedSpots,
+  isDarkMode = false,
 }) {
   if (!visible) return null;
+  const colors = getThemeColors(isDarkMode);
 
   const states = ['AUTO', 'REGISTRATION_OPEN', 'REGISTRATION_CLOSED', 'SUBMISSIONS_OPEN', 'COMPLETED'];
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: colors.surface,
+          borderBottomColor: colors.border,
+        },
+      ]}
+    >
       <View style={styles.header}>
         <View style={styles.headerTitleRow}>
-          <Ionicons name="hardware-chip-outline" size={16} color="#0A7075" />
-          <Text style={styles.headerTitle}>Evaluator Control Panel</Text>
+          <Ionicons name="hardware-chip-outline" size={16} color={colors.primary} />
+          <Text style={[styles.headerTitle, { color: colors.primary }]}>Evaluator Control Panel</Text>
         </View>
         <TouchableOpacity onPress={onClose} style={styles.closeBtn} activeOpacity={0.7}>
-          <Ionicons name="close" size={18} color="#64748B" />
+          <Ionicons name="close" size={18} color={colors.textSecondary} />
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.sectionLabel}>1. Switch Demo Persona:</Text>
+      <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>1. Switch Demo Persona:</Text>
       <View style={styles.userRow}>
         {users.map((u) => {
           const isSelected = activeUser?._id === u._id;
           return (
             <TouchableOpacity
               key={u._id}
-              style={[styles.userChip, isSelected && styles.userChipSelected]}
+              style={[
+                styles.userChip,
+                {
+                  backgroundColor: isSelected
+                    ? isDarkMode ? '#132E35' : '#E8F6F6'
+                    : isDarkMode ? '#172234' : '#F8FAFC',
+                  borderColor: isSelected ? colors.primary : colors.border,
+                },
+              ]}
               onPress={() => onSelectUser(u)}
               activeOpacity={0.8}
             >
-              <Text style={[styles.userChipText, isSelected && styles.userChipTextSelected]}>
+              <Text
+                style={[
+                  styles.userChipText,
+                  { color: isSelected ? colors.primary : colors.textSecondary },
+                  isSelected && { fontWeight: '700' },
+                ]}
+              >
                 {u.name} {u.name === 'Pooja Sharma' ? '(Registered)' : '(New)'}
               </Text>
             </TouchableOpacity>
@@ -50,18 +74,30 @@ export default function DevToolbar({
         })}
       </View>
 
-      <Text style={styles.sectionLabel}>2. Force State Machine Override:</Text>
+      <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>2. Force State Machine Override:</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.stateRow}>
         {states.map((st) => {
           const isSelected = currentState === st;
           return (
             <TouchableOpacity
               key={st}
-              style={[styles.stateChip, isSelected && styles.stateChipSelected]}
+              style={[
+                styles.stateChip,
+                {
+                  backgroundColor: isSelected ? colors.primary : isDarkMode ? '#172234' : '#F8FAFC',
+                  borderColor: isSelected ? colors.primary : colors.border,
+                },
+              ]}
               onPress={() => onOverrideState(st)}
               activeOpacity={0.8}
             >
-              <Text style={[styles.stateChipText, isSelected && styles.stateChipTextSelected]}>
+              <Text
+                style={[
+                  styles.stateChipText,
+                  { color: isSelected ? '#FFFFFF' : colors.textSecondary },
+                  isSelected && { fontWeight: '700' },
+                ]}
+              >
                 {st}
               </Text>
             </TouchableOpacity>
@@ -69,9 +105,10 @@ export default function DevToolbar({
         })}
       </ScrollView>
 
-      <View style={styles.footerRow}>
-        <Text style={styles.statsText}>
-          Live Quota: <Text style={styles.statsBold}>{bookedSpots}/20 booked</Text> ({spotsRemaining} left)
+      <View style={[styles.footerRow, { borderTopColor: colors.border }]}>
+        <Text style={[styles.statsText, { color: colors.textSecondary }]}>
+          Live Quota:{' '}
+          <Text style={[styles.statsBold, { color: colors.primary }]}>{bookedSpots}/20 booked</Text> ({spotsRemaining} left)
         </Text>
         <TouchableOpacity style={styles.resetBtn} onPress={onResetDemo} activeOpacity={0.8}>
           <Ionicons name="refresh" size={13} color="#FFFFFF" />
@@ -84,9 +121,7 @@ export default function DevToolbar({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
     padding: 14,
     ...Platform.select({
       web: { boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
@@ -106,7 +141,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0A7075',
     letterSpacing: 0.5,
   },
   closeBtn: {
@@ -115,7 +149,6 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#94A3B8',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginTop: 8,
@@ -130,22 +163,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
-    backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  userChipSelected: {
-    backgroundColor: '#E8F6F6',
-    borderColor: '#0A7075',
   },
   userChipText: {
     fontSize: 11,
-    color: '#475569',
     fontWeight: '500',
-  },
-  userChipTextSelected: {
-    color: '#0A7075',
-    fontWeight: '700',
   },
   stateRow: {
     flexDirection: 'row',
@@ -156,22 +178,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 8,
-    backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  stateChipSelected: {
-    backgroundColor: '#0A7075',
-    borderColor: '#0A7075',
   },
   stateChipText: {
     fontSize: 10,
-    color: '#64748B',
     fontWeight: '600',
-  },
-  stateChipTextSelected: {
-    color: '#FFFFFF',
-    fontWeight: '700',
   },
   footerRow: {
     flexDirection: 'row',
@@ -180,15 +191,12 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
   },
   statsText: {
     fontSize: 11,
-    color: '#475569',
   },
   statsBold: {
     fontWeight: '700',
-    color: '#0A7075',
   },
   resetBtn: {
     flexDirection: 'row',
