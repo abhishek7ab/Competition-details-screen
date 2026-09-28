@@ -475,16 +475,14 @@ export default function App() {
             />
           )}
 
-          {/* Bottom Navigation (Mobile Only) */}
-          {!isDesktop && (
-            <BottomNav
-              activeTab={activeTab}
-              onSelectTab={handleSelectTab}
-              activeUser={activeUser}
-              language={language}
-              isDarkMode={isDarkMode}
-            />
-          )}
+          {/* Navigation for mobile and desktop */}
+          <BottomNav
+            activeTab={activeTab}
+            onSelectTab={handleSelectTab}
+            activeUser={activeUser}
+            language={language}
+            isDarkMode={isDarkMode}
+          />
         </View>
 
         {/* Right Action Column (Desktop Only when on Contests) */}
