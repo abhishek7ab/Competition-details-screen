@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Platform } from 'react-native';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 import Icon from './Icon';
 
 export default function DesktopActionCard({
@@ -10,7 +10,9 @@ export default function DesktopActionCard({
   onSubmitPress,
   loading,
   language,
+  isDarkMode = false,
 }) {
+  const colors = getThemeColors(isDarkMode);
   const isRegistered = computed?.userState?.isRegistered;
   const hasSubmitted = computed?.userState?.hasSubmitted;
   const currentState = computed?.currentState || 'REGISTRATION_OPEN';
@@ -32,25 +34,25 @@ export default function DesktopActionCard({
     buttonSubtext = language === 'hi' ? 'समीक्षाधीन' : 'Entry Submitted & Under Review';
     actionHandler = onSubmitPress;
     buttonVariant = 'success';
-    buttonIcon = 'eye-outline';
+    buttonIcon = 'checkmark-circle';
   } else if (isRegistered) {
     buttonTitle = language === 'hi' ? 'प्रस्तुति अपलोड करें' : 'Upload Dance Submission';
     buttonSubtext = language === 'hi' ? 'आप पंजीकृत हैं' : 'Spot Reserved! Ready for submission';
     actionHandler = onSubmitPress;
     buttonVariant = 'primary';
-    buttonIcon = 'cloud-upload-outline';
+    buttonIcon = 'upload';
   } else if (isRegistrationFull) {
     buttonTitle = language === 'hi' ? 'सभी स्थान भरे हुए हैं' : 'Registration Full (Sold Out)';
     buttonSubtext = language === 'hi' ? 'पंजीकरण बंद' : 'All 20/20 seats booked';
     isActionDisabled = true;
     buttonVariant = 'disabled';
-    buttonIcon = 'lock-closed-outline';
+    buttonIcon = 'lock-closed';
   } else if (currentState === 'REGISTRATION_CLOSED') {
     buttonTitle = language === 'hi' ? 'पंजीकरण बंद' : 'Registration Closed';
     buttonSubtext = language === 'hi' ? 'समय सीमा समाप्त' : 'Deadline has passed';
     isActionDisabled = true;
     buttonVariant = 'disabled';
-    buttonIcon = 'time-outline';
+    buttonIcon = 'stopwatch-outline';
   } else {
     buttonTitle =
       language === 'hi'
@@ -67,43 +69,63 @@ export default function DesktopActionCard({
   }
 
   return (
-    <View style={styles.card}>
+    <View
+      style={[
+        styles.card,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+      ]}
+    >
       {/* Top Header Badge */}
       <View style={styles.topBadgeRow}>
-        <View style={styles.officialBadge}>
-          <Icon name="sparkles" size={12} color={THEME.colors.primary} />
-          <Text style={styles.officialBadgeText}>OFFICIAL REGISTRATION</Text>
+        <View
+          style={[
+            styles.officialBadge,
+            {
+              backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6',
+              borderColor: isDarkMode ? '#1A4D54' : '#B2E2E4',
+            },
+          ]}
+        >
+          <Icon name="sparkles" size={12} color={colors.primary} />
+          <Text style={[styles.officialBadgeText, { color: colors.primary }]}>OFFICIAL REGISTRATION</Text>
         </View>
-        <Text style={styles.spotsCounterText}>{spotsRemaining} Spots Left</Text>
+        <Text style={[styles.spotsCounterText, { color: colors.primary }]}>{spotsRemaining} Spots Left</Text>
       </View>
 
       {/* Pricing and Prize Row */}
       <View style={styles.headerRow}>
         <View>
-          <Text style={styles.entryFeeLabel}>ENTRY FEE</Text>
+          <Text style={[styles.entryFeeLabel, { color: colors.textMuted }]}>ENTRY FEE</Text>
           <View style={styles.priceRow}>
-            <Text style={styles.entryFeeValue}>₹{competition?.entryFee || 99}</Text>
-            <Text style={styles.perEntryText}>/ performer</Text>
+            <Text style={[styles.entryFeeValue, { color: colors.textPrimary }]}>₹{competition?.entryFee || 99}</Text>
+            <Text style={[styles.perEntryText, { color: colors.textMuted }]}>/ performer</Text>
           </View>
         </View>
         <View style={styles.prizePoolBox}>
-          <Text style={styles.prizeLabel}>CASH POOL</Text>
-          <Text style={styles.prizeValue}>₹{(competition?.prizePool || 1500).toLocaleString('en-IN')}</Text>
+          <Text style={[styles.prizeLabel, { color: colors.textMuted }]}>CASH POOL</Text>
+          <Text style={[styles.prizeValue, { color: colors.primary }]}>
+            ₹{(competition?.prizePool || 1500).toLocaleString('en-IN')}
+          </Text>
         </View>
       </View>
 
       {/* Progress Quota Track */}
       <View style={styles.progressContainer}>
         <View style={styles.progressTopRow}>
-          <Text style={styles.progressLabel}>Capacity Quota</Text>
-          <Text style={styles.progressCount}>{bookedSpots}/{maxSpots} Booked ({Math.round(progressRatio * 100)}%)</Text>
+          <Text style={[styles.progressLabel, { color: colors.textMuted }]}>Capacity Quota</Text>
+          <Text style={[styles.progressCount, { color: colors.textSecondary }]}>
+            {bookedSpots}/{maxSpots} Booked ({Math.round(progressRatio * 100)}%)
+          </Text>
         </View>
-        <View style={styles.track}>
+        <View style={[styles.track, { backgroundColor: isDarkMode ? '#334155' : '#E2E8F0' }]}>
           <View
             style={[
               styles.fill,
-              { width: `${progressRatio * 100}%` },
-              isRegistrationFull && { backgroundColor: THEME.colors.rose },
+              { width: `${progressRatio * 100}%`, backgroundColor: colors.primary },
+              isRegistrationFull && { backgroundColor: colors.rose },
             ]}
           />
         </View>
@@ -113,27 +135,28 @@ export default function DesktopActionCard({
       <TouchableOpacity
         style={[
           styles.actionBtn,
-          buttonVariant === 'success' && styles.btnSuccess,
-          buttonVariant === 'disabled' && styles.btnDisabled,
+          { backgroundColor: colors.primary },
+          buttonVariant === 'disabled' && [styles.btnDisabled, { backgroundColor: isDarkMode ? '#334155' : '#E2E8F0' }],
         ]}
         onPress={actionHandler}
         disabled={isActionDisabled || loading}
         activeOpacity={0.85}
+        accessibilityRole="button"
       >
         {loading ? (
-          <ActivityIndicator color={THEME.colors.bg} size="small" />
+          <ActivityIndicator color="#FFFFFF" size="small" />
         ) : (
           <View style={styles.btnContent}>
             <View style={styles.btnTitleRow}>
               <Icon
                 name={buttonIcon}
                 size={18}
-                color={buttonVariant === 'disabled' ? THEME.colors.textMuted : THEME.colors.bg}
+                color={buttonVariant === 'disabled' ? colors.textMuted : '#FFFFFF'}
               />
               <Text
                 style={[
                   styles.btnTitle,
-                  buttonVariant === 'disabled' && styles.btnTitleDisabled,
+                  buttonVariant === 'disabled' && { color: colors.textMuted },
                 ]}
               >
                 {buttonTitle}
@@ -143,7 +166,7 @@ export default function DesktopActionCard({
               <Text
                 style={[
                   styles.btnSubtext,
-                  buttonVariant === 'disabled' && styles.btnSubtextDisabled,
+                  buttonVariant === 'disabled' && { color: colors.textMuted },
                 ]}
               >
                 {buttonSubtext}
@@ -154,18 +177,18 @@ export default function DesktopActionCard({
       </TouchableOpacity>
 
       {/* Security & Trust Badges */}
-      <View style={styles.trustBadgesRow}>
+      <View style={[styles.trustBadgesRow, { borderTopColor: colors.border }]}>
         <View style={styles.trustItem}>
-          <Icon name="lock-closed" size={12} color={THEME.colors.primary} />
-          <Text style={styles.trustText}>Razorpay 256-Bit</Text>
+          <Icon name="lock-closed" size={12} color={colors.primary} />
+          <Text style={[styles.trustText, { color: colors.textSecondary }]}>Razorpay 256-Bit</Text>
         </View>
         <View style={styles.trustItem}>
-          <Icon name="flash" size={12} color={THEME.colors.gold} />
-          <Text style={styles.trustText}>Instant UPI Payout</Text>
+          <Icon name="flash" size={12} color={colors.gold} />
+          <Text style={[styles.trustText, { color: colors.textSecondary }]}>Instant UPI</Text>
         </View>
         <View style={styles.trustItem}>
-          <Icon name="shield-checkmark" size={12} color={THEME.colors.primary} />
-          <Text style={styles.trustText}>100% Refundable</Text>
+          <Icon name="shield-checkmark" size={12} color={colors.primary} />
+          <Text style={[styles.trustText, { color: colors.textSecondary }]}>100% Refundable</Text>
         </View>
       </View>
     </View>
@@ -174,11 +197,9 @@ export default function DesktopActionCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     gap: 16,
     ...Platform.select({
       web: {
@@ -195,70 +216,58 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    backgroundColor: '#E8F6F6',
-    borderWidth: 1,
-    borderColor: '#B2E2E4',
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 6,
+    borderWidth: 1,
   },
   officialBadgeText: {
     fontSize: 10,
-    fontWeight: '700',
-    color: '#0A7075',
+    fontWeight: '800',
     letterSpacing: 0.5,
   },
   spotsCounterText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0A7075',
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingBottom: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    alignItems: 'flex-start',
   },
   entryFeeLabel: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#64748B',
-    letterSpacing: 0.8,
-    marginBottom: 2,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   priceRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: 4,
+    marginTop: 2,
   },
   entryFeeValue: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#0F172A',
+    fontSize: 28,
+    fontWeight: '900',
     letterSpacing: -0.5,
   },
   perEntryText: {
     fontSize: 11,
-    color: '#94A3B8',
     fontWeight: '500',
   },
   prizePoolBox: {
     alignItems: 'flex-end',
   },
   prizeLabel: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#64748B',
-    letterSpacing: 0.8,
-    marginBottom: 2,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   prizeValue: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#0A7075',
+    fontSize: 22,
+    fontWeight: '900',
     letterSpacing: -0.5,
+    marginTop: 2,
   },
   progressContainer: {
     gap: 6,
@@ -270,45 +279,32 @@ const styles = StyleSheet.create({
   },
   progressLabel: {
     fontSize: 11,
-    color: '#64748B',
-    fontWeight: '500',
+    fontWeight: '600',
   },
   progressCount: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0A7075',
   },
   track: {
     height: 6,
-    backgroundColor: '#E2E8F0',
     borderRadius: 3,
     overflow: 'hidden',
   },
   fill: {
     height: '100%',
-    backgroundColor: '#0A7075',
     borderRadius: 3,
   },
   actionBtn: {
-    backgroundColor: '#0A7075',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     ...Platform.select({
-      web: {
-        boxShadow: '0 2px 8px rgba(10, 112, 117, 0.25)',
-        cursor: 'pointer',
-      },
+      web: { cursor: 'pointer' },
     }),
   },
-  btnSuccess: {
-    backgroundColor: '#0A7075',
-  },
   btnDisabled: {
-    backgroundColor: '#E2E8F0',
-    borderWidth: 0,
-    boxShadow: 'none',
+    opacity: 0.7,
   },
   btnContent: {
     alignItems: 'center',
@@ -320,27 +316,22 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   btnTitle: {
-    fontSize: 15,
-    fontWeight: '700',
     color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '800',
     letterSpacing: 0.3,
   },
-  btnTitleDisabled: {
-    color: '#94A3B8',
-  },
   btnSubtext: {
-    fontSize: 11,
     color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: 11,
     fontWeight: '500',
-  },
-  btnSubtextDisabled: {
-    color: '#94A3B8',
   },
   trustBadgesRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 4,
+    paddingTop: 14,
+    borderTopWidth: 1,
   },
   trustItem: {
     flexDirection: 'row',
@@ -349,8 +340,6 @@ const styles = StyleSheet.create({
   },
   trustText: {
     fontSize: 11,
-    color: '#64748B',
     fontWeight: '500',
   },
 });
-

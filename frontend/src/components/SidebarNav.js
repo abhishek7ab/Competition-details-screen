@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Platform } from 'react-native';
-import { THEME } from '../constants/theme';
+import { THEME, getThemeColors } from '../constants/theme';
 import Icon from './Icon';
 
 export default function SidebarNav({
@@ -10,7 +10,11 @@ export default function SidebarNav({
   onCreatePress,
   language,
   setLanguage,
+  isDarkMode = false,
+  onToggleDarkMode,
 }) {
+  const colors = getThemeColors(isDarkMode);
+
   const navItems = [
     { key: 'contests', icon: 'trophy-outline', iconActive: 'trophy', label: 'Competition Details', labelHi: 'प्रतियोगिता विवरण' },
     { key: 'home', icon: 'home-outline', iconActive: 'home', label: 'Discover & Feed', labelHi: 'मुख्य फ़ीड' },
@@ -19,28 +23,43 @@ export default function SidebarNav({
   ];
 
   return (
-    <View style={styles.sidebar}>
+    <View
+      style={[
+        styles.sidebar,
+        {
+          backgroundColor: colors.surface,
+          borderRightColor: colors.border,
+        },
+      ]}
+    >
       {/* Brand Header */}
-      <View style={styles.brandContainer}>
+      <View style={[styles.brandContainer, { borderBottomColor: colors.border }]}>
         <View style={styles.brandRow}>
-          <View style={styles.logoIcon}>
+          <View style={[styles.logoIcon, { backgroundColor: colors.primary }]}>
             <Icon name="sparkles" size={17} color="#FFFFFF" />
           </View>
           <View>
             <View style={styles.brandTitleRow}>
-              <Text style={styles.brandTitle}>FEEDANTS</Text>
-              <View style={styles.proBadge}>
-                <Text style={styles.proBadgeText}>PRO</Text>
+              <Text style={[styles.brandTitle, { color: colors.textPrimary }]}>FEEDANTS</Text>
+              <View style={[styles.proBadge, { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
+                <Text style={[styles.proBadgeText, { color: colors.primary }]}>PRO</Text>
               </View>
             </View>
-            <Text style={styles.brandTagline}>Full-Stack Competition Platform</Text>
+            <Text style={[styles.brandTagline, { color: colors.textMuted }]}>
+              Full-Stack Competition Platform
+            </Text>
           </View>
         </View>
       </View>
 
       {/* Host Competition CTA */}
-      <TouchableOpacity style={styles.hostBtn} onPress={onCreatePress} activeOpacity={0.85}>
-        <Feather name="plus-circle" size={16} color="#FFFFFF" />
+      <TouchableOpacity
+        style={[styles.hostBtn, { backgroundColor: colors.primary }]}
+        onPress={onCreatePress}
+        activeOpacity={0.85}
+        accessibilityRole="button"
+      >
+        <Icon name="plus" size={16} color="#FFFFFF" />
         <Text style={styles.hostBtnText}>
           {language === 'hi' ? 'प्रतियोगिता आयोजित करें' : 'Host Competition'}
         </Text>
@@ -48,25 +67,38 @@ export default function SidebarNav({
 
       {/* Navigation Links */}
       <View style={styles.navSection}>
-        <Text style={styles.navSectionTitle}>NAVIGATION</Text>
+        <Text style={[styles.navSectionTitle, { color: colors.textMuted }]}>NAVIGATION</Text>
         {navItems.map((item) => {
           const isActive = activeTab === item.key;
           return (
             <TouchableOpacity
               key={item.key}
-              style={[styles.navLink, isActive && styles.navLinkActive]}
+              style={[
+                styles.navLink,
+                isActive && [
+                  styles.navLinkActive,
+                  { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' },
+                ],
+              ]}
               onPress={() => onSelectTab(item.key)}
               activeOpacity={0.8}
+              accessibilityRole="button"
             >
               <Icon
                 name={isActive ? item.iconActive : item.icon}
                 size={18}
-                color={isActive ? '#0A7075' : '#64748B'}
+                color={isActive ? colors.primary : colors.textSecondary}
               />
-              <Text style={[styles.navLinkText, isActive && styles.navLinkTextActive]}>
+              <Text
+                style={[
+                  styles.navLinkText,
+                  { color: isActive ? colors.primary : colors.textSecondary },
+                  isActive && { fontWeight: '700' },
+                ]}
+              >
                 {language === 'hi' ? item.labelHi : item.label}
               </Text>
-              {isActive && <View style={styles.activePill} />}
+              {isActive && <View style={[styles.activePill, { backgroundColor: colors.primary }]} />}
             </TouchableOpacity>
           );
         })}
@@ -75,28 +107,44 @@ export default function SidebarNav({
       {/* Spacer */}
       <View style={{ flex: 1 }} />
 
-      {/* Language Switcher */}
-      <View style={styles.langRow}>
-        <Text style={styles.langLabel}>Language</Text>
-        <View style={styles.langToggleWrap}>
+      {/* Dark Mode & Language Toggles */}
+      <View style={[styles.settingsRow, { borderTopColor: colors.border }]}>
+        {onToggleDarkMode && (
           <TouchableOpacity
-            style={[styles.langBtn, language === 'en' && styles.langBtnActive]}
+            style={[styles.themeBtn, { backgroundColor: isDarkMode ? '#334155' : '#F1F5F9', borderColor: colors.border }]}
+            onPress={onToggleDarkMode}
+            activeOpacity={0.7}
+          >
+            <Icon name={isDarkMode ? 'sunny' : 'moon-outline'} size={15} color={isDarkMode ? '#FBBF24' : '#0F172A'} />
+            <Text style={[styles.themeBtnText, { color: colors.textPrimary }]}>
+              {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        <View style={[styles.langToggleWrap, { backgroundColor: isDarkMode ? '#0F172A' : '#F1F5F9', borderColor: colors.border }]}>
+          <TouchableOpacity
+            style={[styles.langBtn, language === 'en' && { backgroundColor: colors.primary }]}
             onPress={() => setLanguage('en')}
           >
-            <Text style={[styles.langBtnText, language === 'en' && styles.langBtnTextActive]}>EN</Text>
+            <Text style={[styles.langBtnText, language === 'en' ? styles.langBtnTextActive : { color: colors.textSecondary }]}>
+              EN
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.langBtn, language === 'hi' && styles.langBtnActive]}
+            style={[styles.langBtn, language === 'hi' && { backgroundColor: colors.primary }]}
             onPress={() => setLanguage('hi')}
           >
-            <Text style={[styles.langBtnText, language === 'hi' && styles.langBtnTextActive]}>हिं</Text>
+            <Text style={[styles.langBtnText, language === 'hi' ? styles.langBtnTextActive : { color: colors.textSecondary }]}>
+              हिं
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Active User Persona Card */}
       <TouchableOpacity
-        style={styles.userCard}
+        style={[styles.userCard, { backgroundColor: isDarkMode ? '#172234' : '#F8FAFC', borderColor: colors.border }]}
         onPress={() => onSelectTab('profile')}
         activeOpacity={0.8}
       >
@@ -110,12 +158,14 @@ export default function SidebarNav({
           <View style={styles.onlineDot} />
         </View>
         <View style={styles.userInfo}>
-          <Text style={styles.userName} numberOfLines={1}>{activeUser?.name || 'Pooja Sharma'}</Text>
-          <Text style={styles.userRole}>
+          <Text style={[styles.userName, { color: colors.textPrimary }]} numberOfLines={1}>
+            {activeUser?.name || 'Pooja Sharma'}
+          </Text>
+          <Text style={[styles.userRole, { color: colors.textMuted }]}>
             {activeUser?.name === 'Pooja Sharma' ? 'Enrolled Performer ✓' : 'Artist Member'}
           </Text>
         </View>
-        <Icon name="chevron-forward" size={14} color="#94A3B8" />
+        <Icon name="chevron-forward" size={14} color={colors.textMuted} />
       </TouchableOpacity>
     </View>
   );
@@ -123,25 +173,23 @@ export default function SidebarNav({
 
 const styles = StyleSheet.create({
   sidebar: {
-    width: 270,
-    backgroundColor: '#FFFFFF',
+    width: 260,
     borderRightWidth: 1,
-    borderRightColor: '#E2E8F0',
-    padding: 20,
-    gap: 16,
+    padding: 18,
+    gap: 14,
     height: '100vh',
     position: 'sticky',
     top: 0,
     ...Platform.select({
       web: {
-        boxShadow: '1px 0 3px rgba(0, 0, 0, 0.03)',
+        boxShadow: '1px 0 6px rgba(0, 0, 0, 0.03)',
+        userSelect: 'none',
       },
     }),
   },
   brandContainer: {
-    paddingBottom: 16,
+    paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
   },
   brandRow: {
     flexDirection: 'row',
@@ -152,7 +200,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: '#0A7075',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -162,15 +209,11 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   brandTitle: {
-    fontSize: 17,
-    fontWeight: '800',
-    color: '#0F172A',
-    letterSpacing: 1.5,
+    fontSize: 16,
+    fontWeight: '900',
+    letterSpacing: 0.5,
   },
   proBadge: {
-    backgroundColor: '#E8F6F6',
-    borderWidth: 1,
-    borderColor: '#B2E2E4',
     paddingHorizontal: 6,
     paddingVertical: 1,
     borderRadius: 4,
@@ -178,107 +221,109 @@ const styles = StyleSheet.create({
   proBadgeText: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#0A7075',
   },
   brandTagline: {
-    fontSize: 11,
-    color: '#64748B',
-    marginTop: 2,
+    fontSize: 10,
     fontWeight: '500',
+    marginTop: 2,
   },
   hostBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#0A7075',
     paddingVertical: 11,
     borderRadius: 10,
     ...Platform.select({
-      web: {
-        boxShadow: '0 2px 6px rgba(10, 112, 117, 0.25)',
-      },
+      web: { cursor: 'pointer' },
     }),
   },
   hostBtnText: {
+    color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '700',
-    color: '#FFFFFF',
-    letterSpacing: 0.2,
   },
   navSection: {
     gap: 4,
-    marginTop: 4,
+    marginTop: 6,
   },
   navSectionTitle: {
     fontSize: 10,
-    fontWeight: '700',
-    color: '#94A3B8',
+    fontWeight: '800',
     letterSpacing: 1.2,
-    marginBottom: 4,
-    paddingLeft: 4,
+    marginBottom: 6,
+    paddingLeft: 8,
   },
   navLink: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    paddingVertical: 10,
     paddingHorizontal: 12,
+    paddingVertical: 10,
     borderRadius: 10,
     position: 'relative',
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
-  navLinkActive: {
-    backgroundColor: '#E8F6F6',
-  },
+  navLinkActive: {},
   navLinkText: {
-    flex: 1,
     fontSize: 13,
-    fontWeight: '500',
-    color: '#475569',
+    fontWeight: '600',
   },
   navLinkTextActive: {
-    color: '#0A7075',
     fontWeight: '700',
   },
   activePill: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#0A7075',
+    position: 'absolute',
+    right: 0,
+    top: 8,
+    bottom: 8,
+    width: 3,
+    borderRadius: 2,
   },
-  langRow: {
+  settingsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 10,
+    justifyContent: 'space-between',
+    paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
+    gap: 8,
   },
-  langLabel: {
+  themeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
+  },
+  themeBtnText: {
     fontSize: 11,
-    color: '#64748B',
-    fontWeight: '500',
+    fontWeight: '600',
   },
   langToggleWrap: {
     flexDirection: 'row',
-    backgroundColor: '#F1F5F9',
     borderRadius: 9999,
     padding: 2,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    gap: 2,
   },
   langBtn: {
-    paddingHorizontal: 9,
-    paddingVertical: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     borderRadius: 9999,
-  },
-  langBtnActive: {
-    backgroundColor: '#0A7075',
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   langBtnText: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '700',
-    color: '#64748B',
   },
   langBtnTextActive: {
     color: '#FFFFFF',
@@ -287,11 +332,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: '#F8FAFC',
     padding: 10,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   avatarWrap: {
     position: 'relative',
@@ -300,33 +346,27 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
   onlineDot: {
     position: 'absolute',
-    bottom: -1,
-    right: -1,
-    width: 9,
-    height: 9,
+    bottom: 0,
+    right: 0,
+    width: 10,
+    height: 10,
     borderRadius: 5,
-    backgroundColor: '#16A34A',
-    borderWidth: 1.5,
+    backgroundColor: '#22C55E',
+    borderWidth: 2,
     borderColor: '#FFFFFF',
   },
   userInfo: {
     flex: 1,
+    gap: 1,
   },
   userName: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F172A',
   },
   userRole: {
     fontSize: 10,
-    color: '#0A7075',
-    marginTop: 1,
-    fontWeight: '500',
   },
 });
-
