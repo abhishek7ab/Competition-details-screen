@@ -24,7 +24,9 @@ app.use(cors({
     if (!origin || allowedOrigins.has(origin)) {
       return callback(null, true);
     }
-    return callback(new Error('Origin is not allowed by CORS'));
+    const error = new Error('Origin is not allowed by CORS');
+    error.code = 'CORS_ORIGIN_DENIED';
+    return callback(error);
   },
 }));
 app.use(express.json({ limit: '100kb' }));
@@ -41,6 +43,9 @@ app.use('/api', apiRoutes);
 app.use((error, req, res, next) => {
   if (res.headersSent) {
     return next(error);
+  }
+  if (error && error.code === 'CORS_ORIGIN_DENIED') {
+    return res.status(403).json({ success: false, message: 'Origin is not allowed by CORS' });
   }
   if (error && error.type === 'entity.too.large') {
     return res.status(413).json({ success: false, message: 'Request body is too large. Maximum size is 100 KB.' });
