@@ -73,7 +73,9 @@ export const apiService = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ statusOverride }),
       });
-      return await res.json();
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || 'Failed to update competition status');
+      return json;
     } catch (error) {
       console.error('API overrideState error:', error);
       throw error;
@@ -84,7 +86,9 @@ export const apiService = {
   async resetDemoState() {
     try {
       const res = await fetch(`${API_BASE_URL}/dev/reset`, { method: 'POST' });
-      return await res.json();
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || 'Failed to reset demo data');
+      return json;
     } catch (error) {
       console.error('API resetDemoState error:', error);
       throw error;
