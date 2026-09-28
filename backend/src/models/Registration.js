@@ -17,7 +17,8 @@ const registrationSchema = new mongoose.Schema(
     paymentStatus: {
       type: String,
       enum: ['PAID', 'PENDING', 'FAILED', 'REFUNDED'],
-      default: 'PAID',
+      // Fail closed: a registration must never be treated as paid by default.
+      default: 'PENDING',
     },
     amountPaid: {
       type: Number,
