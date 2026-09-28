@@ -142,8 +142,9 @@ const registerForCompetition = async (req, res) => {
       userId,
       competitionId: updated._id,
       amountPaid: updated.entryFee,
-      paymentStatus: 'PENDING',
-      paymentId: undefined,
+      // Demo-only payment simulation. Production registrations are blocked above
+      // until real gateway verification is implemented.
+      paymentStatus: 'PAID',
     });
 
     return res.status(201).json({
@@ -200,8 +201,8 @@ const submitEntry = async (req, res) => {
     const now = new Date();
     const withinSubmissionWindow =
       state === 'SUBMISSIONS_OPEN' &&
-      now >= new Date(competition.submissionStartDate) &&
-      now <= new Date(competition.submissionEndDate);
+      (competition.statusOverride === 'SUBMISSIONS_OPEN' ||
+        (now >= new Date(competition.submissionStartDate) && now <= new Date(competition.submissionEndDate)));
     if (!withinSubmissionWindow) {
       return res.status(409).json({
         success: false,
@@ -243,6 +244,9 @@ const submitEntry = async (req, res) => {
 
 const getDemoUsers = async (req, res) => {
   try {
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(404).json({ success: false, message: 'Not found' });
+    }
     const users = await User.find().select('-password -passwordHash');
     return res.status(200).json({ success: true, data: users });
   } catch (error) {
