@@ -37,15 +37,20 @@ app.get('/health', (req, res) => {
 // Mount API routes
 app.use('/api', apiRoutes);
 
-// Return consistent JSON errors for malformed or oversized JSON request bodies.
+// Return consistent JSON errors for malformed, oversized, and unexpected errors.
 app.use((error, req, res, next) => {
+  if (res.headersSent) {
+    return next(error);
+  }
   if (error && error.type === 'entity.too.large') {
     return res.status(413).json({ success: false, message: 'Request body is too large. Maximum size is 100 KB.' });
   }
   if (error instanceof SyntaxError && error.status === 400 && 'body' in error) {
     return res.status(400).json({ success: false, message: 'Invalid JSON request body.' });
   }
-  return next(error);
+
+  console.error('Unhandled request error:', error);
+  return res.status(500).json({ success: false, message: 'Internal server error' });
 });
 
 // Start server
