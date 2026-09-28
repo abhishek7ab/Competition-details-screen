@@ -1,51 +1,52 @@
+const mongoose = require('mongoose');
 const Competition = require('../models/Competition');
 const Registration = require('../models/Registration');
 const Submission = require('../models/Submission');
 const User = require('../models/User');
 
-// Get Competition Details with dynamic user state and lifecycle
+const isValidId = (value) => mongoose.isValidObjectId(value);
+const isHttpUrl = (value) => {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
+// Get competition details with dynamic user state and lifecycle.
 const getCompetitionDetails = async (req, res) => {
   try {
     const { id } = req.params;
     const { userId } = req.query;
 
-    let competition;
-    if (!id || id === 'default' || id === 'latest') {
-      competition = await Competition.findOne().sort({ createdAt: -1 });
-    } else {
-      competition = await Competition.findById(id);
+    if (userId && !isValidId(userId)) {
+      return res.status(400).json({ success: false, message: 'Invalid userId' });
     }
+
+    const competition =
+      !id || id === 'default' || id === 'latest'
+        ? await Competition.findOne().sort({ createdAt: -1 })
+        : isValidId(id)
+          ? await Competition.findById(id)
+          : null;
 
     if (!competition) {
-      return res.status(404).json({ success: false, message: 'Competition not found' });
+      return res.status(id && id !== 'default' && id !== 'latest' ? 400 : 404).json({
+        success: false,
+        message: id && id !== 'default' && id !== 'latest' ? 'Invalid competition id' : 'Competition not found',
+      });
     }
 
-    // Determine lifecycle state
     const currentState = competition.getCurrentState();
-
-    // Check user registration and submission status
-    let userState = {
-      isRegistered: false,
-      hasSubmitted: false,
-      registration: null,
-      submission: null,
-    };
+    let userState = { isRegistered: false, hasSubmitted: false, registration: null, submission: null };
 
     if (userId) {
-      const registration = await Registration.findOne({
-        userId,
-        competitionId: competition._id,
-      });
-
+      const registration = await Registration.findOne({ userId, competitionId: competition._id });
       if (registration) {
         userState.isRegistered = true;
         userState.registration = registration;
-
-        const submission = await Submission.findOne({
-          userId,
-          competitionId: competition._id,
-        });
-
+        const submission = await Submission.findOne({ userId, competitionId: competition._id });
         if (submission) {
           userState.hasSubmitted = true;
           userState.submission = submission;
@@ -53,11 +54,8 @@ const getCompetitionDetails = async (req, res) => {
       }
     }
 
-    // Time calculations
     const now = new Date();
-    const millisUntilRegistrationCloses = Math.max(0, new Date(competition.registrationDeadline) - now);
     const spotsRemaining = Math.max(0, competition.maxSpots - competition.bookedSpots);
-    const isRegistrationFull = spotsRemaining <= 0;
 
     return res.status(200).json({
       success: true,
@@ -66,136 +64,170 @@ const getCompetitionDetails = async (req, res) => {
         computed: {
           currentState,
           spotsRemaining,
-          isRegistrationFull,
-          millisUntilRegistrationCloses,
+          isRegistrationFull: spotsRemaining === 0,
+          millisUntilRegistrationCloses: Math.max(0, new Date(competition.registrationDeadline) - now),
           userState,
         },
       },
     });
   } catch (error) {
     console.error('Error fetching competition details:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: 'Unable to fetch competition details' });
   }
 };
 
-// Concurrency-safe Registration handler
+// Reserve a spot without allowing overbooking. Registration creation is compensated
+// if the second database write fails; use a MongoDB replica-set transaction for
+// full crash-safe atomicity in production.
 const registerForCompetition = async (req, res) => {
+  let reservedCompetitionId = null;
   try {
     const { id } = req.params;
-    const { userId } = req.body;
+    const { userId } = req.body || {};
 
-    if (!userId) {
-      return res.status(400).json({ success: false, message: 'userId is required' });
+    if (!isValidId(id) || !isValidId(userId)) {
+      return res.status(400).json({ success: false, message: 'Valid competition id and userId are required' });
     }
 
-    const competition = await Competition.findById(id);
-    if (!competition) {
-      return res.status(404).json({ success: false, message: 'Competition not found' });
-    }
+    const [competition, user] = await Promise.all([
+      Competition.findById(id),
+      User.findById(userId),
+    ]);
+    if (!competition) return res.status(404).json({ success: false, message: 'Competition not found' });
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
-    // Check if registration is still open
-    const currentState = competition.getCurrentState();
-    if (currentState !== 'REGISTRATION_OPEN') {
-      return res.status(400).json({
-        success: false,
-        message: `Registration is not open for this competition (Current state: ${currentState})`,
-      });
-    }
-
-    // Check if user already registered
-    const existingRegistration = await Registration.findOne({
-      userId,
-      competitionId: competition._id,
-    });
-
-    if (existingRegistration) {
+    const state = competition.getCurrentState();
+    if (state !== 'REGISTRATION_OPEN') {
       return res.status(409).json({
         success: false,
-        message: 'You are already registered for this competition',
-        data: existingRegistration,
+        message: `Registration is not open (current state: ${state})`,
       });
     }
 
-    // ATOMIC RESERVATION TO PREVENT RACE CONDITIONS
-    // Only increment bookedSpots if bookedSpots < maxSpots
-    const updatedComp = await Competition.findOneAndUpdate(
-      {
-        _id: competition._id,
-        $expr: { $lt: ['$bookedSpots', '$maxSpots'] },
-      },
-      {
-        $inc: { bookedSpots: 1 },
-      },
+    const existing = await Registration.findOne({ userId, competitionId: competition._id });
+    if (existing) {
+      return res.status(409).json({ success: false, message: 'You are already registered', data: existing });
+    }
+
+    const now = new Date();
+    const reservationFilter = {
+      _id: competition._id,
+      $expr: { $lt: ['$bookedSpots', '$maxSpots'] },
+      $or: [
+        { statusOverride: 'REGISTRATION_OPEN' },
+        {
+          statusOverride: 'AUTO',
+          registrationDeadline: { $gt: now },
+          submissionStartDate: { $gt: now },
+        },
+      ],
+    };
+    const updated = await Competition.findOneAndUpdate(
+      reservationFilter,
+      { $inc: { bookedSpots: 1 } },
       { new: true }
     );
 
-    if (!updatedComp) {
+    if (!updated) {
       return res.status(409).json({
         success: false,
-        message: 'Sorry! All spots were just booked by other participants.',
+        message: 'Registration has closed or all spots have been booked.',
       });
     }
+    reservedCompetitionId = updated._id;
 
-    // Create the registration record
+    // This assignment uses a simulated payment flow. Do not treat this as a
+    // verified real payment; production registration must follow gateway verification.
     const registration = await Registration.create({
       userId,
-      competitionId: competition._id,
-      amountPaid: competition.entryFee,
-      paymentStatus: 'PAID',
+      competitionId: updated._id,
+      amountPaid: updated.entryFee,
+      paymentStatus: 'PENDING',
+      paymentId: undefined,
     });
 
     return res.status(201).json({
       success: true,
-      message: 'Registration successful! Spot reserved.',
+      message: 'Spot reserved. Payment is pending verification.',
       data: {
         registration,
-        bookedSpots: updatedComp.bookedSpots,
-        spotsRemaining: updatedComp.maxSpots - updatedComp.bookedSpots,
+        bookedSpots: updated.bookedSpots,
+        spotsRemaining: Math.max(0, updated.maxSpots - updated.bookedSpots),
       },
     });
   } catch (error) {
+    if (reservedCompetitionId) {
+      try {
+        await Competition.updateOne({ _id: reservedCompetitionId, bookedSpots: { $gt: 0 } }, { $inc: { bookedSpots: -1 } });
+      } catch (rollbackError) {
+        console.error('Failed to release reserved spot:', rollbackError);
+      }
+    }
+    if (error && error.code === 11000) {
+      return res.status(409).json({ success: false, message: 'You are already registered for this competition' });
+    }
     console.error('Error during registration:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: 'Registration could not be completed' });
   }
 };
 
-// Submission Handler
+// Submit an entry only during the valid submission window and for a paid registration.
 const submitEntry = async (req, res) => {
   try {
     const { id } = req.params;
-    const { userId, title, danceStyle, videoUrl, description } = req.body;
+    const { userId, title, danceStyle, videoUrl, description } = req.body || {};
 
-    if (!userId || !title || !videoUrl) {
-      return res.status(400).json({
+    if (!isValidId(id) || !isValidId(userId)) {
+      return res.status(400).json({ success: false, message: 'Valid competition id and userId are required' });
+    }
+    if (typeof title !== 'string' || !title.trim() || title.trim().length > 120) {
+      return res.status(400).json({ success: false, message: 'Title is required and must be 120 characters or fewer' });
+    }
+    if (typeof videoUrl !== 'string' || !isHttpUrl(videoUrl)) {
+      return res.status(400).json({ success: false, message: 'A valid HTTP(S) videoUrl is required' });
+    }
+    if (danceStyle != null && (typeof danceStyle !== 'string' || danceStyle.length > 80)) {
+      return res.status(400).json({ success: false, message: 'danceStyle must be 80 characters or fewer' });
+    }
+    if (description != null && (typeof description !== 'string' || description.length > 2000)) {
+      return res.status(400).json({ success: false, message: 'description must be 2000 characters or fewer' });
+    }
+
+    const competition = await Competition.findById(id);
+    if (!competition) return res.status(404).json({ success: false, message: 'Competition not found' });
+
+    const state = competition.getCurrentState();
+    const now = new Date();
+    const withinSubmissionWindow =
+      state === 'SUBMISSIONS_OPEN' &&
+      now >= new Date(competition.submissionStartDate) &&
+      now <= new Date(competition.submissionEndDate);
+    if (!withinSubmissionWindow) {
+      return res.status(409).json({
         success: false,
-        message: 'userId, title, and videoUrl are required',
+        message: `Submissions are not open (current state: ${state})`,
       });
     }
 
-    // Check if user is registered
-    const registration = await Registration.findOne({
-      userId,
-      competitionId: id,
-    });
-
-    if (!registration) {
+    const registration = await Registration.findOne({ userId, competitionId: id });
+    if (!registration || registration.paymentStatus !== 'PAID') {
       return res.status(403).json({
         success: false,
-        message: 'Only registered participants can submit an entry.',
+        message: 'Only participants with a verified paid registration can submit an entry.',
       });
     }
 
     const submission = await Submission.findOneAndUpdate(
       { userId, competitionId: id },
       {
-        title,
-        danceStyle: danceStyle || 'Classical Dance',
-        videoUrl,
-        description: description || '',
-        submittedAt: new Date(),
+        title: title.trim(),
+        danceStyle: (danceStyle || 'Classical Dance').trim(),
+        videoUrl: videoUrl.trim(),
+        description: (description || '').trim(),
+        submittedAt: now,
         status: 'SUBMITTED',
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true }
     );
 
     return res.status(200).json({
@@ -205,68 +237,68 @@ const submitEntry = async (req, res) => {
     });
   } catch (error) {
     console.error('Error during submission upload:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: 'Submission could not be saved' });
   }
 };
 
-// Get Users
 const getDemoUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find().select('-password -passwordHash');
     return res.status(200).json({ success: true, data: users });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: 'Unable to fetch users' });
   }
 };
 
-// Switch lifecycle state for evaluator testing
+// These evaluator controls are intended only for local demos, never production.
 const updateLifecycleOverride = async (req, res) => {
   try {
+    if (process.env.NODE_ENV === 'production' || process.env.ENABLE_DEMO_CONTROLS === 'false') {
+      return res.status(404).json({ success: false, message: 'Not found' });
+    }
     const { id } = req.params;
-    const { statusOverride } = req.body;
-
-    const competition = await Competition.findByIdAndUpdate(
-      id,
-      { statusOverride },
-      { new: true }
-    );
-
-    return res.status(200).json({
-      success: true,
-      message: `State overridden to: ${statusOverride}`,
-      data: competition,
-    });
+    const { statusOverride } = req.body || {};
+    const allowed = ['AUTO', 'REGISTRATION_OPEN', 'REGISTRATION_CLOSED', 'SUBMISSIONS_OPEN', 'SUBMISSIONS_CLOSED', 'COMPLETED'];
+    if (!isValidId(id) || !allowed.includes(statusOverride)) {
+      return res.status(400).json({ success: false, message: 'Valid competition id and statusOverride are required' });
+    }
+    const competition = await Competition.findByIdAndUpdate(id, { statusOverride }, { new: true, runValidators: true });
+    if (!competition) return res.status(404).json({ success: false, message: 'Competition not found' });
+    return res.status(200).json({ success: true, message: `State overridden to: ${statusOverride}`, data: competition });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: 'Unable to update lifecycle state' });
   }
 };
 
-// Reset demo competition state
 const resetDemoState = async (req, res) => {
   try {
-    const competition = await Competition.findOne();
-    if (!competition) {
-      return res.status(404).json({ success: false, message: 'No competition to reset' });
+    if (process.env.NODE_ENV === 'production' || process.env.ENABLE_DEMO_CONTROLS === 'false') {
+      return res.status(404).json({ success: false, message: 'Not found' });
     }
+    const competition = await Competition.findOne().sort({ createdAt: -1 });
+    if (!competition) return res.status(404).json({ success: false, message: 'No competition to reset' });
 
-    // Keep 1 spot booked as per design
-    competition.bookedSpots = 1;
+    const users = await User.find().sort({ createdAt: 1 }).select('_id');
+    if (users.length > 1) {
+      const nonDefaultIds = users.slice(1).map((user) => user._id);
+      await Promise.all([
+        Registration.deleteMany({ userId: { $in: nonDefaultIds }, competitionId: competition._id }),
+        Submission.deleteMany({ userId: { $in: nonDefaultIds }, competitionId: competition._id }),
+      ]);
+    }
+    const actualRegistrations = await Registration.countDocuments({ competitionId: competition._id });
+    competition.bookedSpots = Math.min(competition.maxSpots, actualRegistrations);
     competition.statusOverride = 'AUTO';
     await competition.save();
 
-    // Clear registrations and submissions for non-default users
-    const users = await User.find();
-    if (users.length > 1) {
-      await Registration.deleteMany({ userId: { $ne: users[0]._id } });
-      await Submission.deleteMany({ userId: { $ne: users[0]._id } });
-    }
-
     return res.status(200).json({
       success: true,
-      message: 'Demo state reset successfully!',
+      message: 'Demo state reset successfully',
+      data: { bookedSpots: competition.bookedSpots, spotsRemaining: Math.max(0, competition.maxSpots - competition.bookedSpots) },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    console.error('Error resetting demo state:', error);
+    return res.status(500).json({ success: false, message: 'Unable to reset demo state' });
   }
 };
 
