@@ -176,6 +176,10 @@ const registerForCompetition = async (req, res) => {
 
 // Submit an entry only during the valid submission window and for a paid registration.
 const submitEntry = async (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(503).json({ success: false, message: 'Submissions are disabled in production until authentication and verified payment checks are configured.' });
+  }
+
   try {
     const { id } = req.params;
     const { userId, title, danceStyle, videoUrl, description } = req.body || {};
