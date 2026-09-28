@@ -110,7 +110,7 @@ const registerForCompetition = async (req, res) => {
 
     const existing = await Registration.findOne({ userId, competitionId: competition._id });
     if (existing) {
-      return res.status(409).json({ success: false, message: 'You are already registered', data: existing });
+      return res.status(409).json({ success: false, message: 'You are already registered' });
     }
 
     const now = new Date();
