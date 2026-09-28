@@ -10,7 +10,7 @@ This project is a full-stack application built for the Feedants Full Stack Inter
 - **Works on Mobile and Desktop**: The layout automatically adjusts. It looks like a mobile app on small screens and expands to a three-column layout on computer screens.
 - **Live Countdown Timer**: Shows the remaining days, hours, minutes, and seconds until registration closes.
 - **Available Spots Counter**: Shows how many spots are left in real time (for example, 19 spots left).
-- **Registration and Payment**: Clicking Register Now opens a test Razorpay payment popup to book a spot.
+- **Registration and Payment**: The payment popup is a demo simulator only; it does not process or verify real payments. Production registration is disabled until gateway verification is integrated.
 - **Video Player**: You can watch the judge introduction video and past winners' dance videos directly inside the app.
 - **Video Submission**: After registering, the bottom button changes to Upload Submission where you can enter a video title and link.
 - **English and Hindi Support**: You can switch the text between English and Hindi using the language button in the header.
@@ -34,7 +34,7 @@ npm start
 
 The backend will start at: `http://localhost:5000`
 
-Note: You do not need to install MongoDB separately. If MongoDB is not running on your computer, the backend will automatically use a built-in temporary database.
+For local development, if `MONGODB_URI` is not set, the backend uses a temporary in-memory MongoDB database. **Data is erased when the process stops.** For persistent data, configure `MONGODB_URI` in `backend/.env`. Production startup requires a valid `MONGODB_URI` and will not fall back to temporary storage.
 
 ### Step 2: Start the Frontend
 
@@ -49,6 +49,20 @@ npm run web
 This will open the app in your browser at: `http://localhost:8081`
 
 ---
+
+## Environment configuration
+
+Copy `backend/.env.example` to `backend/.env` and set `MONGODB_URI` to your MongoDB connection string. Keep credentials out of Git.
+
+Demo-only controls are available in development. They are disabled when `NODE_ENV=production`. The current demo user-switching flow is not authentication; the API accepts user IDs and is intended only for the assignment demo.
+
+## Current limitations / production work
+
+- Payment is simulated in development. Real payment gateway order creation, server-side signature/webhook verification, refunds, and payment reconciliation are not implemented. Registration endpoints return 503 in production until real payment verification is added.
+- Authentication and authorization are not implemented. Do not expose the demo APIs to real users.
+- Registration spot reservation is guarded by an atomic conditional update and compensates if the registration insert fails. For full crash-safe atomicity, use a MongoDB replica set and a transaction-based reservation workflow.
+- Demo lifecycle override/reset endpoints are disabled in production.
+- Submission input validation and lifecycle checks are enforced by the backend.
 
 ## Technologies Used
 
