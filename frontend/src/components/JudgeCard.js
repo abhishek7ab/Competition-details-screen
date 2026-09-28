@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Platform, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 export default function JudgeCard({ judge, onPlayVideo, language, isDarkMode = false }) {
   if (!judge) return null;
@@ -20,6 +20,8 @@ export default function JudgeCard({ judge, onPlayVideo, language, isDarkMode = f
         style={styles.leftCol}
         onPress={handleJudgePress}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Judge Profile"
       >
         <Image
           source={{
@@ -47,9 +49,11 @@ export default function JudgeCard({ judge, onPlayVideo, language, isDarkMode = f
         style={styles.videoBtn}
         onPress={() => onPlayVideo(judge.introVideoUrl || '', judge.name)}
         activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel="Watch Intro Video"
       >
-        <View style={[styles.playCircle, { backgroundColor: colors.primaryBg }]}>
-          <Ionicons name="play" size={16} color={colors.primary} style={{ marginLeft: 2 }} />
+        <View style={[styles.playCircle, { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
+          <Icon name="play" size={16} color={colors.primary} style={{ marginLeft: 2 }} />
         </View>
         <Text style={[styles.videoLabel, { color: colors.primary }]}>
           {language === 'hi' ? 'परिचय वीडियो' : 'Intro Video'}
@@ -79,6 +83,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 14,
     flex: 1,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   avatar: {
     width: 60,
@@ -111,6 +118,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
     paddingLeft: 8,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   playCircle: {
     width: 44,

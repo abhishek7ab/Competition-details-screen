@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 export default function ReferralCard({ user, onShowToast, language, isDarkMode = false }) {
   const colors = getThemeColors(isDarkMode);
@@ -37,7 +37,7 @@ export default function ReferralCard({ user, onShowToast, language, isDarkMode =
             { backgroundColor: isDarkMode ? '#065F46' : '#DCFCE7' },
           ]}
         >
-          <Ionicons name="megaphone-outline" size={24} color={isDarkMode ? '#34D399' : '#16A34A'} />
+          <Icon name="megaphone-outline" size={24} color={isDarkMode ? '#34D399' : '#16A34A'} />
         </View>
 
         <View style={styles.contentCol}>
@@ -63,6 +63,7 @@ export default function ReferralCard({ user, onShowToast, language, isDarkMode =
                 ]}
                 onPress={handleCopy}
                 activeOpacity={0.7}
+                accessibilityRole="button"
               >
                 <Text style={[styles.copyBtnText, { color: colors.textPrimary }]}>
                   {copied ? 'Copied!' : 'Copy Link'}
@@ -76,6 +77,7 @@ export default function ReferralCard({ user, onShowToast, language, isDarkMode =
                 style={[styles.referBtn, { backgroundColor: colors.primary }]}
                 onPress={handleCopy}
                 activeOpacity={0.8}
+                accessibilityRole="button"
               >
                 <Text style={styles.referBtnText}>
                   {language === 'hi' ? 'रेफ़र करें' : 'Refer Now'}
@@ -145,6 +147,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 5,
     borderRadius: 6,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   copyBtnText: {
     fontSize: 10,
@@ -157,6 +162,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   referBtnText: {
     fontSize: 12,

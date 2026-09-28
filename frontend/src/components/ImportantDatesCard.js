@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform, TouchableOpacity, Alert } from 'react-native';
-import { Ionicons, Feather } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 export default function ImportantDatesCard({ competition, language, isDarkMode = false, onShowToast }) {
   const colors = getThemeColors(isDarkMode);
@@ -36,7 +36,6 @@ export default function ImportantDatesCard({ competition, language, isDarkMode =
     {
       id: 'reg',
       icon: 'calendar-outline',
-      iconType: 'ionicons',
       label: language === 'hi' ? 'पंजीकरण अंतिम तिथि' : 'Register Before',
       date: regDate.dateStr,
       time: regDate.timeStr,
@@ -45,7 +44,6 @@ export default function ImportantDatesCard({ competition, language, isDarkMode =
     {
       id: 'sub_start',
       icon: 'send',
-      iconType: 'feather',
       label: language === 'hi' ? 'प्रस्तुति प्रारंभ' : 'Submission Starts',
       date: subStartDate.dateStr,
       time: subStartDate.timeStr,
@@ -54,7 +52,6 @@ export default function ImportantDatesCard({ competition, language, isDarkMode =
     {
       id: 'sub_end',
       icon: 'upload',
-      iconType: 'feather',
       label: language === 'hi' ? 'प्रस्तुति समाप्ति' : 'Submission Ends',
       date: subEndDate.dateStr,
       time: subEndDate.timeStr,
@@ -63,7 +60,6 @@ export default function ImportantDatesCard({ competition, language, isDarkMode =
     {
       id: 'result',
       icon: 'trophy-outline',
-      iconType: 'ionicons',
       label: language === 'hi' ? 'परिणाम तिथि' : 'Result Date',
       date: resultDate.dateStr,
       time: resultDate.timeStr,
@@ -74,7 +70,7 @@ export default function ImportantDatesCard({ competition, language, isDarkMode =
   const handleDatePress = (item) => {
     Alert.alert(
       item.label,
-      `${item.detail}\n\n📅 Date: ${item.date}\n⏰ Time: ${item.time}\n\n🔔 Reminder notification will be sent to your device 1 hour prior.`,
+      `${item.detail}\n\n📅 Date: ${item.date}\n⏰ Time: ${item.time}\n\n🔔 Reminder notification set!`,
       [{ text: 'OK' }]
     );
   };
@@ -97,13 +93,11 @@ export default function ImportantDatesCard({ competition, language, isDarkMode =
               ]}
               onPress={() => handleDatePress(item)}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={item.label}
             >
               <View style={[styles.iconWrap, { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
-                {item.iconType === 'ionicons' ? (
-                  <Ionicons name={item.icon} size={18} color={colors.primary} />
-                ) : (
-                  <Feather name={item.icon} size={16} color={colors.primary} />
-                )}
+                <Icon name={item.icon} size={18} color={colors.primary} />
               </View>
               <View style={styles.cellContent}>
                 <Text style={[styles.label, { color: colors.textMuted }]}>{item.label}</Text>
@@ -146,6 +140,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     padding: 14,
     gap: 10,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   cellLeft: {
     borderRightWidth: 1,

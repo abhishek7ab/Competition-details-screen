@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform, TouchableOpacity, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 const RANK_ICONS = {
   1: { icon: 'trophy', color: '#F59E0B' },
@@ -42,11 +42,12 @@ export default function RewardsList({ rewards, language, isDarkMode = false }) {
               ]}
               onPress={() => handleRewardPress(reward)}
               activeOpacity={0.7}
+              accessibilityRole="button"
             >
               <View style={styles.leftRow}>
                 {iconMeta ? (
                   <View style={[styles.rankIconContainer, { backgroundColor: iconMeta.color + '20' }]}>
-                    <Ionicons name={iconMeta.icon} size={16} color={iconMeta.color} />
+                    <Icon name={iconMeta.icon} size={16} color={iconMeta.color} />
                   </View>
                 ) : (
                   <View style={[styles.rankNumberContainer, { backgroundColor: isDarkMode ? '#334155' : '#F1F5F9' }]}>
@@ -95,6 +96,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 14,
     paddingHorizontal: 16,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   rowBorder: {
     borderBottomWidth: 1,

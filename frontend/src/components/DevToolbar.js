@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 export default function DevToolbar({
   visible,
@@ -33,11 +33,11 @@ export default function DevToolbar({
     >
       <View style={styles.header}>
         <View style={styles.headerTitleRow}>
-          <Ionicons name="hardware-chip-outline" size={16} color={colors.primary} />
+          <Icon name="hardware-chip-outline" size={16} color={colors.primary} />
           <Text style={[styles.headerTitle, { color: colors.primary }]}>Evaluator Control Panel</Text>
         </View>
-        <TouchableOpacity onPress={onClose} style={styles.closeBtn} activeOpacity={0.7}>
-          <Ionicons name="close" size={18} color={colors.textSecondary} />
+        <TouchableOpacity onPress={onClose} style={styles.closeBtn} activeOpacity={0.7} accessibilityRole="button">
+          <Icon name="close" size={18} color={colors.textSecondary} />
         </TouchableOpacity>
       </View>
 
@@ -111,7 +111,7 @@ export default function DevToolbar({
           <Text style={[styles.statsBold, { color: colors.primary }]}>{bookedSpots}/20 booked</Text> ({spotsRemaining} left)
         </Text>
         <TouchableOpacity style={styles.resetBtn} onPress={onResetDemo} activeOpacity={0.8}>
-          <Ionicons name="refresh" size={13} color="#FFFFFF" />
+          <Icon name="refresh" size={13} color="#FFFFFF" />
           <Text style={styles.resetBtnText}>Reset Demo DB</Text>
         </TouchableOpacity>
       </View>
@@ -145,6 +145,9 @@ const styles = StyleSheet.create({
   },
   closeBtn: {
     padding: 4,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   sectionLabel: {
     fontSize: 10,
@@ -164,6 +167,9 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 8,
     borderWidth: 1,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   userChipText: {
     fontSize: 11,
@@ -179,6 +185,9 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 8,
     borderWidth: 1,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   stateChipText: {
     fontSize: 10,
@@ -206,6 +215,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   resetBtnText: {
     fontSize: 11,

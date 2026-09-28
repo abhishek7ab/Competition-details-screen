@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 export default function TrustSection({
   disclaimer,
@@ -28,7 +28,7 @@ export default function TrustSection({
     <View style={styles.container}>
       {/* 1. Disclaimer Banner */}
       <View style={[styles.disclaimerBox, { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
-        <Ionicons name="information-circle-outline" size={17} color={colors.primary} style={styles.infoIcon} />
+        <Icon name="information-circle-outline" size={17} color={colors.primary} style={styles.infoIcon} />
         <Text style={[styles.disclaimerText, { color: isDarkMode ? '#5EEAD4' : '#0A7075' }]}>
           <Text style={styles.disclaimerBold}>
             {language === 'hi' ? 'अस्वीकरण: ' : 'Disclaimer: '}
@@ -47,9 +47,10 @@ export default function TrustSection({
           ]}
           onPress={onWatchPrizeVideo}
           activeOpacity={0.8}
+          accessibilityRole="button"
         >
           <View style={[styles.playBox, { backgroundColor: isDarkMode ? '#172234' : '#E8F6F6' }]}>
-            <Ionicons name="play" size={16} color={colors.primary} style={{ marginLeft: 2 }} />
+            <Icon name="play" size={16} color={colors.primary} style={{ marginLeft: 2 }} />
           </View>
           <View style={styles.videoCardText}>
             <Text style={[styles.videoTitle, { color: colors.textPrimary }]}>
@@ -67,8 +68,9 @@ export default function TrustSection({
             style={styles.policyRow}
             onPress={onOpenRefundPolicy}
             activeOpacity={0.7}
+            accessibilityRole="button"
           >
-            <Ionicons name="shield-checkmark-outline" size={16} color={colors.primary} />
+            <Icon name="shield-checkmark-outline" size={16} color={colors.primary} />
             <Text style={[styles.policyText, { color: colors.textSecondary }]}>
               {language === 'hi' ? 'वापसी नीति' : 'Refund policy'}
             </Text>
@@ -80,8 +82,9 @@ export default function TrustSection({
             style={styles.policyRow}
             onPress={handleRazorpayPress}
             activeOpacity={0.7}
+            accessibilityRole="button"
           >
-            <Ionicons name="shield-checkmark-outline" size={16} color={colors.primary} />
+            <Icon name="shield-checkmark-outline" size={16} color={colors.primary} />
             <Text style={[styles.policyText, { color: colors.textSecondary }]}>
               {language === 'hi' ? 'सुरक्षित भुगतान ' : 'Secure payments powered by '}
               <Text style={[styles.razorpayBrand, { color: isDarkMode ? '#93C5FD' : '#0C2340' }]}>
@@ -131,7 +134,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     ...Platform.select({
-      web: { boxShadow: '0 1px 3px rgba(0,0,0,0.05)' },
+      web: { boxShadow: '0 1px 3px rgba(0,0,0,0.05)', cursor: 'pointer' },
     }),
   },
   playBox: {
@@ -168,6 +171,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   policyText: {
     fontSize: 11,

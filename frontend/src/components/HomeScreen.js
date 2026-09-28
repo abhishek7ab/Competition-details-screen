@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Platform, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 export default function HomeScreen({
   activeUser,
@@ -14,10 +14,10 @@ export default function HomeScreen({
   const colors = getThemeColors(isDarkMode);
 
   const categories = [
-    { name: 'Classical Dance', icon: 'musical-notes', count: '12 Live' },
-    { name: 'Vocal Music', icon: 'mic', count: '8 Live' },
-    { name: 'Fine Arts', icon: 'color-palette', count: '15 Live' },
-    { name: 'Instrumental', icon: 'musical-note', count: '6 Live' },
+    { name: 'Classical Dance', categoryKey: 'Dance', icon: 'musical-notes', count: '12 Live' },
+    { name: 'Vocal Music', categoryKey: 'Music', icon: 'mic', count: '8 Live' },
+    { name: 'Fine Arts', categoryKey: 'Fine Arts', icon: 'color-palette', count: '15 Live' },
+    { name: 'Drama & Theatre', categoryKey: 'Drama', icon: 'sparkles', count: '6 Live' },
   ];
 
   const featured = [
@@ -43,7 +43,7 @@ export default function HomeScreen({
       prize: '₹2,000',
       fee: '₹79',
       badge: '8 Spots Left',
-      category: 'Art',
+      category: 'Fine Arts',
     },
   ];
 
@@ -75,7 +75,7 @@ export default function HomeScreen({
 
       {/* Hero Spotlight: Current Competition */}
       <View style={styles.sectionHeader}>
-        <Ionicons name="trophy" size={18} color="#D97706" />
+        <Icon name="trophy" size={17} color="#D97706" />
         <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>
           {language === 'hi' ? 'विशेष प्रतियोगिता' : 'FEATURED SPOTLIGHT'}
         </Text>
@@ -85,13 +85,17 @@ export default function HomeScreen({
         style={[styles.spotlightCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
         onPress={onGoToContest}
         activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel="View Competition Details"
       >
         <View style={styles.spotlightBadgeRow}>
           <View style={styles.liveTag}>
             <View style={styles.pulsingDot} />
             <Text style={styles.liveTagText}>LIVE NOW</Text>
           </View>
-          <Text style={[styles.spotlightFee, { color: colors.primary }]}>Entry: ₹{competition?.entryFee || 99}</Text>
+          <Text style={[styles.spotlightFee, { color: colors.primary }]}>
+            Entry: ₹{competition?.entryFee || 99}
+          </Text>
         </View>
 
         <Text style={[styles.spotlightTitle, { color: colors.textPrimary }]}>
@@ -110,17 +114,21 @@ export default function HomeScreen({
             </Text>
           </View>
 
-          <View style={[styles.enterBtn, { backgroundColor: colors.primary }]}>
+          <TouchableOpacity
+            style={[styles.enterBtn, { backgroundColor: colors.primary }]}
+            onPress={onGoToContest}
+            activeOpacity={0.8}
+          >
             <Text style={styles.enterBtnText}>
               {language === 'hi' ? 'विवरण देखें →' : 'View Details →'}
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </TouchableOpacity>
 
       {/* Categories */}
       <View style={styles.sectionHeader}>
-        <Ionicons name="grid" size={18} color={colors.textMuted} />
+        <Icon name="grid" size={17} color={colors.textMuted} />
         <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>
           {language === 'hi' ? 'श्रेणियां' : 'BROWSE CATEGORIES'}
         </Text>
@@ -130,11 +138,18 @@ export default function HomeScreen({
         {categories.map((cat, idx) => (
           <TouchableOpacity
             key={idx}
-            style={[styles.categoryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
-            onPress={() => onSelectCategory && onSelectCategory(cat.name)}
-            activeOpacity={0.8}
+            style={[
+              styles.categoryCard,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+            onPress={() => onSelectCategory && onSelectCategory(cat.categoryKey)}
+            activeOpacity={0.75}
+            accessibilityRole="button"
+            accessibilityLabel={cat.name}
           >
-            <Ionicons name={cat.icon} size={24} color={colors.primary} />
+            <View style={[styles.catIconWrap, { backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
+              <Icon name={cat.icon} size={22} color={colors.primary} />
+            </View>
             <Text style={[styles.catName, { color: colors.textPrimary }]}>{cat.name}</Text>
             <Text style={[styles.catCount, { color: colors.primary }]}>{cat.count}</Text>
           </TouchableOpacity>
@@ -143,7 +158,7 @@ export default function HomeScreen({
 
       {/* Trending List */}
       <View style={styles.sectionHeader}>
-        <Ionicons name="trending-up" size={18} color={colors.textMuted} />
+        <Icon name="trending-up" size={17} color={colors.textMuted} />
         <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>
           {language === 'hi' ? 'लोकप्रिय प्रतियोगिताएं' : 'TRENDING COMPETITIONS'}
         </Text>
@@ -152,8 +167,17 @@ export default function HomeScreen({
       {featured.map((item, idx) => (
         <TouchableOpacity
           key={idx}
-          style={[styles.trendingCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
-          onPress={onGoToContest}
+          style={[
+            styles.trendingCard,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+          onPress={() => {
+            if (item.id === 'current') {
+              onGoToContest();
+            } else if (onSelectCategory) {
+              onSelectCategory(item.category);
+            }
+          }}
           activeOpacity={0.8}
         >
           <View style={styles.trendingLeft}>
@@ -161,7 +185,9 @@ export default function HomeScreen({
               <Text style={[styles.badgePillText, { color: colors.primary }]}>{item.badge}</Text>
             </View>
             <Text style={[styles.trendingTitle, { color: colors.textPrimary }]}>{item.title}</Text>
-            <Text style={[styles.trendingCategory, { color: colors.textSecondary }]}>{item.category} • Certified Jury</Text>
+            <Text style={[styles.trendingCategory, { color: colors.textSecondary }]}>
+              {item.category} • Certified Jury
+            </Text>
           </View>
 
           <View style={styles.trendingRight}>
@@ -213,7 +239,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
     marginTop: 6,
   },
   sectionTitle: {
@@ -226,7 +252,7 @@ const styles = StyleSheet.create({
     padding: 18,
     borderWidth: 1,
     ...Platform.select({
-      web: { boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' },
+      web: { boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', cursor: 'pointer' },
     }),
   },
   spotlightBadgeRow: {
@@ -288,6 +314,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 8,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   enterBtnText: {
     fontSize: 12,
@@ -305,11 +334,22 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
+  },
+  catIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   catName: {
     fontSize: 12,
     fontWeight: '700',
+    textAlign: 'center',
   },
   catCount: {
     fontSize: 10,
@@ -322,6 +362,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 14,
     borderWidth: 1,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   trendingLeft: {
     flex: 1,

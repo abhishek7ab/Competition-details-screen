@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Platform } from 'react-native';
-import { Ionicons, Feather } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 const NAV_ITEMS = [
   { key: 'home', icon: 'home-outline', iconActive: 'home', label: 'Home', labelHi: 'होम' },
@@ -33,6 +33,7 @@ export default function BottomNav({
       {NAV_ITEMS.map((item) => {
         const isActive = activeTab === item.key;
 
+        // Center Action Button (+)
         if (item.isCenter) {
           return (
             <TouchableOpacity
@@ -40,14 +41,17 @@ export default function BottomNav({
               style={styles.centerItem}
               onPress={() => onSelectTab && onSelectTab('create')}
               activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel="Host a Competition"
             >
               <View style={[styles.addCircle, { backgroundColor: colors.primary }]}>
-                <Feather name="plus" size={24} color="#FFFFFF" />
+                <Icon name="plus" size={24} color="#FFFFFF" />
               </View>
             </TouchableOpacity>
           );
         }
 
+        // Profile Tab (Avatar with active indicator)
         if (item.isProfile) {
           return (
             <TouchableOpacity
@@ -55,18 +59,22 @@ export default function BottomNav({
               style={styles.navItem}
               onPress={() => onSelectTab && onSelectTab('profile')}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel="User Profile"
             >
-              <Image
-                source={{
-                  uri:
-                    activeUser?.avatarUrl ||
-                    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200',
-                }}
-                style={[
-                  styles.profileAvatar,
-                  isActive && [styles.profileAvatarActive, { borderColor: colors.primary }],
-                ]}
-              />
+              <View style={styles.avatarWrapper}>
+                <Image
+                  source={{
+                    uri:
+                      activeUser?.avatarUrl ||
+                      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200',
+                  }}
+                  style={[
+                    styles.profileAvatar,
+                    isActive && [styles.profileAvatarActive, { borderColor: colors.primary }],
+                  ]}
+                />
+              </View>
               <Text
                 style={[
                   styles.navLabel,
@@ -80,16 +88,19 @@ export default function BottomNav({
           );
         }
 
+        // Standard Navigation Items (Home, Explore, Competitions)
         return (
           <TouchableOpacity
             key={item.key}
             style={styles.navItem}
             onPress={() => onSelectTab && onSelectTab(item.key)}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={item.label}
           >
-            <Ionicons
+            <Icon
               name={isActive ? item.iconActive : item.icon}
-              size={21}
+              size={22}
               color={isActive ? colors.primary : colors.textMuted}
             />
             <Text
@@ -118,35 +129,64 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     paddingHorizontal: 8,
     width: '100%',
+    ...Platform.select({
+      web: {
+        userSelect: 'none',
+      },
+    }),
   },
   navItem: {
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 4,
     flex: 1,
+    paddingVertical: 4,
+    ...Platform.select({
+      web: {
+        cursor: 'pointer',
+      },
+    }),
   },
   centerItem: {
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
+    ...Platform.select({
+      web: {
+        cursor: 'pointer',
+      },
+    }),
   },
   addCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -6,
+    marginTop: -8,
+    ...Platform.select({
+      web: {
+        boxShadow: '0 4px 12px rgba(10, 112, 117, 0.35)',
+      },
+    }),
+  },
+  avatarWrapper: {
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   profileAvatar: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
   },
   profileAvatarActive: {
     borderWidth: 2,
   },
   navLabel: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '500',
+    marginTop: 2,
   },
 });

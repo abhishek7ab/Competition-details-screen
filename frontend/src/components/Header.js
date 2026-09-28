@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 export default function Header({
   activeTab = 'contests',
@@ -17,9 +17,9 @@ export default function Header({
 
   const titles = {
     contests: { en: 'Go back', hi: 'वापस जाएं' },
-    home: { en: 'Feed & Discover', hi: 'मुख्य फ़ीड' },
-    browse: { en: 'Browse Contests', hi: 'प्रतियोगिताएं खोजें' },
-    profile: { en: 'My Profile & Stats', hi: 'प्रोफ़ाइल' },
+    home: { en: 'Go back', hi: 'वापस जाएं' },
+    browse: { en: 'Go back', hi: 'वापस जाएं' },
+    profile: { en: 'Go back', hi: 'वापस जाएं' },
   };
 
   const currentTitle = titles[activeTab] || titles.contests;
@@ -27,17 +27,21 @@ export default function Header({
   return (
     <View style={[styles.container, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
       <View style={styles.innerRow}>
-        <TouchableOpacity style={styles.backButton} onPress={onBackPress} activeOpacity={0.7}>
-          <Ionicons
-            name={activeTab === 'home' ? 'grid-outline' : 'arrow-back'}
-            size={20}
-            color={colors.textPrimary}
-          />
+        {/* Left: Authentic Go Back Button */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={onBackPress}
+          activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
+          <Icon name="arrow-back" size={20} color={colors.textPrimary} />
           <Text style={[styles.backTitleText, { color: colors.textPrimary }]}>
             {language === 'hi' ? currentTitle.hi : currentTitle.en}
           </Text>
         </TouchableOpacity>
 
+        {/* Right Actions */}
         <View style={styles.rightActions}>
           {/* Dark Mode Toggle */}
           {onToggleDarkMode && (
@@ -48,9 +52,10 @@ export default function Header({
               ]}
               onPress={onToggleDarkMode}
               activeOpacity={0.7}
-              title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              accessibilityRole="button"
+              accessibilityLabel={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
-              <Ionicons
+              <Icon
                 name={isDarkMode ? 'sunny' : 'moon-outline'}
                 size={16}
                 color={isDarkMode ? '#FBBF24' : '#0F172A'}
@@ -69,10 +74,11 @@ export default function Header({
               ]}
               onPress={onToggleDevToolbar}
               activeOpacity={0.7}
-              title="Evaluator Dev Tools"
+              accessibilityRole="button"
+              accessibilityLabel="Evaluator Dev Tools"
             >
-              <Ionicons
-                name={isDevToolbarOpen ? 'hardware-chip' : 'hardware-chip-outline'}
+              <Icon
+                name="hardware-chip-outline"
                 size={16}
                 color={isDevToolbarOpen ? '#FFFFFF' : colors.primary}
               />
@@ -80,13 +86,23 @@ export default function Header({
           )}
 
           {/* Language Switcher */}
-          <View style={[styles.langPillContainer, { backgroundColor: isDarkMode ? '#0F172A' : '#F1F5F9', borderColor: colors.border }]}>
+          <View
+            style={[
+              styles.langPillContainer,
+              { backgroundColor: isDarkMode ? '#0F172A' : '#F1F5F9', borderColor: colors.border },
+            ]}
+          >
             <TouchableOpacity
               style={[styles.langPill, language === 'en' && { backgroundColor: colors.primary }]}
               onPress={() => setLanguage('en')}
               activeOpacity={0.8}
             >
-              <Text style={[styles.langText, language === 'en' ? styles.langTextActive : { color: colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.langText,
+                  language === 'en' ? styles.langTextActive : { color: colors.textSecondary },
+                ]}
+              >
                 ENG
               </Text>
             </TouchableOpacity>
@@ -96,7 +112,12 @@ export default function Header({
               onPress={() => setLanguage('hi')}
               activeOpacity={0.8}
             >
-              <Text style={[styles.langText, language === 'hi' ? styles.langTextActive : { color: colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.langText,
+                  language === 'hi' ? styles.langTextActive : { color: colors.textSecondary },
+                ]}
+              >
                 हिंदी
               </Text>
             </TouchableOpacity>
@@ -111,7 +132,7 @@ const styles = StyleSheet.create({
   container: {
     borderBottomWidth: 1,
     ...Platform.select({
-      web: { boxShadow: '0 1px 3px rgba(0,0,0,0.03)' },
+      web: { boxShadow: '0 1px 3px rgba(0,0,0,0.03)', userSelect: 'none' },
     }),
   },
   innerRow: {
@@ -125,6 +146,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    paddingVertical: 4,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   backTitleText: {
     fontSize: 16,
@@ -143,6 +168,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   langPillContainer: {
     flexDirection: 'row',
@@ -155,6 +183,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 9999,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   langText: {
     fontSize: 11,

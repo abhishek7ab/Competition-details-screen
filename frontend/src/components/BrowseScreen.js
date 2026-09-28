@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
-export default function BrowseScreen({ onGoToContest, language, isDarkMode = false }) {
+export default function BrowseScreen({ onGoToContest, language, isDarkMode = false, initialCategory = 'All' }) {
   const colors = getThemeColors(isDarkMode);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
+
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(initialCategory);
+    }
+  }, [initialCategory]);
 
   const categories = ['All', 'Dance', 'Music', 'Fine Arts', 'Drama'];
 
@@ -42,7 +48,7 @@ export default function BrowseScreen({ onGoToContest, language, isDarkMode = fal
       fee: '₹120',
       status: 'Closes in 2 Days',
       statusColor: '#DC2626',
-      icon: 'time',
+      icon: 'stopwatch-outline',
     },
     {
       id: '4',
@@ -77,7 +83,7 @@ export default function BrowseScreen({ onGoToContest, language, isDarkMode = fal
           },
         ]}
       >
-        <Ionicons name="search" size={18} color={colors.textMuted} style={styles.searchIcon} />
+        <Icon name="search" size={18} color={colors.textMuted} style={styles.searchIcon} />
         <TextInput
           style={[styles.searchInput, { color: colors.textPrimary }]}
           placeholder="Search competitions, dances, judges..."
@@ -86,8 +92,8 @@ export default function BrowseScreen({ onGoToContest, language, isDarkMode = fal
           onChangeText={setSearchQuery}
         />
         {searchQuery ? (
-          <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <Ionicons name="close-circle" size={18} color={colors.textMuted} />
+          <TouchableOpacity onPress={() => setSearchQuery('')} activeOpacity={0.7}>
+            <Icon name="close-circle" size={18} color={colors.textMuted} />
           </TouchableOpacity>
         ) : null}
       </View>
@@ -141,7 +147,7 @@ export default function BrowseScreen({ onGoToContest, language, isDarkMode = fal
                 <Text style={[styles.cardCategoryText, { color: colors.primary }]}>{item.category}</Text>
               </View>
               <View style={[styles.statusBadge, { backgroundColor: `${item.statusColor}20` }]}>
-                <Ionicons name={item.icon} size={11} color={item.statusColor} />
+                <Icon name={item.icon} size={12} color={item.statusColor} />
                 <Text style={[styles.statusText, { color: item.statusColor }]}>{item.status}</Text>
               </View>
             </View>
@@ -154,9 +160,13 @@ export default function BrowseScreen({ onGoToContest, language, isDarkMode = fal
                 <Text style={[styles.footerLabel, { color: colors.textMuted }]}>Prize Pool</Text>
                 <Text style={[styles.footerPrize, { color: colors.primary }]}>{item.prize}</Text>
               </View>
-              <View style={[styles.viewContestBtn, { backgroundColor: colors.primary }]}>
+              <TouchableOpacity
+                style={[styles.viewContestBtn, { backgroundColor: colors.primary }]}
+                onPress={onGoToContest}
+                activeOpacity={0.8}
+              >
                 <Text style={styles.viewContestText}>Open Contest →</Text>
-              </View>
+              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         ))}
@@ -198,6 +208,9 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 9999,
     borderWidth: 1,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   catPillText: {
     fontSize: 11,
@@ -224,7 +237,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     ...Platform.select({
-      web: { boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' },
+      web: { boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', cursor: 'pointer' },
     }),
   },
   cardTop: {
@@ -282,6 +295,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   viewContestText: {
     fontSize: 11,

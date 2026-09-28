@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 export default function CountdownBanner({ targetDate, language, isDarkMode = false }) {
   const colors = getThemeColors(isDarkMode);
@@ -38,7 +38,7 @@ export default function CountdownBanner({ targetDate, language, isDarkMode = fal
     <View style={[styles.banner, { backgroundColor: colors.primaryBg }]}>
       {/* Left: Hourglass + Registration closes in */}
       <View style={styles.leftSide}>
-        <Ionicons name="hourglass-outline" size={15} color={colors.primary} />
+        <Icon name="hourglass-outline" size={15} color={colors.primary} />
         <Text style={[styles.label, { color: colors.primary }]}>
           {language === 'hi' ? 'पंजीकरण समाप्त' : 'Registration closes in'}
         </Text>
@@ -51,7 +51,7 @@ export default function CountdownBanner({ targetDate, language, isDarkMode = fal
 
       {/* Right: Hurry up! */}
       <View style={styles.rightSide}>
-        <Ionicons name="stopwatch-outline" size={14} color={colors.primary} />
+        <Icon name="stopwatch-outline" size={14} color={colors.primary} />
         <Text style={[styles.hurryText, { color: colors.primary }]}>
           {language === 'hi' ? 'जल्दी करें!' : 'Hurry up!'}
         </Text>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Platform } from 'react-native';
-import { Ionicons, Feather } from '@expo/vector-icons';
 import { THEME } from '../constants/theme';
+import Icon from './Icon';
 
 export default function SidebarNav({
   activeTab,
@@ -24,7 +24,7 @@ export default function SidebarNav({
       <View style={styles.brandContainer}>
         <View style={styles.brandRow}>
           <View style={styles.logoIcon}>
-            <Ionicons name="sparkles" size={17} color="#FFFFFF" />
+            <Icon name="sparkles" size={17} color="#FFFFFF" />
           </View>
           <View>
             <View style={styles.brandTitleRow}>
@@ -58,7 +58,7 @@ export default function SidebarNav({
               onPress={() => onSelectTab(item.key)}
               activeOpacity={0.8}
             >
-              <Ionicons
+              <Icon
                 name={isActive ? item.iconActive : item.icon}
                 size={18}
                 color={isActive ? '#0A7075' : '#64748B'}
@@ -115,7 +115,7 @@ export default function SidebarNav({
             {activeUser?.name === 'Pooja Sharma' ? 'Enrolled Performer ✓' : 'Artist Member'}
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={14} color="#94A3B8" />
+        <Icon name="chevron-forward" size={14} color="#94A3B8" />
       </TouchableOpacity>
     </View>
   );

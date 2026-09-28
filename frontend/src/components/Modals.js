@@ -10,8 +10,8 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 // 1. Video Player Modal
 export function VideoModal({ visible, onClose, videoUrl, title, isDarkMode = false }) {
@@ -26,8 +26,8 @@ export function VideoModal({ visible, onClose, videoUrl, title, isDarkMode = fal
             <Text style={[styles.modalTitle, { color: colors.textPrimary }]} numberOfLines={1}>
               {title || 'Video Preview'}
             </Text>
-            <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn} activeOpacity={0.7}>
-              <Ionicons name="close" size={20} color={colors.textSecondary} />
+            <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn} activeOpacity={0.7} accessibilityRole="button">
+              <Icon name="close" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -42,7 +42,7 @@ export function VideoModal({ visible, onClose, videoUrl, title, isDarkMode = fal
               />
             ) : (
               <View style={[styles.mobileVideoPlaceholder, { backgroundColor: colors.surface }]}>
-                <Ionicons name="play-circle" size={54} color={colors.primary} />
+                <Icon name="play-circle" size={54} color={colors.primary} />
                 <Text style={[styles.mobileVideoText, { color: colors.textPrimary }]}>Playing: {title}</Text>
                 <Text style={[styles.videoUrlText, { color: colors.textSecondary }]} numberOfLines={1}>
                   {videoUrl}
@@ -55,6 +55,7 @@ export function VideoModal({ visible, onClose, videoUrl, title, isDarkMode = fal
             style={[styles.dismissBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
             onPress={onClose}
             activeOpacity={0.8}
+            accessibilityRole="button"
           >
             <Text style={[styles.dismissBtnText, { color: colors.textPrimary }]}>Close Preview</Text>
           </TouchableOpacity>
@@ -96,8 +97,8 @@ export function SubmissionModal({
             <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>
               {initialData ? 'Your Submission' : 'Upload Submission'}
             </Text>
-            <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn} activeOpacity={0.7}>
-              <Ionicons name="close" size={20} color={colors.textSecondary} />
+            <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn} activeOpacity={0.7} accessibilityRole="button">
+              <Icon name="close" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -164,6 +165,7 @@ export function SubmissionModal({
             onPress={handleSubmit}
             disabled={loading}
             activeOpacity={0.8}
+            accessibilityRole="button"
           >
             {loading ? (
               <ActivityIndicator color="#FFFFFF" size="small" />
@@ -198,12 +200,12 @@ export function PaymentModal({
         <View style={[styles.paymentCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <View style={[styles.paymentHeader, { borderBottomColor: colors.border }]}>
             <View style={styles.razorpayRow}>
-              <Ionicons name="flash" size={16} color="#58A6FF" />
+              <Icon name="flash" size={16} color="#58A6FF" />
               <Text style={styles.razorpayLogo}>Razorpay</Text>
               <Text style={styles.secureBadge}>Verified</Text>
             </View>
-            <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn} activeOpacity={0.7}>
-              <Ionicons name="close" size={20} color={colors.textSecondary} />
+            <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn} activeOpacity={0.7} accessibilityRole="button">
+              <Icon name="close" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -212,7 +214,7 @@ export function PaymentModal({
               National Classical Dance Contest
             </Text>
             <View style={styles.spotsBadge}>
-              <Ionicons name="flame" size={14} color="#D97706" />
+              <Icon name="flame" size={14} color="#D97706" />
               <Text style={styles.paymentSpotsAlert}>Only {spotsRemaining} spots left</Text>
             </View>
 
@@ -238,7 +240,7 @@ export function PaymentModal({
                 },
               ]}
             >
-              <Ionicons name="shield-checkmark" size={16} color={colors.primary} />
+              <Icon name="shield-checkmark" size={16} color={colors.primary} />
               <Text style={[styles.paymentMethodText, { color: colors.primary }]}>
                 Instant UPI / Card Payment (Simulated Sandbox)
               </Text>
@@ -250,6 +252,7 @@ export function PaymentModal({
             onPress={onConfirm}
             disabled={loading}
             activeOpacity={0.8}
+            accessibilityRole="button"
           >
             {loading ? (
               <ActivityIndicator color="#FFFFFF" size="small" />
@@ -285,8 +288,8 @@ export function CreateModal({ visible, onClose, onCreateSuccess, isDarkMode = fa
         <View style={[styles.modalCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <View style={styles.modalHeader}>
             <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Host a Competition</Text>
-            <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn} activeOpacity={0.7}>
-              <Ionicons name="close" size={20} color={colors.textSecondary} />
+            <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn} activeOpacity={0.7} accessibilityRole="button">
+              <Icon name="close" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -353,6 +356,7 @@ export function CreateModal({ visible, onClose, onCreateSuccess, isDarkMode = fa
             style={[styles.primaryActionBtn, { backgroundColor: colors.primary }]}
             onPress={handleCreate}
             activeOpacity={0.8}
+            accessibilityRole="button"
           >
             <Text style={styles.primaryActionBtnText}>Launch Competition</Text>
           </TouchableOpacity>
@@ -400,13 +404,13 @@ export function ReviewsModal({ visible, onClose, isDarkMode = false, language })
         <View style={[styles.modalCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <View style={styles.modalHeader}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Ionicons name="chatbubble-ellipses" size={20} color={colors.primary} />
+              <Icon name="chatbubble-ellipses" size={20} color={colors.primary} />
               <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>
                 {language === 'hi' ? 'प्रतिभागी समीक्षाएं' : 'Community Reviews (4.9★)'}
               </Text>
             </View>
-            <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn} activeOpacity={0.7}>
-              <Ionicons name="close" size={20} color={colors.textSecondary} />
+            <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn} activeOpacity={0.7} accessibilityRole="button">
+              <Icon name="close" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -435,7 +439,7 @@ export function ReviewsModal({ visible, onClose, isDarkMode = false, language })
                   </View>
                   <View style={styles.starRow}>
                     {[...Array(rev.rating)].map((_, i) => (
-                      <Ionicons key={i} name="star" size={13} color="#F59E0B" />
+                      <Icon key={i} name="star" size={13} color="#F59E0B" />
                     ))}
                   </View>
                 </View>
@@ -448,6 +452,7 @@ export function ReviewsModal({ visible, onClose, isDarkMode = false, language })
             style={[styles.dismissBtn, { backgroundColor: colors.primary, marginTop: 14 }]}
             onPress={onClose}
             activeOpacity={0.8}
+            accessibilityRole="button"
           >
             <Text style={[styles.dismissBtnText, { color: '#FFFFFF' }]}>Back to Competition</Text>
           </TouchableOpacity>
@@ -498,6 +503,9 @@ const styles = StyleSheet.create({
   },
   modalCloseBtn: {
     padding: 4,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   formSubtitle: {
     fontSize: 12,
@@ -529,6 +537,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   dismissBtnText: {
     fontSize: 13,
@@ -557,7 +568,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
     ...Platform.select({
-      web: { boxShadow: '0 2px 8px rgba(10, 112, 117, 0.25)' },
+      web: { boxShadow: '0 2px 8px rgba(10, 112, 117, 0.25)', cursor: 'pointer' },
     }),
   },
   primaryActionBtnText: {
@@ -648,6 +659,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   payNowBtnText: {
     color: '#FFFFFF',

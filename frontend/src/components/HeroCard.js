@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 export default function HeroCard({ competition, computed, language, isDarkMode = false }) {
   const colors = getThemeColors(isDarkMode);
@@ -45,7 +45,7 @@ export default function HeroCard({ competition, computed, language, isDarkMode =
             activeOpacity={0.8}
             onPress={() => Alert.alert('Registration Verified', 'You have an active spot reserved in this competition.')}
           >
-            <Ionicons name="checkmark-circle" size={15} color={colors.primary} />
+            <Icon name="checkmark-circle" size={15} color={colors.primary} />
             <Text style={[styles.registeredText, { color: colors.primary }]}>
               {language === 'hi' ? 'पंजीकृत' : 'Registered'}
             </Text>
@@ -77,7 +77,7 @@ export default function HeroCard({ competition, computed, language, isDarkMode =
         ))}
 
         <TouchableOpacity style={styles.certRow} onPress={handleCertPress} activeOpacity={0.7}>
-          <Ionicons name="trophy-outline" size={14} color={colors.primary} />
+          <Icon name="trophy-outline" size={14} color={colors.primary} />
           <Text style={[styles.certText, { color: colors.primary }]}>
             {badgeText || 'Winners get certificate'}
           </Text>
@@ -109,7 +109,7 @@ export default function HeroCard({ competition, computed, language, isDarkMode =
         {/* 3. Capacity & Progress */}
         <View style={styles.spotsBox}>
           <View style={styles.spotsTopRow}>
-            <Ionicons name="people-outline" size={14} color={colors.primary} />
+            <Icon name="people-outline" size={14} color={colors.primary} />
             <Text style={[styles.spotsLabel, { color: colors.primary }, isSoldOut && { color: colors.rose }]}>
               {isSoldOut
                 ? (language === 'hi' ? 'हाउसफुल' : 'Sold out')
@@ -183,6 +183,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 6,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   categoryPillText: {
     fontSize: 12,
@@ -193,6 +196,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
     marginLeft: 2,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   certText: {
     fontSize: 12,

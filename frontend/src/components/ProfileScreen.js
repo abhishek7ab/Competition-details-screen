@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Platform, Alert } from 'react-native';
-import { Ionicons, Feather } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 export default function ProfileScreen({
   activeUser,
@@ -44,7 +44,7 @@ export default function ProfileScreen({
         <View style={styles.profileInfo}>
           <View style={styles.nameRow}>
             <Text style={[styles.name, { color: colors.textPrimary }]}>{activeUser?.name || 'Artist'}</Text>
-            <Ionicons name="checkmark-circle" size={16} color={colors.primary} />
+            <Icon name="checkmark-circle" size={16} color={colors.primary} />
           </View>
           <Text style={[styles.email, { color: colors.textSecondary }]}>
             {activeUser?.email || 'user@feedants.com'}
@@ -100,7 +100,12 @@ export default function ProfileScreen({
           activeOpacity={0.85}
         >
           <View style={styles.entryTop}>
-            <Text style={[styles.entryBadge, { color: colors.primary, backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' }]}>
+            <Text
+              style={[
+                styles.entryBadge,
+                { color: colors.primary, backgroundColor: isDarkMode ? '#132E35' : '#E8F6F6' },
+              ]}
+            >
               Kathak Dance
             </Text>
             <Text style={[styles.entryStatus, { color: colors.primary }]}>Spot Reserved ✓</Text>
@@ -119,7 +124,7 @@ export default function ProfileScreen({
         </TouchableOpacity>
       ) : (
         <View style={[styles.emptyCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Ionicons name="ticket-outline" size={28} color={colors.textMuted} />
+          <Icon name="ticket-outline" size={28} color={colors.textMuted} />
           <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No registered competitions yet.</Text>
           <TouchableOpacity
             style={[styles.browseNowBtn, { backgroundColor: colors.primary }]}
@@ -139,12 +144,12 @@ export default function ProfileScreen({
           activeOpacity={0.7}
         >
           <View style={styles.optionLeft}>
-            <Ionicons name="gift-outline" size={18} color={colors.primary} />
+            <Icon name="gift-outline" size={18} color={colors.primary} />
             <Text style={[styles.optionTitle, { color: colors.textPrimary }]}>
               Referral Program (Code: {activeUser?.referralCode || 'feed123'})
             </Text>
           </View>
-          <Feather name="chevron-right" size={18} color={colors.textMuted} />
+          <Icon name="chevron-forward" size={18} color={colors.textMuted} />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -153,10 +158,10 @@ export default function ProfileScreen({
           activeOpacity={0.7}
         >
           <View style={styles.optionLeft}>
-            <Ionicons name="shield-checkmark-outline" size={18} color={colors.primary} />
+            <Icon name="shield-checkmark-outline" size={18} color={colors.primary} />
             <Text style={[styles.optionTitle, { color: colors.textPrimary }]}>Security & Refund Policy</Text>
           </View>
-          <Feather name="chevron-right" size={18} color={colors.textMuted} />
+          <Icon name="chevron-forward" size={18} color={colors.textMuted} />
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -247,6 +252,9 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     gap: 6,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   entryTop: {
     flexDirection: 'row',
@@ -295,6 +303,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
     marginTop: 4,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   browseNowText: {
     fontSize: 11,
@@ -312,6 +323,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 14,
     borderBottomWidth: 1,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   optionLeft: {
     flexDirection: 'row',

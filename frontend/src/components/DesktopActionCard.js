@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME } from '../constants/theme';
+import Icon from './Icon';
 
 export default function DesktopActionCard({
   competition,
@@ -71,7 +71,7 @@ export default function DesktopActionCard({
       {/* Top Header Badge */}
       <View style={styles.topBadgeRow}>
         <View style={styles.officialBadge}>
-          <Ionicons name="sparkles" size={12} color={THEME.colors.primary} />
+          <Icon name="sparkles" size={12} color={THEME.colors.primary} />
           <Text style={styles.officialBadgeText}>OFFICIAL REGISTRATION</Text>
         </View>
         <Text style={styles.spotsCounterText}>{spotsRemaining} Spots Left</Text>
@@ -125,7 +125,7 @@ export default function DesktopActionCard({
         ) : (
           <View style={styles.btnContent}>
             <View style={styles.btnTitleRow}>
-              <Ionicons
+              <Icon
                 name={buttonIcon}
                 size={18}
                 color={buttonVariant === 'disabled' ? THEME.colors.textMuted : THEME.colors.bg}
@@ -156,15 +156,15 @@ export default function DesktopActionCard({
       {/* Security & Trust Badges */}
       <View style={styles.trustBadgesRow}>
         <View style={styles.trustItem}>
-          <Ionicons name="lock-closed" size={12} color={THEME.colors.primary} />
+          <Icon name="lock-closed" size={12} color={THEME.colors.primary} />
           <Text style={styles.trustText}>Razorpay 256-Bit</Text>
         </View>
         <View style={styles.trustItem}>
-          <Ionicons name="flash" size={12} color={THEME.colors.gold} />
+          <Icon name="flash" size={12} color={THEME.colors.gold} />
           <Text style={styles.trustText}>Instant UPI Payout</Text>
         </View>
         <View style={styles.trustItem}>
-          <Ionicons name="shield-checkmark" size={12} color={THEME.colors.primary} />
+          <Icon name="shield-checkmark" size={12} color={THEME.colors.primary} />
           <Text style={styles.trustText}>100% Refundable</Text>
         </View>
       </View>

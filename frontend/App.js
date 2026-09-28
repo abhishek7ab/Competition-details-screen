@@ -11,9 +11,9 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { apiService } from './src/services/api';
 import { THEME, getThemeColors } from './src/constants/theme';
+import Icon from './src/components/Icon';
 
 // Components
 import Header from './src/components/Header';
@@ -54,6 +54,7 @@ export default function App() {
 
   // Navigation & Interactive Modals State
   const [activeTab, setActiveTab] = useState('contests'); // 'home' | 'browse' | 'create' | 'contests' | 'profile'
+  const [browseCategory, setBrowseCategory] = useState('All');
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [videoModal, setVideoModal] = useState({ visible: false, url: '', title: '' });
   const [submissionModalVisible, setSubmissionModalVisible] = useState(false);
@@ -70,9 +71,14 @@ export default function App() {
     }
     setActiveTab(tab);
     if (tab === 'home') showToast('Switched to Home Feed');
-    else if (tab === 'browse') showToast('Browse Competitions');
-    else if (tab === 'profile') showToast(`Profile: ${activeUser?.name || 'User'}`);
-    else if (tab === 'contests') showToast('Competition Details Screen');
+    else if (tab === 'browse') {
+      setBrowseCategory('All');
+      showToast('Browse Competitions');
+    } else if (tab === 'profile') {
+      showToast(`Profile: ${activeUser?.name || 'User'}`);
+    } else if (tab === 'contests') {
+      showToast('Competition Details Screen');
+    }
   };
 
   const handleBackPress = () => {
@@ -80,27 +86,7 @@ export default function App() {
       setActiveTab('contests');
       showToast('Back to Competition Details');
     } else {
-      Alert.alert(
-        'Feedants Navigation',
-        'You are currently viewing Competition Details. Where would you like to navigate?',
-        [
-          { text: 'Stay Here', style: 'cancel' },
-          {
-            text: 'Go to Home Feed',
-            onPress: () => {
-              setActiveTab('home');
-              showToast('Feedants Home');
-            },
-          },
-          {
-            text: 'Explore Contests',
-            onPress: () => {
-              setActiveTab('browse');
-              showToast('Explore Contests');
-            },
-          },
-        ]
-      );
+      showToast('You are on the Competition Details screen');
     }
   };
 
@@ -109,7 +95,7 @@ export default function App() {
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage('');
-    }, 3000);
+    }, 2800);
   };
 
   // 1. Initial Load: Fetch Users & Competition Data
@@ -310,7 +296,7 @@ export default function App() {
           </View>
         ) : !competition && activeTab === 'contests' ? (
           <View style={[styles.loadingContainer, { backgroundColor: colors.bg }]}>
-            <Ionicons name="cloud-offline-outline" size={40} color="#DC2626" />
+            <Icon name="cloud-offline-outline" size={40} color="#DC2626" />
             <Text style={[styles.loadingText, { color: '#DC2626', marginTop: 10 }]}>
               Unable to reach Backend API (:5000)
             </Text>
@@ -329,8 +315,12 @@ export default function App() {
           <HomeScreen
             activeUser={activeUser}
             competition={competition}
-            onGoToContest={() => setActiveTab('contests')}
+            onGoToContest={() => {
+              setActiveTab('contests');
+              showToast('Competition Details Screen');
+            }}
             onSelectCategory={(cat) => {
+              setBrowseCategory(cat);
               setActiveTab('browse');
               showToast(`Browsing ${cat}`);
             }}
@@ -339,7 +329,11 @@ export default function App() {
           />
         ) : activeTab === 'browse' ? (
           <BrowseScreen
-            onGoToContest={() => setActiveTab('contests')}
+            onGoToContest={() => {
+              setActiveTab('contests');
+              showToast('Competition Details Screen');
+            }}
+            initialCategory={browseCategory}
             language={language}
             isDarkMode={isDarkMode}
           />
@@ -347,7 +341,10 @@ export default function App() {
           <ProfileScreen
             activeUser={activeUser}
             onShowToast={showToast}
-            onGoToContest={() => setActiveTab('contests')}
+            onGoToContest={() => {
+              setActiveTab('contests');
+              showToast('Competition Details Screen');
+            }}
             language={language}
             isDarkMode={isDarkMode}
           />

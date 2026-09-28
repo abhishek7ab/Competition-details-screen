@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 export default function PreviousWinners({ winners, onPlayVideo, language, isDarkMode = false }) {
   if (!winners || winners.length === 0) return null;
@@ -27,13 +27,15 @@ export default function PreviousWinners({ winners, onPlayVideo, language, isDark
             ]}
             onPress={() => onPlayVideo(winner.videoUrl, `${winner.name} (${winner.rankTitle})`)}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={`${winner.name} Video`}
           >
             {/* Thumbnail Image */}
             <View style={styles.imageWrapper}>
               <Image source={{ uri: winner.avatarUrl }} style={styles.image} />
               {/* Circular Play Badge Icon */}
               <View style={[styles.playBadge, { backgroundColor: colors.primary }]}>
-                <Ionicons name="play" size={11} color="#FFFFFF" style={{ marginLeft: 1 }} />
+                <Icon name="play" size={11} color="#FFFFFF" style={{ marginLeft: 1 }} />
               </View>
             </View>
 
@@ -75,7 +77,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: 175,
     ...Platform.select({
-      web: { boxShadow: '0 1px 3px rgba(0,0,0,0.05)' },
+      web: { boxShadow: '0 1px 3px rgba(0,0,0,0.05)', cursor: 'pointer' },
     }),
   },
   imageWrapper: {

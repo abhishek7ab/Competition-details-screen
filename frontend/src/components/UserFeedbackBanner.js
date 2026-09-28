@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 export default function UserFeedbackBanner({ onFeedbackPress, language, isDarkMode = false }) {
   const colors = getThemeColors(isDarkMode);
@@ -34,8 +34,9 @@ export default function UserFeedbackBanner({ onFeedbackPress, language, isDarkMo
         ]}
         onPress={handleDefaultFeedbackPress}
         activeOpacity={0.8}
+        accessibilityRole="button"
       >
-        <Ionicons name="chatbubble-ellipses-outline" size={20} color={colors.primary} />
+        <Icon name="chatbubble-ellipses-outline" size={20} color={colors.primary} />
         <View style={styles.textContainer}>
           <Text style={[styles.title, { color: colors.textPrimary }]}>
             {language === 'hi' ? 'हमारे उपयोगकर्ताओं से सुनें' : 'Hear From Our Users'}
@@ -46,7 +47,7 @@ export default function UserFeedbackBanner({ onFeedbackPress, language, isDarkMo
               : 'See what 1,400+ participants say about Feedants (4.9★)'}
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+        <Icon name="chevron-forward" size={18} color={colors.textMuted} />
       </TouchableOpacity>
 
       {/* 2. Ad Here spot (interactive) */}
@@ -60,8 +61,9 @@ export default function UserFeedbackBanner({ onFeedbackPress, language, isDarkMo
         ]}
         onPress={handleAdPress}
         activeOpacity={0.7}
+        accessibilityRole="button"
       >
-        <Ionicons name="megaphone-outline" size={16} color={colors.primary} />
+        <Icon name="megaphone-outline" size={16} color={colors.primary} />
         <Text style={[styles.adText, { color: colors.textMuted }]}>
           {language === 'hi' ? 'विज्ञापन / प्रायोजक स्थान (टैप करें)' : 'Ad / Sponsor Here (Tap to Partner)'}
         </Text>
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: 12,
     ...Platform.select({
-      web: { boxShadow: '0 1px 3px rgba(0,0,0,0.05)' },
+      web: { boxShadow: '0 1px 3px rgba(0,0,0,0.05)', cursor: 'pointer' },
     }),
   },
   textContainer: {
@@ -106,6 +108,9 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     borderRadius: 10,
     paddingVertical: 12,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   adText: {
     fontSize: 12,

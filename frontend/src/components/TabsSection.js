@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { THEME, getThemeColors } from '../constants/theme';
+import Icon from './Icon';
 
 export default function TabsSection({ competition, language, isDarkMode = false }) {
   const colors = getThemeColors(isDarkMode);
@@ -43,6 +43,8 @@ export default function TabsSection({ competition, language, isDarkMode = false 
               style={styles.tabHeader}
               onPress={() => setActiveTab(tab.key)}
               activeOpacity={0.7}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: isActive }}
             >
               <Text
                 style={[
@@ -77,6 +79,7 @@ export default function TabsSection({ competition, language, isDarkMode = false 
               style={styles.viewMoreButton}
               onPress={() => setIsExpanded(!isExpanded)}
               activeOpacity={0.7}
+              accessibilityRole="button"
             >
               <Text style={[styles.viewMoreText, { color: colors.primary }]}>
                 {isExpanded
@@ -87,7 +90,7 @@ export default function TabsSection({ competition, language, isDarkMode = false 
                   ? 'और पढ़ें'
                   : 'View more'}
               </Text>
-              <Ionicons
+              <Icon
                 name={isExpanded ? 'chevron-up' : 'chevron-down'}
                 size={14}
                 color={colors.primary}
@@ -111,6 +114,7 @@ export default function TabsSection({ competition, language, isDarkMode = false 
                 ]}
                 onPress={() => handleParamPress(item)}
                 activeOpacity={0.7}
+                accessibilityRole="button"
               >
                 <View style={styles.paramTop}>
                   <Text style={[styles.paramName, { color: colors.textPrimary }]}>
@@ -145,8 +149,9 @@ export default function TabsSection({ competition, language, isDarkMode = false 
                   ]}
                   onPress={() => handleRulePress(ruleTextStr)}
                   activeOpacity={0.7}
+                  accessibilityRole="button"
                 >
-                  <Ionicons
+                  <Icon
                     name="checkmark-circle"
                     size={16}
                     color={colors.primary}
@@ -185,6 +190,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   tabHeaderText: {
     fontSize: 12,
@@ -213,6 +221,9 @@ const styles = StyleSheet.create({
     gap: 4,
     marginTop: 10,
     alignSelf: 'center',
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   viewMoreText: {
     fontSize: 12,
@@ -225,6 +236,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 12,
     borderWidth: 1,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   paramTop: {
     flexDirection: 'row',
@@ -259,6 +273,9 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     borderWidth: 1,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+    }),
   },
   ruleIcon: {
     marginTop: 1,
