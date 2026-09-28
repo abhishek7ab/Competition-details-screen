@@ -8,8 +8,25 @@ const { seedDatabase } = require('./seed');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+// Configure browser origins explicitly. Production must set CORS_ORIGINS to the
+// frontend origin(s), separated by commas. Requests without an Origin header
+// (such as server-to-server or command-line requests) are still allowed.
+const defaultDevelopmentOrigins = ['http://localhost:8081', 'http://127.0.0.1:8081', 'http://localhost:19006'];
+const configuredOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map((origin) => origin.trim()).filter(Boolean)
+  : process.env.NODE_ENV === 'production'
+    ? []
+    : defaultDevelopmentOrigins;
+const allowedOrigins = new Set(configuredOrigins);
+
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.has(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Origin is not allowed by CORS'));
+  },
+}));
 app.use(express.json());
 
 // Health check endpoint
