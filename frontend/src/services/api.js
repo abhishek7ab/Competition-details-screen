@@ -62,7 +62,7 @@ export const apiService = {
       return json.data || [];
     } catch (error) {
       console.error('API getDemoUsers error:', error);
-      return [];
+      throw error;
     }
   },
 
