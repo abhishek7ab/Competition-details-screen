@@ -1,8 +1,6 @@
-import { Platform } from 'react-native';
-
-// In Web and local simulators, localhost:5000 works.
-// On physical mobile devices, replace with your local IP (e.g., http://192.168.1.X:5000)
-export const API_BASE_URL = 'http://localhost:5000/api';
+// Set EXPO_PUBLIC_API_BASE_URL in frontend/.env for deployed or physical-device builds.
+// Example: EXPO_PUBLIC_API_BASE_URL=http://192.168.1.10:5000/api
+export const API_BASE_URL = (process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api').replace(/\\/$/, '');
 
 export const apiService = {
   // Fetch competition details with user state
