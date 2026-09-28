@@ -41,7 +41,8 @@ const getCompetitionDetails = async (req, res) => {
     const currentState = competition.getCurrentState();
     let userState = { isRegistered: false, hasSubmitted: false, registration: null, submission: null };
 
-    if (userId) {
+    // User IDs are not authentication. Never expose registration/payment details or submitted video data through this public endpoint in production.
+    if (userId && process.env.NODE_ENV !== 'production') {
       const registration = await Registration.findOne({ userId, competitionId: competition._id });
       if (registration) {
         userState.isRegistered = true;
